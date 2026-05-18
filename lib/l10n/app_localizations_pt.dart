@@ -1,0 +1,541 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Portuguese (`pt`).
+class AppLocalizationsPt extends AppLocalizations {
+  AppLocalizationsPt([String locale = 'pt']) : super(locale);
+
+  @override
+  String get onboardingSkip => 'Pular';
+
+  @override
+  String get onboardingTitleOne => 'Escanear e Decodificar';
+
+  @override
+  String get onboardingDescOne =>
+      'Aponte sua câmera para desbloquear\nhistórias de artefatos e traduzir\ninstantaneamente Hieróglifos antigos.';
+
+  @override
+  String get onboardingTitleTwo => 'Fale com a História';
+
+  @override
+  String get onboardingDescTwo =>
+      'Tenha conversas reais com artefatos.\nFaça perguntas e ouça seus\nsegredos ocultos.';
+
+  @override
+  String get onboardingTitleThree => 'Explore os Mitos';
+
+  @override
+  String get onboardingDescThree =>
+      'Mergulhe fundo nas eras e na mitologia\ndo Antigo Egito. Sua jornada começa\nagora.';
+
+  @override
+  String get onboardingGetStarted => 'Começar';
+
+  @override
+  String get onboardingNext => 'Próximo';
+
+  @override
+  String get drawerHome => 'Início';
+
+  @override
+  String get drawerDiscover => 'Descobrir';
+
+  @override
+  String get drawerScan => 'Escanear';
+
+  @override
+  String get drawerChat => 'Chat';
+
+  @override
+  String get drawerProfile => 'Perfil';
+
+  @override
+  String get drawerSettings => 'Configurações';
+
+  @override
+  String get homeSliderDescOne => 'Desenvolvido pela\n*Coleção\ndo GEM*.';
+
+  @override
+  String get homeSliderDescTwo =>
+      'Nosso modelo de IA é\natuamente\ndedicado aos artefatos do\n*Grande Museu\nEgípcio*.';
+
+  @override
+  String get homeScanButton => 'Escanear Artefatos e\nDecodificar Hieróglifos';
+
+  @override
+  String get homeHistoryTitle => 'História Egípcia\ne Eras';
+
+  @override
+  String get homeMythologyTitle => 'Mitologia e\nDeuses';
+
+  @override
+  String get discoverTitle => 'Descobrir';
+
+  @override
+  String get discoverHistoryTitle => 'História Egípcia e Eras';
+
+  @override
+  String get discoverMythologyTitle => 'Mitologia e Deuses';
+
+  @override
+  String get discoverHistoryButton => 'Explorar Dinastias';
+
+  @override
+  String get discoverMythologyButton => 'Entrar no Panteão';
+
+  @override
+  String get readMore => 'Ler mais';
+
+  @override
+  String get showless => 'Mostrar menos';
+
+  @override
+  String get era1Title => 'Período Pré-Dinástico e Dinástico Antigo';
+
+  @override
+  String get era1Desc =>
+      'Período Pré-Dinástico e Dinástico Antigo (c. 3200 – 2686 a.C.)\nA história da civilização começou quando os habitantes do Vale do Nilo se reuniram em dois centros principais: a região do Delta (Reino do Norte) e a cidade de \"Hieracômpolis\" no Alto Egito (Reino do Sul). Do Sul emergiu Narmer (Menés), o último rei do período Pré-Dinástico, que invadiu o Norte para unificar o país pela primeira vez por volta de 3150 a.C. Narmer registrou essa grande vitória na \"Paleta de Narmer\", onde ele aparece usando a coroa do Sul de um lado e a coroa do Norte do outro, estabelecendo a Primeira Dinastia. Para garantir o controle central e gerenciar a burocracia emergente, ele fundou a capital \"Mênfis\". Ele foi sucedido pelo Rei \"Hor-Aha\", e a Segunda Dinastia continuou a consolidar os pilares do estado.';
+
+  @override
+  String get era2Title => 'Império Antigo';
+
+  @override
+  String get era2Desc =>
+      'A Era dos Construtores de Pirâmides (2686 – 2181 a.C.)\nA Terceira Dinastia testemunhou um salto arquitetônico, onde o Rei Djoser e seu arquiteto Imhotep construíram a primeira estrutura de pedra gigante da história (a Pirâmide de Degraus de Saqqara). Com o advento da Quarta Dinastia, Sneferu estabeleceu verdadeiras pirâmides em Meidum e Dahshur. Depois veio seu filho Quéops para construir a Grande Pirâmide de Gizé, que permaneceu o edifício mais alto do mundo por milênios, construída por trabalhadores egípcios — que trabalhavam em troca de isenções fiscais e comida, não como escravos. Na Quinta Dinastia, Userkaf focou na construção de templos solares em Abusir. No entanto, no final da Sexta Dinastia, o prestígio real começou a diminuir e a tendência de independência cresceu entre os governadores provinciais.';
+
+  @override
+  String get era3Title => 'Primeiro Período Intermediário';
+
+  @override
+  String get era3Desc =>
+      'Primeiro Período Intermediário (2181 – 2055 a.C.)\nApós o colapso do Império Antigo, o Egito entrou em um túnel escuro onde a autoridade central recuou completamente. O caos e a instabilidade política prevaleceram, a ponto de a era ser descrita por frases que indicavam a abundância de reis e seus curtos reinados (Dinastias 9 a 11), levando a uma ansiedade social generalizada.';
+
+  @override
+  String get era4Title => 'Império Médio';
+
+  @override
+  String get era4Desc =>
+      'A Era da Prosperidade (2055 – 1650 a.C.)\nA unidade retornou às terras egípcias com o alvorecer da Décima Primeira Dinastia pelas mãos dos príncipes de Tebas. O Rei Mentuhotep II conseguiu reunificar o país e construiu seu templo mortuário em Deir el-Bahari. A Décima Segunda Dinastia testemunhou estabilidade e prosperidade, onde reis como Amenemhat I e Senusret II empreenderam projetos de irrigação e construíram pirâmides relativamente menores (em comparação com o Império Antigo) em Lisht, Lahun e Hawara em Faiyum.';
+
+  @override
+  String get era5Title => 'Segundo Período Intermediário';
+
+  @override
+  String get era5Desc =>
+      'A Invasão dos Hicsos (1650 – 1550 a.C.)\nA autoridade real recuou novamente, permitindo que os \"Hicsos\" (tribos pastorais nômades) explorassem essa fraqueza e dominassem o norte do Egito e o Delta usando carruagens de guerra. Os Hicsos estabeleceram sua capital em \"Avaris\", enquanto o domínio egípcio nativo ficou confinado ao Sul, durante um período que os egípcios não costumavam documentar muito devido à amargura da derrota.';
+
+  @override
+  String get era6Title => 'Império Novo';
+
+  @override
+  String get era6Desc =>
+      'A Era do Império (1550 – 1069 a.C.)\nEsta era gloriosa começou com o Rei Ahmose expulsando os Hicsos e fundando a Décima Oitava Dinastia. O Egito se expandiu militarmente; Tutmés I invadiu a Núbia, e Tutmés III (o Napoleão dos tempos antigos) liderou campanhas chegando ao Rio Eufrates na Síria. A Rainha Hatshepsut ganhou destaque, construindo o templo de Deir el-Bahari; seu reinado foi marcado por construções e prosperidade. Uma revolução religiosa e artística ocorreu quando Amenhotep IV (Akhenaton) substituiu os antigos deuses pela adoração de \"Aton\" e mudou a capital para \"Tell el-Amarna\". No entanto, seu filho Tutancâmon retornou a capital para Tebas e restaurou a antiga religião. Na Décima Nona Dinastia, Seti I e mais tarde seu filho Ramsés II enfrentaram as forças hititas. O conflito terminou com a Batalha de Kadesh e o primeiro tratado de paz da história. Ramsés construiu monumentos maciços (Abu Simbel). A glória do império terminou com Ramsés III (Vigésima Dinastia), que repeliu os \"Povos do Mar\", seguido por um declínio sob os reis raméssidas.';
+
+  @override
+  String get era7Title => 'Terceiro Período Intermediário';
+
+  @override
+  String get era7Desc =>
+      'Terceiro Período Intermediário (1069 – 664 a.C.)\nO Egito ficou politicamente dividido; uma nova dinastia governou de \"Tanis\" no Delta, enquanto os Sumos Sacerdotes de Amon controlavam Tebas no Sul. O país se fragmentou em pequenos estados, abrindo caminho para os governantes de Kush (Núbios) controlarem o Alto Egito, invadirem Mênfis e estabelecerem a Vigésima Quinta Dinastia.';
+
+  @override
+  String get era8Title => 'Período Tardio';
+
+  @override
+  String get era8Desc =>
+      'Período Tardio (664 – 332 a.C.)\nApesar das guerras constantes, este período viu flashes de um renascimento cultural (Vigésima Sexta Dinastia). O Egito enfrentou a invasão assíria, depois a Trigésima Dinastia retornou como a última dinastia egípcia nativa liderada por Nectanebo I e Nectanebo II, que construíram templos em Philae. O domínio nativo terminou permanentemente depois que Nectanebo II foi derrotado pelos persas na Batalha de Pelúsio (343 a.C.), tornando o Egito uma província persa pela segunda vez.';
+
+  @override
+  String get era9Title => 'Períodos Grego e Romano';
+
+  @override
+  String get era9Desc =>
+      'Períodos Grego e Romano (332 a.C. – 30 a.C.)\nEm 332 a.C., Alexandre, o Grande, entrou no Egito, encerrando o domínio persa. Após sua morte, Ptolomeu I fundou o Reino Ptolomaico. O domínio ptolomaico continuou até a era de Cleópatra VII, que se envolveu em uma disputa pelo trono que terminou com a chegada de Júlio César e, posteriormente, Otaviano (Augusto). Otaviano a derrotou e capturou Alexandria em 30 a.C., transformando oficialmente o Egito em uma província romana, marcando o desaparecimento gradual da língua e cultura do antigo Egito.';
+
+  @override
+  String get god1Title => 'As Crônicas do Nilo:\nDo Caos à Ordem';
+
+  @override
+  String get god1Desc =>
+      'I. O Amanhecer da Luz\nNo princípio, antes do tempo começar, havia apenas Nun, um oceano infinito e caótico de águas escuras. Das profundezas desse abismo, um grande monte piramidal se ergueu, e em seu pico estava uma flor de lótus. À medida que as pétalas desabrochavam, revelavam um brilho ofuscante que baniu a escuridão. Este era Rá, o Deus do Sol e a fonte de toda a vida.\n\nSolitário em sua magnificência, Rá gerou a primeira geração de deuses: Shu (Ar) e Tefnut (Chuva). Mas o universo era vasto e aquoso, e seus filhos se perderam nas correntes escuras. Angustiado, Rá enviou seu olho, na forma da deusa Hathor, para encontrá-los. Quando eles voltaram, Rá chorou lágrimas de pura alegria. Quando essas lágrimas divinas atingiram a terra, transformaram-se nos primeiros seres humanos.\n\nRá, o primeiro Faraó, governou durante uma era de ouro. Ele presenteou a humanidade com o Rio Nilo, o batimento cardíaco da existência. No entanto, com o passar dos éons, Rá envelheceu. A humanidade, vendo sua força diminuir, se rebelou. Com raiva, Rá libertou a leoa Sekhmet para puni-los, quase aniquilando a humanidade em uma inundação de sangue antes que Rá mostrasse misericórdia. Cansado do mundo mortal, Rá ascendeu aos céus. A cada dia ele navegava pelo céu em sua barca solar, e a cada noite descia ao Submundo para lutar contra a serpente do caos, Apófis, garantindo que o sol nascesse novamente.\n\nII. A Era de Ouro de Osíris\nCom Rá nos céus, o governo da terra passou para seus netos: Osíris e Ísis, e Seth e Néftis.\n\nOsíris sentou-se no trono do Egito, um rei benevolente e sábio. Ele trouxe a civilização para a humanidade, ensinando-os a tecer, assar pão, estabelecer leis e cultivar a terra. Sob seu governo, a paz floresceu. No entanto, nas sombras espreitava seu irmão, Seth.\n\nEnquanto Osíris governava o vale fértil, Seth era o senhor dos desertos áridos e ardentes. O ciúme apodreceu o coração de Seth — não apenas pelo poder de seu irmão, mas pelo caso secreto que Osíris teve com a esposa de Seth, Néftis, que gerou Anúbis, o deus com cabeça de chacal.\n\nIII. O Banquete Traiçoeiro\nConsumido pela inveja, Seth planejou uma vingança sombria. Ele deu um banquete luxuoso em homenagem a Osíris. No centro do salão, ele exibiu um magnífico caixão, feito de cedro e ouro. \"Este baú\", anunciou Seth com um sorriso perverso, \"pertence a quem couber perfeitamente dentro dele.\"\n\nUm por um, os convidados tentaram, mas era uma armadilha projetada apenas para o Rei. Quando Osíris se deitou dentro dele, Seth e seus conspiradores fecharam a tampa, selaram-na com chumbo derretido e a lançaram no Nilo. O rei benevolente se afogou, e a era da inocência acabou.\n\nÍsis, consumida pela dor, procurou seu marido pelo mundo. Ela o encontrou, mas o malicioso Seth roubou o corpo e o cortou em 14 pedaços, espalhando-os por todo o Egito. Com a ajuda de Anúbis, Ísis recuperou os pedaços (exceto um) e realizou os primeiros ritos de mumificação. Osíris foi ressuscitado, mas não podia mais habitar a terra dos vivos. Ele desceu para se tornar o Senhor dos Mortos, deixando o trono do Egito vazio.\n\nIV. A Guerra do Tio e do Sobrinho\nSeth usurpou o trono, mergulhando o Egito em um reinado de terror e escuridão. Mas Ísis havia dado à luz um filho de seu marido ressuscitado: Hórus, o Deus Falcão.\n\nEscondido nos pântanos até atingir a maioridade, Hórus finalmente se apresentou para reivindicar seu direito de nascença. Ele desafiou seu tio, iniciando uma guerra que duraria 80 anos. O conflito foi brutal. Em suas batalhas, eles se transformaram em hipopótamos para ver quem conseguia ficar submerso por mais tempo; eles lutaram nos céus e nas areias. Em um ponto, Seth arrancou o olho de Hórus (que foi restaurado por Hathor), e Hórus humilhou Seth enganando-o para consumir sua semente divina escondida em alface.\n\nO tribunal dos Deuses, presidido por Rá, cansou-se do caos. Embora Rá inicialmente favorecesse Seth por sua força em proteger a barca solar da serpente Apófis, a justiça da reivindicação de Hórus não podia ser negada.\n\nV. O Equilíbrio: A Terra Negra e A Terra Vermelha\nFinalmente, os deuses emitiram seu veredicto. Hórus foi coroado o Rei legítimo, vingando seu pai.\nNo entanto, a visão de mundo egípcia foi construída sobre Maat — o equilíbrio. A destruição total de um lado não era o caminho do cosmos. O mundo foi dividido entre os dois deuses poderosos:\n\nHórus recebeu o domínio sobre Kemet, a \"Terra Negra\". Este era o solo fértil ao longo das margens do Nilo, onde as plantações cresciam, a civilização prosperava e as pessoas viviam. Ele representava a ordem, o crescimento e o coração do Egito.\n\nSeth não foi destruído, mas recebeu o domínio sobre os Desertos, a \"Terra Vermelha\". Embora dura, sua força era necessária. Ele se tornou o feroz protetor das fronteiras do Egito, guardando o reino contra invasores estrangeiros e continuando a navegar no barco de Rá para matar a serpente do caos Apófis todas as noites.\n\nVI. A Coroação\nA partir daquele dia, os Faraós do Egito foram vistos como a encarnação viva de Hórus. No entanto, eles reconheceram a necessidade da força de Seth.\n\nEm um ato final de harmonia cósmica, foi estabelecido que tanto Hórus quanto Seth coroariam simbolicamente cada novo Faraó. Nos rituais de coroação representados nas paredes dos templos, o Falcão e a Besta ficam em ambos os lados do novo Rei, colocando a coroa em sua cabeça juntos. Isso simbolizava que um verdadeiro governante deve dominar tanto a paz fértil da Terra Negra quanto o poder feroz e caótico da Terra Vermelha para manter o Egito soberano e forte.';
+
+  @override
+  String get god2Title => 'Atum';
+
+  @override
+  String get god2Subtitle => 'O Criador';
+
+  @override
+  String get god2Desc =>
+      'No início dos tempos, havia apenas Nun, as águas primordiais do caos. De uma grande inundação dentro dessas águas, o deus do sol Atum se ergueu e se criou. Ele criou o primeiro par divino: Shu (ar) e Tefnut (umidade). Eles, por sua vez, deram à luz a Geb (terra) e Nut (céu), que produziram os quatro irmãos: Osíris, Ísis, Seth e Néftis, completando o grupo divino conhecido como a Enéade.';
+
+  @override
+  String get god3Title => 'Osíris';
+
+  @override
+  String get god3Subtitle => 'Rei dos Mortos';
+
+  @override
+  String get god3Desc =>
+      'Osíris era um rei amado que governou o Egito com sua irmã-esposa Ísis durante uma época de paz e prosperidade sem precedentes. No entanto, seu irmão ciumento Seth o assassinou, desmembrou seu corpo e espalhou os pedaços pela terra. Depois que Ísis recuperou seu corpo, Osíris foi ressuscitado, mas estava fraco demais para permanecer no mundo dos vivos. Ele viajou para o Duat (o Submundo) para se tornar o Senhor dos Mortos. Lá, ele preside o julgamento final, avaliando se as almas são dignas de entrar na vida após a morte.';
+
+  @override
+  String get god4Title => 'Ísis';
+
+  @override
+  String get god4Subtitle => 'A Grande Mãe e Feiticeira';
+
+  @override
+  String get god4Desc =>
+      'Considerada a deusa mais importante do Egito, Ísis era a esposa de Osíris e mãe de Hórus. Após o assassinato do marido, ela procurou por seus pedaços espalhados e, com a ajuda de Anúbis e Thoth, o reconstruiu para criar a primeira múmia. Ela fugiu para esconder seu filho Hórus de Seth, criando-o em segredo. Ísis era conhecida por sua poderosa magia, que ela usava para curar as pessoas e proteger o reino. Sua magia era tão potente que ela uma vez criou uma cobra para morder Rá, forçando-o a revelar seu nome secreto para ser curado, o que aumentou muito seu poder.';
+
+  @override
+  String get god5Title => 'Seth';
+
+  @override
+  String get god5Subtitle => 'Deus do Caos e do Deserto';
+
+  @override
+  String get god5Desc =>
+      'Conhecido como \"O Vermelho\", Seth personificava a raiva, a violência e o deserto árido (\"Terra Vermelha\") que ameaçava a vida. Ele assassinou seu irmão Osíris para usurpar o trono, levando a um conflito violento com seu sobrinho Hórus. Apesar de ser o antagonista e representar a agitação civil e a invasão estrangeira, Seth desempenhou um papel crucial na ordem cósmica. Todas as noites, ele viajava na barca solar de Rá pelo submundo, sendo o único deus capaz de repelir a serpente Apófis com sua lança para proteger o sol.';
+
+  @override
+  String get god6Title => 'Hórus';
+
+  @override
+  String get god6Subtitle => 'O Rei Falcão';
+
+  @override
+  String get god6Desc =>
+      'Filho de Ísis e Osíris, Hórus é o deus da realeza. Ele foi criado escondido até ter idade suficiente para desafiar seu tio Seth. Após uma disputa violenta e um julgamento legal divino presidido por Geb, Hórus foi declarado o rei legítimo do Egito. Acreditava-se que os faraós eram a encarnação viva de Hórus. Ele era imaginado como um falcão cósmico: seu olho direito era o sol, seu olho esquerdo era a lua e o bater de suas asas produzia os ventos.';
+
+  @override
+  String get god7Title => 'Rá';
+
+  @override
+  String get god7Subtitle => 'O Deus do Sol';
+
+  @override
+  String get god7Desc =>
+      'Rá era o principal dos deuses, e pensava-se que seu corpo fosse o próprio sol. Ele criou o homem a partir de suas lágrimas. Ele governou como o primeiro Rei na terra até envelhecer e ascender aos céus nas costas da deusa do céu Nut. Rá passa por um ciclo diário:\nKhepri: O escaravelho, rolando o sol para cima ao amanhecer.\nRá: O sol do meio-dia navegando pelo céu.\nAtum: O sol poente. À noite, ele viaja pelo submundo, lutando contra a serpente Apófis para renascer novamente ao amanhecer.';
+
+  @override
+  String get god8Title => 'Amon';
+
+  @override
+  String get god8Subtitle => 'O Oculto';
+
+  @override
+  String get god8Desc =>
+      'Amon era a força invisível por trás de todas as coisas. Ao contrário de outros deuses ligados a elementos específicos, Amon era um deus universal. Ao longo da história, ele absorveu outros deuses, mais notavelmente se fundindo com Rá para se tornar Amon-Rá. Nessa forma, ele se tornou o Rei dos Deuses e a divindade principal do Egito.';
+
+  @override
+  String get god9Title => 'Anúbis';
+
+  @override
+  String get god9Subtitle => 'Guardião dos Túmulos';
+
+  @override
+  String get god9Desc =>
+      'O deus do embalsamamento com cabeça de chacal. Ele ajudou Ísis a embrulhar Osíris, criando a primeira múmia. Anúbis cuidava dos túmulos, punia os ladrões de túmulos e supervisionava os rituais de embalsamamento. Na vida após a morte, ele desempenha um papel fundamental no Salão de Maat. Ele opera a balança, pesando o coração do falecido contra a \"Pena da Verdade\". Se o coração fosse puro, a alma passava para Osíris; se estivesse pesado de pecado, era devorado pelo monstro Ammit.';
+
+  @override
+  String get god10Title => 'Thoth';
+
+  @override
+  String get god10Subtitle => 'Deus da Sabedoria e da Escrita';
+
+  @override
+  String get god10Desc =>
+      'Um deus lunar da escrita, conhecimento e equilíbrio. Alguns mitos dizem que ele nasceu da testa de Seth. Thoth curou o olho de Hórus depois que foi ferido na batalha. Ele inventou a arte da escrita e serviu como escriba dos deuses, registrando palavras divinas e os reinados dos faraós. No Salão do Julgamento, ele fica perto da balança para registrar o veredicto da pesagem do coração.';
+
+  @override
+  String get god11Title => 'Ptah';
+
+  @override
+  String get god11Subtitle => 'O Criador Artesão';
+
+  @override
+  String get god11Desc =>
+      'O deus padroeiro de Mênfis e dos artesãos. A teologia de Mênfis sustentava que Ptah era o criador do mundo, trazendo o universo à existência através do pensamento e da fala (sonhando-o em seu coração e falando-o com sua língua). Ele era visto como um escultor que formava a terra em uma roda de oleiro.';
+
+  @override
+  String get god12Title => 'Sekhmet';
+
+  @override
+  String get god12Desc =>
+      'A leoa da guerra e do fogo. Rá a enviou para punir humanos rebeldes, e sua ira foi tão grande que ela quase exterminou a humanidade.';
+
+  @override
+  String get god13Title => 'Bastet';
+
+  @override
+  String get god13Desc =>
+      'Originalmente uma leoa, ela mais tarde se tornou a deusa gato. Ela protegia mulheres grávidas e o Faraó, enquanto ainda ajudava Rá a lutar contra Apófis.';
+
+  @override
+  String get god14Title => 'Hathor';
+
+  @override
+  String get god14Desc =>
+      'A deusa vaca do amor, da maternidade e da música. Ela dava as boas-vindas aos mortos na vida após a morte.';
+
+  @override
+  String get god15Title => 'Neith';
+
+  @override
+  String get god15Desc =>
+      'Uma deusa guerreira e mãe (mãe do deus crocodilo Sobek). Ela era uma arqueira mestre e figura criadora.';
+
+  @override
+  String get settings => 'Configurações';
+
+  @override
+  String get settingsAppPreferences => 'Preferências do Aplicativo';
+
+  @override
+  String get settingsLanguage => 'Idioma';
+
+  @override
+  String get settingsLightMood => 'Modo Claro';
+
+  @override
+  String get settingsCameraPermission => 'Permissão de Câmera';
+
+  @override
+  String get settingsSupportAbout => 'Suporte e Sobre';
+
+  @override
+  String get settingsPrivacyPolicy => 'Política de Privacidade';
+
+  @override
+  String get settingsLogOut => 'Sair';
+
+  @override
+  String get language => 'Idioma';
+
+  @override
+  String get english => 'Inglês';
+
+  @override
+  String get arabic => 'Árabe';
+
+  @override
+  String get french => 'Francês';
+
+  @override
+  String get german => 'Alemão';
+
+  @override
+  String get spanish => 'Espanhol';
+
+  @override
+  String get chinese => 'Chinês';
+
+  @override
+  String get russian => 'Russo';
+
+  @override
+  String get italian => 'Italiano';
+
+  @override
+  String get japanese => 'Japonês';
+
+  @override
+  String get korean => 'Coreano';
+
+  @override
+  String get portuguese => 'Português';
+
+  @override
+  String get appLanguage => 'Idioma do aplicativo';
+
+  @override
+  String get aboutTitle => 'Sobre o Echo';
+
+  @override
+  String get aboutSubtitle =>
+      'Onde os sussurros antigos encontram uma voz moderna';
+
+  @override
+  String get aboutPhilosophyTitle => 'A Filosofia do Echo';
+
+  @override
+  String get aboutPhilosophyBody =>
+      'A história é mais do que apenas datas e pedras empoeiradas; é o batimento cardíaco de uma civilização que se recusou a ser esquecida. Por milhares de anos, as histórias de nossos ancestrais existiram como \"sussurros\" esculpidos nas paredes dos templos e sussurrados pelos corredores de nossos museus.\n\nO Echo nasceu de uma missão simples, mas profunda: dar a esses sussurros uma voz moderna.\n\nAcreditamos que, para entender verdadeiramente um artefato, deve-se olhar além de sua forma física e mergulhar no espírito de seus criadores: sua mitologia sagrada, sua linguagem rítmica e as crenças atemporais que moldaram o mundo.';
+
+  @override
+  String get aboutMoreTitle => 'Mais do que apenas um aplicativo';
+
+  @override
+  String get aboutMoreBody =>
+      'Nossa jornada não foi apenas sobre escrever código; foi sobre redescobrir a alma egípcia. Reunimos meticulosamente os fios de nossa herança para oferecer a você uma conexão mais profunda com o passado:\n\n• A Sabedoria da Mitologia: Explorando as histórias dos deuses e a filosofia da vida após a morte.\n• O Poder da Linguagem: Preenchendo a lacuna entre as inscrições antigas e a compreensão moderna.\n• A Profundidade da História: Descobrindo as histórias humanas por trás de cada estátua e monumento.';
+
+  @override
+  String get aboutBridgeTitle => 'A Ponte para o Amanhã';
+
+  @override
+  String get aboutBridgeBody =>
+      'Embora nossos corações estejam enraizados no mundo antigo, nossas ferramentas são forjadas na era moderna. Usamos a tecnologia como uma ponte, não para substituir a história, mas para iluminá-la. Ao combinar IA avançada e design interativo, permitimos que o passado fale mais uma vez, garantindo que o legado do Egito continue a ressoar nas gerações futuras.';
+
+  @override
+  String get aboutTeamTitle => 'Equipe';
+
+  @override
+  String get aboutTeamBody =>
+      'Somos uma equipe de alunos do último ano da Faculdade de Computação e Informação da Universidade de Tanta, dedicados a preservar nossa herança por meio da inovação.';
+
+  @override
+  String get profileFavorite => 'Favoritos';
+
+  @override
+  String get profileScan => 'Escaneamentos';
+
+  @override
+  String get profileAuthMessage =>
+      'Faça login ou cadastre-se para ter um Perfil';
+
+  @override
+  String get profileNoFavorites => 'Ainda não há favoritos';
+
+  @override
+  String get profileNoScans => 'Ainda não há escaneamentos';
+
+  @override
+  String get editProfileTitle => 'Editar Perfil';
+
+  @override
+  String get editProfileName => 'Nome';
+
+  @override
+  String get editProfileSave => 'Salvar Alterações';
+
+  @override
+  String get editProfileChangeCover => 'Mudar Capa';
+
+  @override
+  String get editProfileChangeAvatar => 'Mudar Foto';
+
+  @override
+  String get authWelcomeBack => 'Bem-vindo de volta';
+
+  @override
+  String get authSubtitleDefault =>
+      'Para fazer login ou criar uma conta, insira seu endereço de e-mail.';
+
+  @override
+  String get authEmailHint => 'Endereço de e-mail';
+
+  @override
+  String get authPasswordHint => 'Senha';
+
+  @override
+  String get authContinue => 'Continuar';
+
+  @override
+  String get authOr => 'OU';
+
+  @override
+  String get authGoogle => 'Continuar com o Google';
+
+  @override
+  String get authApple => 'Continuar com a Apple';
+
+  @override
+  String get authMicrosoft => 'Continuar com a Microsoft';
+
+  @override
+  String get authPhone => 'Continuar com o telefone';
+
+  @override
+  String get authGuestPrompt => 'Não quer todos os benefícios de uma conta?';
+
+  @override
+  String get authContinueGuest => 'Continuar como convidado';
+
+  @override
+  String get authStayLoggedOut => 'Permanecer desconectado';
+
+  @override
+  String get authEmailRequired => 'Por favor, insira seu e-mail';
+
+  @override
+  String get authEmailInvalid => 'Por favor, insira um e-mail válido';
+
+  @override
+  String get authPasswordRequired => 'Por favor, insira uma senha';
+
+  @override
+  String get authPasswordTooShort => 'A senha deve ter pelo menos 8 caracteres';
+
+  @override
+  String get networkError => 'Erro de rede. Verifique sua conexão.';
+
+  @override
+  String get socialComingSoon => 'O login social estará disponível em breve!';
+
+  @override
+  String get profileUpdatedSuccessfully => 'Perfil atualizado com sucesso!';
+
+  @override
+  String get scanTitle => 'Scan Artifacts & Decode Hieroglyphs';
+
+  @override
+  String get scanSubtitle =>
+      'Take a photo of any ancient Egyptian artifact to identify it and translate its hieroglyphs.';
+
+  @override
+  String get scanTakePhoto => 'Take Photo';
+
+  @override
+  String get scanPickGallery => 'Pick from Gallery';
+
+  @override
+  String get scanAnalyzeArtifact => 'Analyze Artifact';
+
+  @override
+  String get scanDifferentPhoto => 'Choose Different Photo';
+
+  @override
+  String get scanAnalyzing => 'Analyzing your artifact...';
+
+  @override
+  String get scanAnalyzingWait => 'This may take up to a minute';
+
+  @override
+  String get scanSaveFavorites => 'Save to Favorites';
+
+  @override
+  String get scanRemoveFavorites => 'Remove from Favorites';
+
+  @override
+  String get scanNewScan => 'New Scan';
+
+  @override
+  String get scanChat => 'Chat';
+
+  @override
+  String get scanHieroglyphs => 'Hieroglyphs';
+
+  @override
+  String get scanAddedToFavorites => 'Added to Favorites!';
+
+  @override
+  String get scanRemovedFromFavorites => 'Removed from Favorites';
+
+  @override
+  String get scanFavorited => 'Favorited';
+
+  @override
+  String get scanSave => 'Save';
+
+  @override
+  String get scanNoHieroglyphs => 'No hieroglyphs detected in this artifact.';
+
+  @override
+  String get scanHieroglyphsTranslation => 'Hieroglyphs Translation';
+}

@@ -1,0 +1,127 @@
+import 'package:echo_explorer/core/error/failures.dart';
+import 'package:echo_explorer/core/hive/cache_helper.dart';
+import 'package:echo_explorer/core/usecases/usecase.dart';
+import 'package:echo_explorer/features/auth/domain/usecases/login_usecase.dart';
+import 'package:echo_explorer/features/auth/domain/usecases/register_usecase.dart';
+import 'package:echo_explorer/features/auth/domain/usecases/get_profile_usecase.dart';
+import 'package:echo_explorer/features/auth/domain/usecases/update_profile_usecase.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+part 'auth_state.dart';
+
+class AuthCubit extends Cubit<AuthState> {
+  final LoginUseCase loginUseCase;
+  final RegisterUseCase registerUseCase;
+  final GetProfileUseCase getProfileUseCase;
+  final UpdateProfileUseCase updateProfileUseCase;
+
+  bool _initialFetchDone = false;
+
+  AuthCubit({
+    required this.loginUseCase,
+    required this.registerUseCase,
+    required this.getProfileUseCase,
+    required this.updateProfileUseCase,
+  }) : super(AuthInitial()) {
+    _checkSavedLogin();
+  }
+
+  Future<void> _checkSavedLogin() async {
+    final token = CacheHelper.getData(key: 'jwt_token');
+
+    if (token != null && token.toString().isNotEmpty) {
+      final cachedName = CacheHelper.getData(key: 'user_name') ?? 'User';
+      final cachedEmail = CacheHelper.getData(key: 'user_email') ?? '';
+
+      emit(Authenticated(userName: cachedName, userEmail: cachedEmail, token: token));
+
+      final result = await getProfileUseCase(NoParams());
+      result.fold(
+        (failure) {
+          debugPrint('Failed to fetch fresh profile data: ${failure.message}');
+        },
+        (user) {
+          if (_initialFetchDone) return;
+          _initialFetchDone = true;
+          final freshToken = user.token.isNotEmpty ? user.token : token;
+          final name = cachedName.isNotEmpty && cachedName != 'User' ? cachedName : user.name;
+          final email = cachedEmail.isNotEmpty ? cachedEmail : user.email;
+          _saveUserData(freshToken, name, email);
+          emit(Authenticated(userName: name, userEmail: email, token: freshToken));
+        },
+      );
+    } else {
+      emit(UnAuthenticated());
+    }
+  }
+
+  Future<void> submitAuth(String email, String password) async {
+    emit(AuthLoading());
+    final result = await loginUseCase(LoginParams(email: email, password: password));
+
+    result.fold(
+      (failure) async {
+        final isNotFound = failure is ServerFailure && failure.statusCode == 404;
+        if (isNotFound) {
+          final registerResult = await registerUseCase(
+            RegisterParams(email: email, password: password, name: email.split('@').first),
+          );
+          registerResult.fold(
+            (regFailure) {
+              emit(AuthError(message: regFailure.message));
+            },
+            (user) {
+              _saveUserData(user.token, user.name, user.email);
+              emit(Authenticated(userName: user.name, userEmail: user.email, token: user.token));
+            },
+          );
+        } else {
+          emit(AuthError(message: failure.message));
+        }
+      },
+      (user) {
+        _saveUserData(user.token, user.name, user.email);
+        emit(Authenticated(userName: user.name, userEmail: user.email, token: user.token));
+      },
+    );
+  }
+
+  Future<void> updateProfile({required String newName, required String email, String? lang}) async {
+    if (state is! Authenticated) return;
+    final token = (state as Authenticated).token;
+    final currentLang = lang ?? CacheHelper.getData(key: 'localeLanguageCode') ?? 'en';
+
+    emit(AuthLoading());
+
+    final result = await updateProfileUseCase(UpdateProfileParams(name: newName, email: email, lang: currentLang));
+
+    result.fold(
+      (failure) {
+        debugPrint('Error updating profile: ${failure.message}');
+        emit(AuthError(message: failure.message));
+      },
+      (_) {
+        _initialFetchDone = true;
+        _saveUserData(token, newName, email);
+        emit(Authenticated(userName: newName, userEmail: email, token: token));
+      },
+    );
+  }
+
+  Future<void> logout() async {
+    await CacheHelper.deleteData(key: 'jwt_token');
+    await CacheHelper.deleteData(key: 'user_name');
+    await CacheHelper.deleteData(key: 'user_email');
+    await CacheHelper.deleteData(key: 'profile_image');
+    await CacheHelper.deleteData(key: 'cover_image');
+
+    emit(UnAuthenticated());
+  }
+
+  Future<void> _saveUserData(String token, String name, String email) async {
+    await CacheHelper.putData(key: 'jwt_token', value: token);
+    await CacheHelper.putData(key: 'user_name', value: name);
+    await CacheHelper.putData(key: 'user_email', value: email);
+  }
+}

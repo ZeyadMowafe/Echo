@@ -1,0 +1,420 @@
+import 'dart:io';
+import 'package:echo_explorer/core/constants/app_colors.dart';
+import 'package:echo_explorer/core/di/injection_container.dart';
+import 'package:echo_explorer/core/hive/cache_helper.dart';
+import 'package:echo_explorer/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:echo_explorer/features/auth/presentation/widgets/auth_sheet_helper.dart';
+import 'package:echo_explorer/core/routing/routes.dart';
+import 'package:echo_explorer/features/scanner/domain/entities/scan_log_entity.dart';
+import 'package:echo_explorer/features/scanner/presentation/cubit/scan_cubit.dart';
+import 'package:echo_explorer/features/scanner/presentation/views/scan_log_details_view.dart';
+import 'package:echo_explorer/l10n/app_localizations.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+class ProfileView extends StatefulWidget {
+  const ProfileView({super.key});
+
+  @override
+  State<ProfileView> createState() => _ProfileViewState();
+}
+
+class _ProfileViewState extends State<ProfileView> {
+  int _selectedTabIndex = 0;
+  late final ScanCubit _scanCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _scanCubit = sl<ScanCubit>();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final authState = context.read<AuthCubit>().state;
+      if (authState is! Authenticated) {
+        showAuthSheet(
+          context,
+          AppLocalizations.of(context)!.profileAuthMessage,
+        );
+        return;
+      }
+      _loadTabData();
+    });
+  }
+
+  @override
+  void dispose() {
+    _scanCubit.close();
+    super.dispose();
+  }
+
+  void _loadTabData() {
+    if (_selectedTabIndex == 0) {
+      _scanCubit.loadFavorites();
+    } else {
+      _scanCubit.loadScanLogs();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return BlocProvider.value(
+      value: _scanCubit,
+      child: BlocBuilder<AuthCubit, AuthState>(
+        builder: (context, state) {
+          final loggedIn = state is Authenticated;
+          final userName = loggedIn ? state.userName : '';
+          final userEmail = loggedIn ? state.userEmail : ''; 
+          
+          final String? profileImagePath = CacheHelper.getData(key: 'profile_image');
+          final String? coverImagePath = CacheHelper.getData(key: 'cover_image');
+
+          return ColoredBox(
+            color: AppColors.of(context).background,
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _ProfileHeader(
+                    isLoggedIn: loggedIn,
+                    userName: userName,
+                    profileImagePath: profileImagePath, 
+                    coverImagePath: coverImagePath,  
+                    onSettings: () {
+                      Navigator.of(context).pushNamed(AppRoutes.settingsView);
+                    },
+                    onEdit: () {
+                      if (!loggedIn) {
+                        showAuthSheet(context, l10n.profileAuthMessage);
+                        return;
+                      }
+                      Navigator.of(context).pushNamed(AppRoutes.editProfileView);
+                    },
+                  ),
+                  if (loggedIn) ...[
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+                      child: Text(
+                        userName,
+                        style:  TextStyle(
+                          color: AppColors.of(context).footer,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w700,
+                          height: 1.1,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Text(
+                        userEmail,
+                        style: TextStyle(
+                          color: AppColors.of(context).footer.withOpacity(0.6),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    _buildTabs(l10n),
+                    const SizedBox(height: 16),
+                    _buildTabContent(),
+                  ],
+                const SizedBox(height: 120),
+              ],
+            ),
+          ),
+        );
+      },
+      ),
+    );
+  }
+
+  Widget _buildTabs(AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Row(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  setState(() => _selectedTabIndex = 0);
+                  _loadTabData();
+                },
+                child: Text(
+                  l10n.profileFavorite,
+                  style: TextStyle(
+                    color: _selectedTabIndex == 0 ? AppColors.of(context).footer : AppColors.of(context).footer.withOpacity(0.6),
+                    fontSize: 16,
+                    fontWeight: _selectedTabIndex == 0 ? FontWeight.w600 : FontWeight.w400,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 32),
+              GestureDetector(
+                onTap: () {
+                  setState(() => _selectedTabIndex = 1);
+                  _loadTabData();
+                },
+                child: Text(
+                  l10n.profileScan,
+                  style: TextStyle(
+                    color: _selectedTabIndex == 1 ? AppColors.of(context).footer : AppColors.of(context).footer.withOpacity(0.6),
+                    fontSize: 16,
+                    fontWeight: _selectedTabIndex == 1 ? FontWeight.w600 : FontWeight.w400,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+        Divider(
+          height: 1,
+          thickness: 1,
+          color: AppColors.of(context).footer.withOpacity(0.12),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTabContent() {
+    return BlocBuilder<ScanCubit, ScanState>(
+      builder: (context, state) {
+        if (state is ScanLoading) {
+          return Center(
+            child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: CircularProgressIndicator(color: AppColors.secondary),
+          ));
+        }
+        if (state is ScanFavoritesLoaded) {
+          if (state.favorites.isEmpty) return _buildEmptyState();
+          return _buildLogList(state.favorites);
+        }
+        if (state is ScanLogsLoaded) {
+          if (state.scanLogs.isEmpty) return _buildEmptyState();
+          return _buildLogList(state.scanLogs);
+        }
+        if (state is ScanError) {
+          return Padding(
+            padding: const EdgeInsets.all(32),
+            child: Center(
+              child: Text(state.message,
+                  style: TextStyle(color: Colors.redAccent, fontSize: 14),
+                  textAlign: TextAlign.center),
+            ),
+          );
+        }
+        return _buildEmptyState();
+      },
+    );
+  }
+
+  Widget _buildLogList(List<ScanLogEntity> logs) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: logs.length,
+        itemBuilder: (context, index) {
+          final log = logs[index];
+          final name = log.artifactName ?? log.artifactModelId ?? 'Unknown Artifact';
+          return Card(
+            color: AppColors.c151D18.withValues(alpha: 0.6),
+            margin: const EdgeInsets.symmetric(vertical: 4),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              leading: Icon(Icons.image_outlined, color: AppColors.secondary, size: 24),
+              title: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: AppColors.cf9f9f9, fontSize: 15)),
+              subtitle: Text(
+                '${log.era ?? 'Unknown'} • ${DateTime.now().difference(log.createdAt).inDays}d ago',
+                style: TextStyle(color: AppColors.cf9f9f9.withValues(alpha: 0.5), fontSize: 12),
+              ),
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => ScanLogDetailsView(scanLog: log),
+              )),
+              trailing: IconButton(
+                icon: Icon(
+                  log.isFavorited ? Icons.favorite : Icons.favorite_border,
+                  color: log.isFavorited ? Colors.redAccent : AppColors.cf9f9f9.withValues(alpha: 0.3),
+                  size: 20,
+                ),
+                onPressed: () => context.read<ScanCubit>().toggleFavoriteScan(log.id),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    final isFavorite = _selectedTabIndex == 0;
+    final l10n = AppLocalizations.of(context)!;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              isFavorite ? Icons.favorite_border_rounded : Icons.document_scanner_outlined,
+              size: 64,
+              color: AppColors.of(context).footer.withOpacity(0.2),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              isFavorite ? l10n.profileNoFavorites : l10n.profileNoScans,
+              style: TextStyle(
+                color: AppColors.of(context).footer.withOpacity(0.5),
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ProfileHeader extends StatelessWidget {
+  const _ProfileHeader({
+    required this.isLoggedIn,
+    required this.userName,
+    this.profileImagePath,
+    this.coverImagePath,
+    required this.onSettings,
+    required this.onEdit,
+  });
+
+  final bool isLoggedIn;
+  final String userName;
+  final String? profileImagePath;
+  final String? coverImagePath;
+  final VoidCallback onSettings;
+  final VoidCallback onEdit;
+
+  @override
+  Widget build(BuildContext context) {
+    final topPad = MediaQuery.paddingOf(context).top;
+
+    return SizedBox(
+      height: isLoggedIn ? 190 : 190, 
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned(
+            left: 0,
+            right: 0,
+            top: 0,
+            height: 124,
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF1B2328),
+                image: coverImagePath != null
+                    ? DecorationImage(
+                        image: FileImage(File(coverImagePath!)),
+                        fit: BoxFit.cover,
+                      )
+                    : null,
+              ),
+            ),
+          ),
+          Positioned(
+            right: 12,
+            top: topPad + 4,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _HeaderIconButton(icon: Icons.settings_outlined, onTap: onSettings),
+                const SizedBox(height: 6),
+                _HeaderIconButton(icon: Icons.edit_outlined, onTap: onEdit),
+              ],
+            ),
+          ),
+          Positioned(
+            left: 16,
+            top: 69,
+            child: _AvatarChip(isLoggedIn: isLoggedIn, userName: userName, imagePath: profileImagePath),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AvatarChip extends StatelessWidget {
+  const _AvatarChip({required this.isLoggedIn, required this.userName, this.imagePath});
+  final bool isLoggedIn;
+  final String userName;
+  final String? imagePath;
+
+  String get _letter {
+    final t = userName.trim();
+    if (t.isEmpty) return '?';
+    return t[0].toUpperCase();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!isLoggedIn) {
+      return Container(
+        padding: const EdgeInsets.all(5),
+        decoration: BoxDecoration(color:AppColors.of(context).background, shape: BoxShape.circle),
+        child:CircleAvatar(
+          radius: 52,
+          backgroundColor: AppColors.of(context).footer,
+          child: Icon(Icons.person_outline, size: 40, color: AppColors.of(context).background),
+        ),
+      );
+    }
+    return Container(
+      width: 110,
+      height: 110,
+      padding: const EdgeInsets.all(5),
+      decoration: BoxDecoration(color: AppColors.of(context).background, shape: BoxShape.circle),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.of(context).footer,
+          shape: BoxShape.circle,
+          image: imagePath != null ? DecorationImage(image: FileImage(File(imagePath!)), fit: BoxFit.cover) : null,
+        ),
+        alignment: Alignment.center,
+        child: imagePath == null ? Text(_letter, style:  TextStyle(fontSize: 56, height: 1, color: AppColors.of(context).background, fontWeight: FontWeight.w600)) : null,
+      ),
+    );
+  }
+}
+
+class _HeaderIconButton extends StatelessWidget {
+  const _HeaderIconButton({required this.icon, required this.onTap});
+  final IconData icon;
+  final VoidCallback onTap;
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          width: 38,
+          height: 38,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(color: AppColors.c000000.withOpacity(0), shape: BoxShape.circle),
+          child: Icon(icon, color: AppColors.cffffff, size: 20),
+        ),
+      ),
+    );
+  }
+}

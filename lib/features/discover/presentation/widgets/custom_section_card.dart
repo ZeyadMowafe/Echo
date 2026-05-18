@@ -1,0 +1,78 @@
+import 'package:echo_explorer/core/constants/app_colors.dart';
+import 'package:echo_explorer/core/widgets/custom_glass_container.dart';
+import 'package:echo_explorer/features/discover/data/models/section_card_model.dart';
+import 'package:flutter/material.dart';
+
+class CustomSectionCard extends StatelessWidget {
+  const CustomSectionCard({super.key, required this.sectionCardModel,required this.onPressed});
+  final SectionCardModel sectionCardModel;
+  final Function() onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.only(left: 22, right: 22, bottom: 26),
+        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          image: DecorationImage(
+            image: AssetImage(sectionCardModel.image),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              AppColors.c000000.withOpacity(0.1),
+              BlendMode.darken,
+            ),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Text(
+              sectionCardModel.title,
+              style: TextStyle(
+                color: AppColors.cffffff,
+                fontSize: 32,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            CustomGlassContainer(
+              color: AppColors.cffffff.withOpacity(.10),
+              height: 50,
+              borderRadius: BorderRadius.circular(32),
+              borderColor: AppColors.cffffff.withOpacity(.10),
+              gradient: LinearGradient(colors: [AppColors.cffffff.withOpacity(.10),AppColors.cffffff.withOpacity(.10)],begin: AlignmentGeometry.topCenter,end: AlignmentGeometry.bottomCenter),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.cffffff.withOpacity(0.01),
+                ),
+                onPressed: onPressed,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      sectionCardModel.buttonText,
+                      style: TextStyle(
+                        color: AppColors.cffffff,
+                        fontSize: 14,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ), // Text first
+                    SizedBox(width: 4),
+                    Icon(
+                      Icons.arrow_forward,
+                      size: 20.0,
+                      color: AppColors.cf9f9f9,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
