@@ -1,0 +1,165 @@
+import 'dart:async';
+
+import 'dart:io';
+
+import 'dart:ui';
+
+import 'package:camera/camera.dart';
+
+import 'package:echo_explorer/core/constants/app_colors.dart';
+
+import 'package:echo_explorer/core/constants/app_strings.dart';
+
+import 'package:echo_explorer/core/widgets/custom_glass_back_button.dart';
+
+import 'package:echo_explorer/core/widgets/custom_glass_drawer.dart';
+
+import 'package:echo_explorer/features/home/presentation/cubit/features_cubit.dart';
+
+import 'package:echo_explorer/features/scanner/data/models/scan_result_args.dart';
+
+import 'package:echo_explorer/features/scanner/presentation/cubit/scan_cubit.dart';
+
+import 'package:echo_explorer/features/scanner/presentation/views/details_view.dart';
+
+import 'package:echo_explorer/features/chat/presentation/views/chat_view.dart';
+
+import 'package:flutter/material.dart';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import 'package:gap/gap.dart';
+enum _ScanPhase {
+ scanning, analyzing, result, error }
+class CameraScannerView extends StatefulWidget {
+  final String? initialImagePath;
+  const CameraScannerView({
+super.key, this.initialImagePath}
+);
+  @override  State<CameraScannerView> createState() => _CameraScannerViewState();
+}
+class _CameraScannerViewState extends State<CameraScannerView>    with SingleTickerProviderStateMixin {
+  CameraController? _controller;
+  bool _isInitialized = false;
+  bool _isScanning = false;
+  bool _isDone = false;
+  late AnimationController _scanAnimController;
+  late Animation<double> _scanAnimation;
+  _ScanPhase _phase = _ScanPhase.scanning;
+  String? _capturedImagePath;
+  bool _showTranslation = false;
+  bool _showFullTranslation = false;
+  @override  void initState() {
+    super.initState();
+    _scanAnimController = AnimationController(      vsync: this,      duration: const Duration(seconds: 5),    );
+    _scanAnimation = Tween<double>(begin: 0, end: 1).animate(      CurvedAnimation(parent: _scanAnimController, curve: Curves.easeInOut),    );
+    _scanAnimController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _onScanComplete();
+      }
+    }
+);
+    if (widget.initialImagePath != null) {
+      setState(() => _isInitialized = true);
+      _startScan();
+    }
+ else {
+      _initCamera();
+    }
+  }
+  Future<void> _initCamera() async {
+    final cameras = await availableCameras();
+    if (cameras.isEmpty) return;
+    _controller = CameraController(cameras[0], ResolutionPreset.high);
+    await _controller!.initialize();
+    if (mounted) {
+      setState(() => _isInitialized = true);
+      _startScan();
+    }
+  }
+  void _startScan() {
+    setState(() => _isScanning = true);
+    _scanAnimController.forward();
+  }
+  Future<void> _onScanComplete() async {
+    if (_isDone) return;
+    _isDone = true;
+    String? path;
+    if (widget.initialImagePath != null) {
+      path = widget.initialImagePath;
+    }
+ else if (_controller != null && _isInitialized) {
+      final file = await _controller!.takePicture();
+      _controller?.dispose();
+      _controller = null;
+      path = file.path;
+    }
+    if (path == null || !mounted) return;
+    _capturedImagePath = path;
+    setState(() => _phase = _ScanPhase.analyzing);
+    final cubit = context.read<ScanCubit>();
+    cubit.setImagePath(path);
+    cubit.analyzeImage();
+  }
+  @override  void dispose() {
+    if (!_isDone) {
+      _controller?.dispose();
+      _controller = null;
+      _scanAnimController.dispose();
+    }
+    super.dispose();
+  }
+  @override  Widget build(BuildContext context) {
+    final scanState = context.watch<ScanCubit>().state;
+    if (scanState is ScanResultLoaded && _phase == _ScanPhase.analyzing) {
+      _phase = _ScanPhase.result;
+    }
+ else if (scanState is ScanError && _phase == _ScanPhase.analyzing) {
+      _phase = _ScanPhase.error;
+    }
+    return Scaffold(      backgroundColor: Colors.black,      drawer: CustomGlassDrawer(        currentFeature: AppStrings.scanFeature.key,        onTap: (featureName) {
+          final cubit = context.read<FeaturesCubit>();
+          Navigator.of(context).popUntil((route) => route.isFirst);
+          cubit.changeFeature(featureName: featureName);
+        }
+,      ),      body: SafeArea(        child: Stack(          children: [            // Full-screen image/camera preview            if (_isInitialized && _capturedImagePath != null)              SizedBox(                width: double.infinity,                height: double.infinity,                child: Image.file(File(_capturedImagePath!), fit: BoxFit.cover),              )            else if (_isInitialized &&                widget.initialImagePath != null &&                _capturedImagePath == null)              SizedBox(                width: double.infinity,                height: double.infinity,                child: Image.file(                  File(widget.initialImagePath!),                  fit: BoxFit.cover,                ),              )            else if (_isInitialized && _controller != null)              SizedBox(                width: double.infinity,                height: double.infinity,                child: CameraPreview(_controller!),              )            else              const Center(                child: CircularProgressIndicator(color: Colors.white),              ),            // Viewfinder overlay            Positioned(              left: 22.w,              top: 202.h,              width: 346.w,              height: 463.h,              child: AnimatedBuilder(                animation: _scanAnimation,                builder: (context, child) {
+                  return Container(                    decoration: BoxDecoration(                      borderRadius: BorderRadius.circular(8.r),                      border: Border.all(                        color: _isScanning                            ? Color.lerp(                                const Color(0xFFF9F9F9),                                const Color(0xFF4CAF50),                                _scanAnimation.value,                              )!                            : const Color(0xFFF9F9F9),                        width: 1 + (_isScanning ? _scanAnimation.value * 2 : 0),                      ),                    ),                  );
+                }
+,              ),            ),            // Scanning indicator            if (_phase == _ScanPhase.scanning)              Positioned(                left: 0,                right: 0,                bottom: MediaQuery.of(context).padding.bottom + 40,                child: Center(                  child: Column(                    mainAxisSize: MainAxisSize.min,                    children: [                      AnimatedBuilder(                        animation: _scanAnimation,                        builder: (context, child) {
+                          return CircularProgressIndicator(                            value: _scanAnimation.value,                            color: const Color(0xFF4CAF50),                            strokeWidth: 3,                          );
+                        }
+,                      ),                      Gap(12.h),                      Text(                        'Scanning...',                        style: TextStyle(                          color: Colors.white.withValues(alpha: 0.8),                          fontSize: 14.sp,                        ),                      ),                    ],                  ),                ),              ),            // Analyzing indicator            if (_phase == _ScanPhase.analyzing)              Positioned(                left: 0,                right: 0,                bottom: MediaQuery.of(context).padding.bottom + 40,                child: Center(                  child: Column(                    mainAxisSize: MainAxisSize.min,                    children: [                      const CircularProgressIndicator(color: Color(0xFF4CAF50)),                      Gap(12.h),                      Text(                        'Analyzing...',                        style: TextStyle(                          color: Colors.white.withValues(alpha: 0.8),                          fontSize: 14.sp,                        ),                      ),                    ],                  ),                ),              ),            // Result overlay card (hidden when translation is shown)            if (_phase == _ScanPhase.result &&                scanState is ScanResultLoaded &&                !_showTranslation)              Positioned(                left: 12.w,                top: 584.h,                width: 366.w,                height: 230.h,                child: ClipRRect(                  borderRadius: BorderRadius.circular(24.r),                  child: BackdropFilter(                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),                    child: Container(                      padding: EdgeInsets.only(                        top: 23.h,                        right: 16.w,                        bottom: 23.h,                        left: 16.w,                      ),                      decoration: BoxDecoration(                        borderRadius: BorderRadius.circular(24.r),                        border: Border.all(                          color: Colors.white.withValues(alpha: 0.2),                        ),                        gradient: const LinearGradient(                          begin: Alignment.topCenter,                          end: Alignment.bottomCenter,                          colors: [Color(0x03000000), Color(0x03000000)],                        ),                      ),                      child: Column(                        crossAxisAlignment: CrossAxisAlignment.start,                        children: [                          Text(                            scanState.result.artifact.name ?? 'Artifact',                            style: TextStyle(                              color: Colors.white,                              fontSize: 18.sp,                              fontWeight: FontWeight.w700,                            ),                            maxLines: 1,                            overflow: TextOverflow.ellipsis,                          ),                          Gap(8.h),                          Text(                            scanState.result.artifact.description ?? '',                            style: TextStyle(                              color: Colors.white.withValues(alpha: 0.7),                              fontSize: 13,                            ),                            maxLines: 2,                            overflow: TextOverflow.ellipsis,                          ),                          const Spacer(),                          Row(                            children: [                              Expanded(                                child: _OverlayButton(                                  label: 'Chat',                                  icon: Icons.chat_outlined,                                  isOutlined: true,                                  onTap: () {
+                                    final artifact = scanState.result.artifact;
+                                    Navigator.push(                                      context,                                      MaterialPageRoute(                                        builder: (_) => ChatView(                                          artifactId:                                              artifact.artifactModelId ?? '',                                          artifactName:                                              artifact.name ??                                              artifact.artifactModelId ??                                              '',                                        ),                                      ),                                    );
+                                  }
+,                                ),                              ),                              Gap(12.w),                              Expanded(                                child: _OverlayButton(                                  label: 'Details',                                  icon: Icons.arrow_forward_rounded,                                  isOutlined: false,                                  onTap: () {
+                                    Navigator.push(                                      context,                                      MaterialPageRoute(                                        builder: (_) => BlocProvider.value(                                          value: context.read<ScanCubit>(),                                          child: DetailsView(                                            args: ScanResultArgs(                                              result: scanState.result,                                              imagePath: scanState.imagePath,                                            ),                                          ),                                        ),                                      ),                                    );
+                                  }
+,                                ),                              ),                            ],                          ),                        ],                      ),                    ),                  ),                ),              ),            // Hieroglyphs translation toggle button            if (_phase == _ScanPhase.result &&                scanState is ScanResultLoaded &&                scanState.result.hieroglyphs?.detected == true &&                scanState.result.hieroglyphs?.translation != null)              Positioned(                left: 250.w,                top: 163.h,                width: 140.w,                height: 34.h,                child: GestureDetector(                  onTap: () => setState(() {
+                    _showTranslation = !_showTranslation;
+                    if (!_showTranslation) _showFullTranslation = false;
+                  }
+),                  child: ClipRRect(                    borderRadius: BorderRadius.circular(24.r),                    child: BackdropFilter(                      filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),                      child: Container(                        padding: EdgeInsets.symmetric(                          horizontal: 10.w,                          vertical: 8.h,                        ),                        decoration: BoxDecoration(                          borderRadius: BorderRadius.circular(24.r),                          border: Border.all(                            color: Colors.white.withValues(alpha: 0.1),                          ),                          gradient: const LinearGradient(                            begin: Alignment.topCenter,                            end: Alignment.bottomCenter,                            colors: [Color(0xFF568D3F), Color(0xFF568D3F)],                          ),                        ),                        child: Row(                          mainAxisSize: MainAxisSize.min,                          mainAxisAlignment: MainAxisAlignment.center,                          children: [                            Icon(                              _showTranslation                                  ? Icons.visibility_off_rounded                                  : Icons.visibility_rounded,                              color: Colors.white,                              size: 14.r,                            ),                            Gap(4.w),                            Text(                              _showTranslation                                  ? 'Hide Translation'                                  : 'Reveal Translation',                              style: TextStyle(                                color: Colors.white,                                fontSize: 10.sp,                                fontWeight: FontWeight.w600,                              ),                            ),                          ],                        ),                      ),                    ),                  ),                ),              ),            // Translation card overlay (top position)            if (_phase == _ScanPhase.result &&                scanState is ScanResultLoaded &&                scanState.result.hieroglyphs?.translation != null &&                _showTranslation &&                !_showFullTranslation)              Positioned(                left: 8.w,                top: 261.h,                width: 375.w,                child: ClipRRect(                  borderRadius: BorderRadius.circular(24.r),                  child: BackdropFilter(                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),                    child: Container(                      padding: EdgeInsets.only(                        top: 27.h,                        right: 34.w,                        bottom: 27.h,                        left: 34.w,                      ),                      decoration: BoxDecoration(                        borderRadius: BorderRadius.circular(24.r),                        border: Border.all(                          color: Colors.white.withValues(alpha: 0.3),                        ),                        gradient: const LinearGradient(                          begin: Alignment.topCenter,                          end: Alignment.bottomCenter,                          colors: [Color(0x03000000), Color(0x03000000)],                        ),                      ),                      child: Column(                        crossAxisAlignment: CrossAxisAlignment.center,                        children: [                          Row(                            children: [                              Expanded(                                child: Text(                                  'Discover what the translation reveals…',                                  style: TextStyle(                                    color: Colors.white,                                    fontSize: 16.sp,                                    fontWeight: FontWeight.w700,                                  ),                                ),                              ),                            ],                          ),                          Gap(16.h),                          GestureDetector(                            onTap: () =>                                setState(() => _showFullTranslation = true),                            child: Text(                              textAlign: TextAlign.center,                              scanState.result.hieroglyphs!.translation!,                              style: TextStyle(                                color: Colors.white.withValues(alpha: 0.85),                                fontSize: 14.sp,                                fontWeight: FontWeight.w600,                                height: 1.4,                              ),                            ),                          ),                        ],                      ),                    ),                  ),                ),              ),            // Full translation detail overlay            if (_showFullTranslation &&                _phase == _ScanPhase.result &&                scanState is ScanResultLoaded &&                scanState.result.hieroglyphs?.translation != null)              Positioned(                left: 12.w,                top: 611.h,                width: 366.w,                child: AnimatedOpacity(                  opacity: _showFullTranslation ? 1.0 : 0.0,                  duration: const Duration(milliseconds: 300),                  curve: Curves.easeOut,                  child: ClipRRect(                    borderRadius: BorderRadius.circular(24.r),                    child: BackdropFilter(                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),                      child: Container(                        padding: EdgeInsets.only(                          top: 23.h,                          right: 16.w,                          bottom: 23.h,                          left: 16.w,                        ),                        decoration: BoxDecoration(                          borderRadius: BorderRadius.circular(24.r),                          border: Border.all(                            color: Colors.white.withValues(alpha: 0.2),                          ),                          gradient: const LinearGradient(                            begin: Alignment.topCenter,                            end: Alignment.bottomCenter,                            colors: [Color(0x03000000), Color(0x03000000)],                          ),                        ),                        child: Column(                          crossAxisAlignment: CrossAxisAlignment.start,                          children: [                            Row(                              children: [                                GestureDetector(                                  onTap: () => setState(                                    () => _showFullTranslation = false,                                  ),                                  child: Icon(                                    Icons.arrow_back_rounded,                                    color: Colors.white70,                                    size: 22.r,                                  ),                                ),                                Gap(8.w),                                Expanded(                                  child: Text(                                    'Translation',                                    style: TextStyle(                                      color: Colors.white,                                      fontSize: 15.sp,                                      fontWeight: FontWeight.w600,                                    ),                                  ),                                ),                              ],                            ),                            Gap(12.h),                            Expanded(                              child: SingleChildScrollView(                                child: Text(                                  scanState.result.hieroglyphs!.translation!,                                  style: TextStyle(                                    color: Colors.white.withValues(alpha: 0.85),                                    fontSize: 14.sp,                                    height: 1.6,                                  ),                                ),                              ),                            ),                          ],                        ),                      ),                    ),                  ),                ),              ),            // Error overlay            if (_phase == _ScanPhase.error && scanState is ScanError)              Positioned(                left: 12.w,                top: 584.h,                width: 366.w,                child: Container(                  padding: EdgeInsets.all(16.w),                  decoration: BoxDecoration(                    borderRadius: BorderRadius.circular(24.r),                    color: Colors.black.withValues(alpha: 0.7),                    border: Border.all(                      color: Colors.redAccent.withValues(alpha: 0.4),                    ),                  ),                  child: Column(                    mainAxisSize: MainAxisSize.min,                    children: [                      Icon(                        Icons.error_outline,                        color: Colors.redAccent.withValues(alpha: 0.8),                        size: 28.r,                      ),                      Gap(8.h),                      Text(                        scanState.message,                        style: TextStyle(                          color: Colors.white,                          fontSize: 13.sp,                        ),                        textAlign: TextAlign.center,                      ),                      Gap(12.h),                      TextButton(                        onPressed: () => Navigator.pop(context),                        child: const Text(                          'Back',                          style: TextStyle(color: Colors.white70),                        ),                      ),                    ],                  ),                ),              ),            // Back button (left)            Positioned(              left: 16.w,              top: 8.h,              child: CustomGlassBackButton(                iconColor: Colors.white,                onPressed: () {
+                  _isDone = true;
+                  _controller?.dispose();
+                  _controller = null;
+                  _scanAnimController.dispose();
+                  Navigator.pop(context);
+                }
+,              ),            ),            // Menu button (right)            Positioned(              right: 16.w,              top: 8.h,              child: Builder(                builder: (ctx) => GestureDetector(                  onTap: () => Scaffold.of(ctx).openDrawer(),                  child: Icon(                    Icons.menu_rounded,                    size: 28.r,                    color: Colors.white.withValues(alpha: 0.7),                  ),                ),              ),            ),          ],        ),      ),    );
+  }
+}
+class _OverlayButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final bool isOutlined;
+  final VoidCallback onTap;
+  const _OverlayButton({
+    required this.label,    required this.icon,    required this.isOutlined,    required this.onTap,  }
+);
+  @override  Widget build(BuildContext context) {
+    return SizedBox(      height: 40.h,      child: isOutlined          ? OutlinedButton.icon(              onPressed: onTap,              icon: Icon(icon, size: 16.r),              label: Text(                label,                style: TextStyle(                  fontSize: 13.sp,                  fontWeight: FontWeight.w600,                ),              ),              style: OutlinedButton.styleFrom(                foregroundColor: Colors.white,                side: BorderSide(color: Colors.white.withValues(alpha: 0.3)),                shape: RoundedRectangleBorder(                  borderRadius: BorderRadius.circular(20.r),                ),              ),            )          : ElevatedButton.icon(              onPressed: onTap,              icon: Icon(icon, size: 16.r),              label: Text(                label,                style: TextStyle(                  fontSize: 13.sp,                  fontWeight: FontWeight.w600,                ),              ),              style: ElevatedButton.styleFrom(                backgroundColor: AppColors.secondary.withValues(alpha: 0.3),                foregroundColor: Colors.white,                shape: RoundedRectangleBorder(                  borderRadius: BorderRadius.circular(20.r),                ),              ),            ),    );
+  }
+}
