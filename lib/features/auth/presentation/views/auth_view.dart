@@ -1,10 +1,13 @@
 import 'package:echo_explorer/core/constants/app_colors.dart';
+import 'package:echo_explorer/core/helpers/screen_utils.dart';
 import 'package:echo_explorer/core/routing/routes.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_container.dart';
 import 'package:echo_explorer/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:echo_explorer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gap/gap.dart';
 
 class AuthView extends StatefulWidget {
   const AuthView({super.key});
@@ -78,25 +81,24 @@ class _AuthViewState extends State<AuthView> {
               final isLoading = state is AuthLoading;
 
               return SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
                 child: Form(
                   key: _formKey,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const SizedBox(height: 20),
+                      Gap(20.h),
                       Text(
                         l10n.authWelcomeBack,
-                        style: TextStyle(color: AppColors.cffffff, fontSize: 32, fontWeight: FontWeight.w600, height: 1.2),
+                        style: TextStyle(color: AppColors.cffffff, fontSize: 32.sp, fontWeight: FontWeight.w600, height: 1.2),
                       ),
-                      const SizedBox(height: 16),
+                      Gap(ScreenUtils.md),
                       Text(
                         l10n.authSubtitleDefault,
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: AppColors.cffffff.withOpacity(0.85), fontSize: 14, fontWeight: FontWeight.w300, height: 1.4),
+                        style: TextStyle(color: AppColors.cffffff.withOpacity(0.85), fontSize: 14.sp, fontWeight: FontWeight.w300, height: 1.4),
                       ),
-                      const SizedBox(height: 32),
-                      
+                      Gap(ScreenUtils.xl),
                       _AuthTextField(
                         hintText: l10n.authEmailHint,
                         controller: _emailController,
@@ -107,7 +109,7 @@ class _AuthViewState extends State<AuthView> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 12),
+                      Gap(12.h),
                       _AuthTextField(
                         hintText: l10n.authPasswordHint,
                         controller: _passwordController,
@@ -118,38 +120,34 @@ class _AuthViewState extends State<AuthView> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 24),
-                      
+                      Gap(ScreenUtils.lg),
                       _PrimaryContinueButton(
                         text: l10n.authContinue,
                         isLoading: isLoading,
                         onTap: isLoading ? () {} : _completeAuthWithEmail,
                       ),
-                      
-                      const SizedBox(height: 24),
-                      Text(l10n.authOr, style: TextStyle(color: AppColors.cffffff, fontSize: 12, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 24),
-
+                      Gap(ScreenUtils.lg),
+                      Text(l10n.authOr, style: TextStyle(color: AppColors.cffffff, fontSize: 12.sp, fontWeight: FontWeight.bold)),
+                      Gap(ScreenUtils.lg),
                       _SocialAuthButton(icon: Icons.g_mobiledata_rounded, label: l10n.authGoogle, onTap: isLoading ? () {} : _completeSocialAuth),
-                      const SizedBox(height: 12),
+                      Gap(12.h),
                       _SocialAuthButton(icon: Icons.apple_rounded, label: l10n.authApple, onTap: isLoading ? () {} : _completeSocialAuth),
-                      const SizedBox(height: 12),
+                      Gap(12.h),
                       _SocialAuthButton(icon: Icons.window_rounded, label: l10n.authMicrosoft, onTap: isLoading ? () {} : _completeSocialAuth),
-                      const SizedBox(height: 12),
+                      Gap(12.h),
                       _SocialAuthButton(icon: Icons.phone_outlined, label: l10n.authPhone, onTap: isLoading ? () {} : _completeSocialAuth),
-
-                      const SizedBox(height: 40),
-                      Text(l10n.authGuestPrompt, textAlign: TextAlign.center, style: TextStyle(color: AppColors.cffffff.withOpacity(0.9), fontSize: 14, fontWeight: FontWeight.w300)),
-                      const SizedBox(height: 8),
+                      Gap(40.h),
+                      Text(l10n.authGuestPrompt, textAlign: TextAlign.center, style: TextStyle(color: AppColors.cffffff.withOpacity(0.9), fontSize: 14.sp, fontWeight: FontWeight.w300)),
+                      Gap(ScreenUtils.sm),
                       InkWell(
                         onTap: isLoading ? null : _continueAsGuest,
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(4.r),
                         child: Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Text(l10n.authContinueGuest, style: TextStyle(color: AppColors.cffffff, fontSize: 15, decoration: TextDecoration.underline, decorationColor: AppColors.cffffff)),
+                          padding: EdgeInsets.all(4.r),
+                          child: Text(l10n.authContinueGuest, style: TextStyle(color: AppColors.cffffff, fontSize: 15.sp, decoration: TextDecoration.underline, decorationColor: AppColors.cffffff)),
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      Gap(20.h),
                     ],
                   ),
                 ),
@@ -173,20 +171,20 @@ class _AuthTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomGlassContainer(
       width: double.infinity,
-      borderRadius: BorderRadius.circular(50),
+      borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
       borderColor: AppColors.cffffff.withOpacity(0.15),
       color: AppColors.cffffff.withOpacity(0.02),
-      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 20),
+      padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 20.w),
       child: TextFormField(
         controller: controller,
         obscureText: isPassword,
         validator: validator,
-        style: TextStyle(color: AppColors.cffffff, fontSize: 14),
+        style: TextStyle(color: AppColors.cffffff, fontSize: 14.sp),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: TextStyle(color: AppColors.cffffff.withOpacity(0.50), fontSize: 13),
+          hintStyle: TextStyle(color: AppColors.cffffff.withOpacity(0.50), fontSize: 13.sp),
           border: InputBorder.none,
-          errorStyle: const TextStyle(color: Colors.redAccent, height: 0.8),
+          errorStyle: TextStyle(color: Colors.redAccent, height: 0.8),
         ),
       ),
     );
@@ -205,19 +203,19 @@ class _SocialAuthButton extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(50),
+        borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
         child: CustomGlassContainer(
           width: double.infinity,
-          borderRadius: BorderRadius.circular(50),
+          borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
           borderColor: AppColors.cffffff.withOpacity(0.15),
           color: AppColors.cffffff.withOpacity(0.02),
-          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+          padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 16.w),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 20, color: AppColors.cffffff),
-              const SizedBox(width: 12),
-              Text(label, style: TextStyle(color: AppColors.cffffff, fontSize: 13, fontWeight: FontWeight.w400)),
+              Icon(icon, size: 20.r, color: AppColors.cffffff),
+              Gap(12.w),
+              Text(label, style: TextStyle(color: AppColors.cffffff, fontSize: 13.sp, fontWeight: FontWeight.w400)),
             ],
           ),
         ),
@@ -238,17 +236,17 @@ class _PrimaryContinueButton extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(50),
+        borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
         child: CustomGlassContainer(
           width: double.infinity,
-          borderRadius: BorderRadius.circular(50),
+          borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
           borderColor: AppColors.cffffff.withOpacity(0.15),
           color: AppColors.cffffff.withOpacity(0.06),
-          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+          padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 24.w),
           child: Center(
             child: isLoading
-                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                : Text(text, style: TextStyle(color: AppColors.cffffff, fontSize: 16, fontWeight: FontWeight.w500)),
+                ? SizedBox(width: 20.r, height: 20.r, child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                : Text(text, style: TextStyle(color: AppColors.cffffff, fontSize: 16.sp, fontWeight: FontWeight.w500)),
           ),
         ),
       ),

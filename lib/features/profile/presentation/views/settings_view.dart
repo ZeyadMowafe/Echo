@@ -1,5 +1,6 @@
 import 'package:echo_explorer/core/constants/app_colors.dart';
 import 'package:echo_explorer/core/constants/app_strings.dart';
+import 'package:echo_explorer/core/helpers/screen_utils.dart';
 import 'package:echo_explorer/core/localization/locale_cubit.dart';
 import 'package:echo_explorer/core/routing/routes.dart';
 import 'package:echo_explorer/core/themes/theme_cubit.dart';
@@ -11,6 +12,8 @@ import 'package:echo_explorer/features/home/presentation/cubit/features_cubit.da
 import 'package:echo_explorer/features/profile/presentation/widgets/custom_setting_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gap/gap.dart';
 
 class SettingsView extends StatefulWidget {
   const SettingsView({super.key});
@@ -28,7 +31,7 @@ class _SettingsViewState extends State<SettingsView> {
     final isLightMode = !context.watch<ThemeCubit>().state;
 
     return Scaffold(
-      endDrawer: CustomGlassDrawer(
+      drawer: CustomGlassDrawer(
         currentFeature: AppStrings.settingsFeature.key,
         onTap: (featureKey) {
           context.read<FeaturesCubit>().changeFeature(featureName: featureKey);
@@ -36,7 +39,6 @@ class _SettingsViewState extends State<SettingsView> {
           Navigator.pop(context);
         },
       ),
-      endDrawerEnableOpenDragGesture: false,
       drawerBarrierDismissible: false,
       backgroundColor: appColors.background, 
 
@@ -53,18 +55,18 @@ class _SettingsViewState extends State<SettingsView> {
               end: Alignment.bottomCenter,
             ),
             borderColor: appColors.discoverAppBar.withOpacity(0.05),
-            padding: const EdgeInsets.only(top: 6, bottom: 6, left: 20, right: 20),
+            padding: EdgeInsets.only(top: 6.h, bottom: 6.h, left: 20.w, right: 20.w),
             child: SafeArea(
               bottom: false,
               child: Row(
-                spacing: 8,
+                spacing: 8.w,
                 children: [
                   CustomGlassContainer(
-                    width: 34,
-                    height: 34,
-                    borderRadius: BorderRadius.circular(50),
+                    width: ScreenUtils.glassButtonSize,
+                    height: ScreenUtils.glassButtonSize,
+                    borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
                     borderColor: AppColors.cffffff.withOpacity(0.10),
-                    margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    margin: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                     color: AppColors.cffffff.withOpacity(0.10),
                     gradient: LinearGradient(
                       colors: [
@@ -75,11 +77,11 @@ class _SettingsViewState extends State<SettingsView> {
                       end: Alignment.bottomCenter,
                     ),
                     child: CustomGlassContainer(
-                      width: 34,
-                      height: 34,
+                      width: ScreenUtils.glassButtonSize,
+                      height: ScreenUtils.glassButtonSize,
                       color: AppColors.cffffff.withOpacity(0.25),
                       borderColor: AppColors.cffffff.withOpacity(0.04),
-                      borderRadius: BorderRadius.circular(50),
+                      borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
                       gradient: LinearGradient(
                         colors: [
                           AppColors.cffffff.withOpacity(0.30),
@@ -91,21 +93,21 @@ class _SettingsViewState extends State<SettingsView> {
                       child: IconButton(
                         alignment: Alignment.center,
                         padding: EdgeInsets.zero,
-                        icon: Icon(Icons.arrow_back_rounded, color: appColors.footer, size: 22),
+                        icon: Icon(Icons.arrow_back_rounded, color: appColors.footer, size: ScreenUtils.iconMd),
                         onPressed: () => Navigator.pop(context),
                       ),
                     ),
                   ),
                   Text(
                     AppLocalizations.of(context)!.settings,
-                    style: TextStyle(color: appColors.footer, fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: appColors.footer, fontSize: 16.sp, fontWeight: FontWeight.bold),
                   ),
                   const Spacer(),
                   Builder(
                     builder: (innerContext) {
                       return IconButton(
-                        icon: Icon(Icons.menu, color: appColors.footer, size: 30),
-                        onPressed: () => Scaffold.of(innerContext).openEndDrawer(),
+                        icon: Icon(Icons.menu, color: appColors.footer, size: 30.r),
+                        onPressed: () => Scaffold.of(innerContext).openDrawer(),
                       );
                     },
                   ),
@@ -115,7 +117,7 @@ class _SettingsViewState extends State<SettingsView> {
           ),
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.only(top: 48, left: 18, right: 18),
+              padding: EdgeInsets.only(top: 48.h, left: 18.w, right: 18.w),
               children: [
                 _buildSectionTitle(AppLocalizations.of(context)!.settingsAppPreferences, appColors),
                 CustomSettingItem(
@@ -141,7 +143,7 @@ class _SettingsViewState extends State<SettingsView> {
                     setState(() => isCameraPermissionGranted = value);
                   },
                 ),
-                const SizedBox(height: 35),
+                Gap(35.h),
                 _buildSectionTitle(AppLocalizations.of(context)!.settingsSupportAbout, appColors),
                 CustomSettingItem(
                   leadingIcon: Icons.info_outline_rounded,
@@ -178,10 +180,10 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _buildSectionTitle(String title, BaseThemeColors appColors) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16, left: 4),
+      padding: EdgeInsets.only(bottom: 16.h, left: 4.w),
       child: Text(
         title,
-        style: TextStyle(color: appColors.footer, fontSize: 14, fontWeight: FontWeight.w500),
+        style: TextStyle(color: appColors.footer, fontSize: 14.sp, fontWeight: FontWeight.w500),
       ),
     );
   }
@@ -194,27 +196,27 @@ class _SettingsViewState extends State<SettingsView> {
       context: context,
       isScrollControlled: true,
       backgroundColor: appColors.background,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20.r))),
       builder: (sheetContext) {
         return ConstrainedBox(
-          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.8),
+          constraints: BoxConstraints(maxHeight: 0.8.sh),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+            padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 24.h),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Center(
                   child: Container(
-                    width: 40, height: 4,
-                    decoration: BoxDecoration(color: appColors.footer.withOpacity(0.25), borderRadius: BorderRadius.circular(10)),
+                    width: 40.w, height: 4.h,
+                    decoration: BoxDecoration(color: appColors.footer.withOpacity(0.25), borderRadius: BorderRadius.circular(10.r)),
                   ),
                 ),
                 Row(
                   children: [
                     IconButton(icon: Icon(Icons.close, color: appColors.footer), onPressed: () => Navigator.pop(sheetContext)),
                     Expanded(
-                      child: Text(l10n.appLanguage, style: TextStyle(color: appColors.footer, fontSize: 20, fontWeight: FontWeight.w500)),
+                      child: Text(l10n.appLanguage, style: TextStyle(color: appColors.footer, fontSize: 20.sp, fontWeight: FontWeight.w500)),
                     ),
                   ],
                 ),
@@ -255,11 +257,11 @@ class _SettingsViewState extends State<SettingsView> {
       title: RichText(
         text: TextSpan(
           text: '$nativeName\n',
-          style: TextStyle(color: appColors.footer, fontSize: 16),
+          style: TextStyle(color: appColors.footer, fontSize: 16.sp),
           children: <TextSpan>[
             TextSpan(
               text: localizedName,
-              style: TextStyle(color: appColors.footer.withOpacity(0.6), fontSize: 14),
+              style: TextStyle(color: appColors.footer.withOpacity(0.6), fontSize: 14.sp),
             ),
           ],
         ),
@@ -285,26 +287,26 @@ class _SettingsViewState extends State<SettingsView> {
           builder: (_, controller) {
             return CustomGlassContainer(
               color: appColors.background.withOpacity(0.9),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-              padding: const EdgeInsets.all(24),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(ScreenUtils.glassBorderRadius)),
+              padding: EdgeInsets.all(ScreenUtils.lg),
               child: ListView(
                 controller: controller,
                 children: [
                   Center(
                     child: Container(
-                      width: 40, height: 4, margin: const EdgeInsets.only(bottom: 20),
-                      decoration: BoxDecoration(color: appColors.footer.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
+                    width: 40.w, height: 4.h, margin: EdgeInsets.only(bottom: 20.h),
+                    decoration: BoxDecoration(color: appColors.footer.withOpacity(0.3), borderRadius: BorderRadius.circular(10.r)),
                     ),
                   ),
-                  Text(l10n.aboutTitle, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: appColors.footer), textAlign: TextAlign.center),
-                  const SizedBox(height: 8),
-                  Text(l10n.aboutSubtitle, style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic, color: appColors.footer.withOpacity(0.7)), textAlign: TextAlign.center),
-                  const SizedBox(height: 24),
+                  Text(l10n.aboutTitle, style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold, color: appColors.footer), textAlign: TextAlign.center),
+                  Gap(ScreenUtils.sm),
+                  Text(l10n.aboutSubtitle, style: TextStyle(fontSize: 14.sp, fontStyle: FontStyle.italic, color: appColors.footer.withOpacity(0.7)), textAlign: TextAlign.center),
+                  Gap(ScreenUtils.lg),
                   _buildAboutSection(l10n.aboutPhilosophyTitle, l10n.aboutPhilosophyBody, appColors),
                   _buildAboutSection(l10n.aboutMoreTitle, l10n.aboutMoreBody, appColors),
                   _buildAboutSection(l10n.aboutBridgeTitle, l10n.aboutBridgeBody, appColors),
                   _buildAboutSection(l10n.aboutTeamTitle, l10n.aboutTeamBody, appColors),
-                  const SizedBox(height: 24),
+                  Gap(ScreenUtils.lg),
                 ],
               ),
             );
@@ -316,13 +318,13 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _buildAboutSection(String title, String body, BaseThemeColors appColors) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
+      padding: EdgeInsets.only(bottom: 20.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF00E676))),
-          const SizedBox(height: 8),
-          Text(body, style: TextStyle(fontSize: 14, color: appColors.footer, height: 1.5)),
+          Text(title, style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold, color: const Color(0xFF00E676))),
+          Gap(ScreenUtils.sm),
+          Text(body, style: TextStyle(fontSize: 14.sp, color: appColors.footer, height: 1.5)),
         ],
       ),
     );

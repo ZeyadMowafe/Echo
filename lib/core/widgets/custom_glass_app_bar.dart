@@ -31,7 +31,7 @@ class CustomGlassAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final glassColor = barColor ?? AppColors.of(context).discoverAppBar;
-    final glassBorder = barBorderColor ?? AppColors.c162410;
+    final glassBorder = barBorderColor ?? glassColor.withValues(alpha: 0.05);
     return CustomGlassContainer(
       color: glassColor.withValues(alpha: 0.25),
       gradient: LinearGradient(
@@ -42,7 +42,7 @@ class CustomGlassAppBar extends StatelessWidget {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
       ),
-      borderColor: glassBorder.withValues(alpha: 0.50),
+      borderColor: glassBorder,
       padding: EdgeInsets.only(top: 6.h, bottom: 6.h, left: 20.w, right: 20.w),
       child: SafeArea(
         bottom: false,

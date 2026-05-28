@@ -1,5 +1,8 @@
+import 'package:echo_explorer/core/helpers/screen_utils.dart';
 import 'package:echo_explorer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gap/gap.dart';
 import 'package:readmore/readmore.dart';
 import 'package:echo_explorer/core/constants/app_colors.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_container.dart';
@@ -34,25 +37,25 @@ class _EraTimelineCardState extends State<EraTimelineCard> {
           clipBehavior: Clip.none,
           children: [
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16),
+              margin: EdgeInsets.symmetric(horizontal: 16.w),
               child: CustomGlassContainer(
-                padding: const EdgeInsets.all(20),
-                borderRadius: BorderRadius.circular(24),
+                padding: EdgeInsets.all(20.r),
+                borderRadius: BorderRadius.circular(ScreenUtils.glassBorderRadius),
                 color: AppColors.of(context).footer.withOpacity(0.05),
                 borderColor: AppColors.of(context).footer,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 10),
+                    Gap(10.h),
                     Text(
                       widget.title,
                       style: TextStyle(
                         color: AppColors.of(context).footer,
-                        fontSize: 16,
+                        fontSize: 16.sp,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    Gap(ScreenUtils.sm),
 
                     AnimatedSize(
                       duration: const Duration(milliseconds: 300),
@@ -66,7 +69,7 @@ class _EraTimelineCardState extends State<EraTimelineCard> {
                         trimExpandedText: l10n.showless,
                         style: TextStyle(
                           color: AppColors.of(context).footer.withOpacity(0.7),
-                          fontSize: 12,
+                          fontSize: 12.sp,
                           height: 1.5,
                         ),
                       ),
@@ -78,12 +81,12 @@ class _EraTimelineCardState extends State<EraTimelineCard> {
 
             if (widget.imagePath != null)
               Positioned(
-                top: -80,
-                right: widget.isImageRight ? 24 : null,
-                left: !widget.isImageRight ? 24 : null,
+                top: -80.h,
+                right: widget.isImageRight ? 24.w : null,
+                left: !widget.isImageRight ? 24.w : null,
                 child: Image.asset(
                   widget.imagePath!,
-                  height: 110,
+                  height: 110.h,
                   fit: BoxFit.contain,
                 ),
               ),
@@ -91,8 +94,8 @@ class _EraTimelineCardState extends State<EraTimelineCard> {
         ),
         if (!widget.isLast)
           Container(
-            width: 2,
-            height: 100, 
+            width: 2.w,
+            height: 100.h, 
             color: AppColors.of(context).footer.withOpacity(0.6),
           ),
       ],

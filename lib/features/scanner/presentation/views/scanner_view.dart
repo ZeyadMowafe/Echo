@@ -1,13 +1,23 @@
 import 'dart:io';
+import 'dart:ui';
 import 'package:echo_explorer/core/constants/app_colors.dart';
 import 'package:echo_explorer/core/constants/app_strings.dart';
 import 'package:echo_explorer/core/di/injection_container.dart';
+import 'package:echo_explorer/core/helpers/screen_utils.dart';
+import 'package:echo_explorer/core/widgets/custom_glass_back_button.dart';
+import 'package:echo_explorer/core/widgets/custom_glass_container.dart';
+import 'package:echo_explorer/core/widgets/custom_glass_drawer.dart';
 import 'package:echo_explorer/features/chat/presentation/views/chat_view.dart';
-import 'package:echo_explorer/features/discover/presentation/widgets/custom_discover_app_bar.dart';
+import 'package:echo_explorer/features/home/presentation/view_model/features_cubit.dart';
+import 'package:echo_explorer/features/scanner/data/models/scan_result_args.dart';
 import 'package:echo_explorer/features/scanner/presentation/cubit/scan_cubit.dart';
+import 'package:echo_explorer/features/scanner/presentation/views/camera_scanner_view.dart';
+import 'package:echo_explorer/features/scanner/presentation/views/details_view.dart';
 import 'package:echo_explorer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ScannerView extends StatelessWidget {
@@ -15,82 +25,141 @@ class ScannerView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => sl<ScanCubit>(),
-      child: _ScannerBody(),
-    );
+    return BlocProvider(create: (_) => sl<ScanCubit>(), child: _ScannerBody());
   }
 }
 
-class _ScannerBody extends StatelessWidget {
+class _ScannerBody extends StatefulWidget {
+  @override
+  State<_ScannerBody> createState() => _ScannerBodyState();
+}
+
+class _ScannerBodyState extends State<_ScannerBody> {
+  bool _showTranslation = false;
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.of(context).background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            CustomDiscoverAppBar(
-              previousState: AppStrings.scanFeature.key,
-              title: '',
+      drawer: CustomGlassDrawer(
+        currentFeature: AppStrings.scanFeature.key,
+        onTap: (featureName) {
+          final cubit = context.read<FeaturesCubit>();
+          Navigator.of(context).popUntil((route) => route.isFirst);
+          cubit.changeFeature(featureName: featureName);
+        },
+      ),
+      body: Stack(
+        children: [
+          BlocBuilder<ScanCubit, ScanState>(
+            builder: (context, state) {
+              if (state is ScanInitial) return _buildHome(context);
+              if (state is ScanImagePicked)
+                return _buildPreview(context, imagePath: state.imagePath);
+              if (state is ScanLoading)
+                return _buildPreview(
+                  context,
+                  imagePath: context.read<ScanCubit>().currentImagePath ?? '',
+                  isLoading: true,
+                );
+              if (state is ScanResultLoaded)
+                return _buildPreview(
+                  context,
+                  imagePath: state.imagePath ?? '',
+                  result: state,
+                  showTranslation: _showTranslation,
+                  onToggleTranslation: () =>
+                      setState(() => _showTranslation = !_showTranslation),
+                );
+              if (state is ScanError) return _buildError(context, state);
+              return _buildHome(context);
+            },
+          ),
+          Positioned(
+            left: 16.w,
+            top: MediaQuery.of(context).padding.top + 6.h,
+            child: CustomGlassBackButton(
+              iconColor: Colors.white,
               onPressed: () => Navigator.pop(context),
             ),
-            Expanded(
-              child: BlocBuilder<ScanCubit, ScanState>(
-                builder: (context, state) {
-                  if (state is ScanInitial) return _buildHome(context);
-                  if (state is ScanImagePicked) return _buildPreview(context, state);
-                  if (state is ScanLoading) return _buildLoading(context);
-                  if (state is ScanResultLoaded) return _buildResult(context, state);
-                  if (state is ScanError) return _buildError(context, state);
-                  return _buildHome(context);
-                },
+          ),
+          Positioned(
+            right: 16.w,
+            top: MediaQuery.of(context).padding.top + 6.h,
+            child: Builder(
+              builder: (ctx) => GestureDetector(
+                onTap: () => Scaffold.of(ctx).openDrawer(),
+                child: Icon(
+                  Icons.menu_rounded,
+                  size: 28.r,
+                  color: Colors.white.withValues(alpha: 0.7),
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildHome(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: EdgeInsets.all(ScreenUtils.xl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.camera_alt_outlined, size: 80,
-                color: AppColors.of(context).footer.withValues(alpha: 0.2)),
-            const SizedBox(height: 24),
+            Container(
+              padding: EdgeInsets.all(ScreenUtils.md),
+              decoration: BoxDecoration(
+                color: AppColors.secondary.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.document_scanner_outlined,
+                size: ScreenUtils.iconXl,
+                color: AppColors.secondary,
+              ),
+            ),
+            Gap(ScreenUtils.lg),
             Text(
-              AppLocalizations.of(context)!.scanTitle,
+              l10n.scanTitle,
               style: TextStyle(
                 color: AppColors.of(context).footer,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
+                fontSize: 22.sp,
+                fontWeight: FontWeight.w700,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 12),
+            Gap(ScreenUtils.sm),
             Text(
-              AppLocalizations.of(context)!.scanSubtitle,
+              l10n.scanSubtitle,
               style: TextStyle(
                 color: AppColors.of(context).footer.withValues(alpha: 0.5),
-                fontSize: 14,
+                fontSize: 14.sp,
+                height: 1.4,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 40),
-            _ScanButton(
+            Gap(ScreenUtils.xxl),
+            _GlassSelectionCard(
               icon: Icons.camera_alt_rounded,
-              label: AppLocalizations.of(context)!.scanTakePhoto,
-              onTap: () => _pickImage(context, ImageSource.camera),
+              label: l10n.scanTakePhoto,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => BlocProvider.value(
+                    value: context.read<ScanCubit>(),
+                    child: const CameraScannerView(),
+                  ),
+                ),
+              ),
             ),
-            const SizedBox(height: 16),
-            _ScanButton(
+            Gap(ScreenUtils.md),
+            _GlassSelectionCard(
               icon: Icons.photo_library_outlined,
-              label: AppLocalizations.of(context)!.scanPickGallery,
+              label: l10n.scanPickGallery,
               onTap: () => _pickImage(context, ImageSource.gallery),
             ),
           ],
@@ -104,12 +173,18 @@ class _ScannerBody extends StatelessWidget {
     final file = await picker.pickImage(source: source);
     if (file != null && context.mounted) {
       context.read<ScanCubit>().setImagePath(file.path);
+      await Future.delayed(const Duration(seconds: 3));
+      if (context.mounted) {
+        context.read<ScanCubit>().analyzeImage();
+      }
     }
   }
 
   Future<void> _saveToFavorites(BuildContext context, String scanLogId) async {
     final cubit = context.read<ScanCubit>();
-    final wasFavorited = cubit.state is ScanResultLoaded && (cubit.state as ScanResultLoaded).isFavorited;
+    final wasFavorited =
+        cubit.state is ScanResultLoaded &&
+        (cubit.state as ScanResultLoaded).isFavorited;
     final success = await cubit.toggleScanResultFavorite(scanLogId);
     if (!context.mounted) return;
     if (success) {
@@ -120,14 +195,19 @@ class _ScannerBody extends StatelessWidget {
           SnackBar(
             content: Row(
               children: [
-                const Icon(Icons.favorite, color: Colors.redAccent, size: 20),
-                const SizedBox(width: 12),
-                Text(l10n.scanAddedToFavorites, style: const TextStyle(color: Colors.white)),
+                Icon(Icons.favorite, color: Colors.redAccent, size: 20.r),
+                Gap(12.w),
+                Text(
+                  l10n.scanAddedToFavorites,
+                  style: const TextStyle(color: Colors.white),
+                ),
               ],
             ),
             backgroundColor: AppColors.c151D18,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.r),
+            ),
             duration: const Duration(milliseconds: 1200),
           ),
         );
@@ -139,14 +219,19 @@ class _ScannerBody extends StatelessWidget {
           SnackBar(
             content: Row(
               children: [
-                const Icon(Icons.favorite_border, color: Colors.grey, size: 20),
-                const SizedBox(width: 12),
-                Text(l10n.scanRemovedFromFavorites, style: const TextStyle(color: Colors.white)),
+                Icon(Icons.favorite_border, color: Colors.grey, size: 20.r),
+                Gap(12.w),
+                Text(
+                  l10n.scanRemovedFromFavorites,
+                  style: const TextStyle(color: Colors.white),
+                ),
               ],
             ),
             backgroundColor: AppColors.c151D18,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.r),
+            ),
             duration: const Duration(milliseconds: 1200),
           ),
         );
@@ -154,31 +239,405 @@ class _ScannerBody extends StatelessWidget {
     }
   }
 
-  Widget _buildPreview(BuildContext context, ScanImagePicked state) {
+  Widget _buildPreview(
+    BuildContext context, {
+    required String imagePath,
+    bool isLoading = false,
+    ScanResultLoaded? result,
+    bool showTranslation = false,
+    VoidCallback? onToggleTranslation,
+  }) {
     final l10n = AppLocalizations.of(context)!;
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Image.file(File(state.imagePath), height: 400, width: double.infinity, fit: BoxFit.contain),
-          ),
-          const SizedBox(height: 24),
-          _ScanButton(
-            icon: Icons.search_rounded,
-            label: l10n.scanAnalyzeArtifact,
-            onTap: () => context.read<ScanCubit>().analyzeImage(),
-          ),
-          const SizedBox(height: 12),
-          TextButton.icon(
-            onPressed: () => context.read<ScanCubit>().clearResult(),
-            icon: Icon(Icons.refresh, color: AppColors.of(context).footer.withValues(alpha: 0.5)),
-            label: Text(l10n.scanDifferentPhoto,
-                style: TextStyle(color: AppColors.of(context).footer.withValues(alpha: 0.5))),
-          ),
-        ],
+    final backButton = Positioned(
+      left: 16.w,
+      top: 8.h,
+      child: CustomGlassBackButton(
+        iconColor: Colors.white,
+        onPressed: () => context.read<ScanCubit>().clearResult(),
       ),
+    );
+    return Stack(
+      children: [
+        SizedBox(
+          width: double.infinity,
+          height: double.infinity,
+          child: Image.file(File(imagePath), fit: BoxFit.cover),
+        ),
+        Positioned(
+          left: 22.w,
+          top: 202.h,
+          width: 346.w,
+          height: 463.h,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(8.r),
+              border: Border.all(color: AppColors.cf9f9f9, width: 1),
+            ),
+          ),
+        ),
+        if (isLoading)
+          Positioned(
+            left: 0,
+            right: 0,
+            top: 202.h + 463.h + 20.h,
+            child: Center(
+              child: SizedBox(
+                width: 24.r,
+                height: 24.r,
+                child: CircularProgressIndicator(
+                  color: AppColors.secondary,
+                  strokeWidth: 2.5,
+                ),
+              ),
+            ),
+          ),
+        if (result != null && !showTranslation)
+          Positioned(
+            left: 12.w,
+            top: 611.h,
+            width: 366.w,
+            height: 203.h,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24.r),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  padding: EdgeInsets.only(
+                    top: 23.h,
+                    right: 16.w,
+                    bottom: 23.h,
+                    left: 16.w,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24.r),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.2),
+                    ),
+                    gradient: const LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Color(0x03000000), Color(0x03000000)],
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(5),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          result.result.artifact.name ?? 'Artifact',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24.sp,
+                            fontWeight: FontWeight.w900,
+                          ),
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Builder(
+                          builder: (context) {
+                            final parts = <String>[];
+                            final a = result.result.artifact;
+                            if (a.era != null) parts.add(a.era!);
+                            if (a.material != null) parts.add(a.material!);
+                            if (a.category != null) parts.add(a.category!);
+                            if (a.type != null) parts.add(a.type!);
+                            if (parts.isEmpty) return const SizedBox.shrink();
+                            return Padding(
+                              padding: EdgeInsets.only(top: 8.h),
+                              child: Text(
+                                parts.join(' | '),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        const Spacer(),
+                        Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                final artifact = result.result.artifact;
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => ChatView(
+                                      artifactId:
+                                          artifact.artifactModelId ?? '',
+                                      artifactName:
+                                          artifact.name ??
+                                          artifact.artifactModelId ??
+                                          '',
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(50.r),
+                                child: BackdropFilter(
+                                  filter: ImageFilter.blur(
+                                    sigmaX: 15,
+                                    sigmaY: 15,
+                                  ),
+                                  child: Container(
+                                    width: 45.r,
+                                    height: 45.r,
+                                    padding: EdgeInsets.all(14.r),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Colors.black.withValues(
+                                          alpha: 0.1,
+                                        ),
+                                      ),
+                                      gradient: const LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: [
+                                          Color(0x13FFFFFF),
+                                          Color(0x00FFFFFF),
+                                        ],
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      Icons.chat_outlined,
+                                      color: Colors.white,
+                                      size: 20.r,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const Spacer(),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => BlocProvider.value(
+                                      value: context.read<ScanCubit>(),
+                                      child: DetailsView(
+                                        args: ScanResultArgs(
+                                          result: result.result,
+                                          imagePath: result.imagePath,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(50.r),
+                                child: BackdropFilter(
+                                  filter: ImageFilter.blur(
+                                    sigmaX: 15,
+                                    sigmaY: 15,
+                                  ),
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 16.w,
+                                      vertical: 10.h,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(50.r),
+                                      border: Border.all(
+                                        color: Colors.black.withValues(
+                                          alpha: 0.1,
+                                        ),
+                                      ),
+                                      gradient: const LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: [
+                                          Color(0x13FFFFFF),
+                                          Color(0x00FFFFFF),
+                                        ],
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          'Details',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        Gap(4.w),
+                                        Icon(
+                                          Icons.arrow_forward_rounded,
+                                          color: Colors.white,
+                                          size: 18.r,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        // Translation toggle button
+        if (result != null && onToggleTranslation != null)
+          Positioned(
+            left: 250.w,
+            top: 163.h,
+            width: 123.w,
+            height: 34.h,
+            child: GestureDetector(
+              onTap: onToggleTranslation,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24.r),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                  child: Container(
+                    padding: EdgeInsets.all(10.r),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24.r),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.1),
+                      ),
+                      gradient: const LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Color(0xFF568D3F), Color(0xFF568D3F)],
+                      ),
+                    ),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            showTranslation
+                                ? Icons.visibility_off_rounded
+                                : Icons.visibility_rounded,
+                            color: Colors.white,
+                            size: 14.r,
+                          ),
+                          Gap(2.w),
+                          Text(
+                            showTranslation
+                                ? 'Hide Translation'
+                                : 'Reveal Translation',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10.sp,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        // Translation card overlay
+        if (result != null &&
+            showTranslation &&
+            result.result.hieroglyphs?.translation != null)
+          Positioned(
+            left: 8.w,
+            top: 261.h,
+            width: 375.w,
+            bottom: 12.h,
+            child: SingleChildScrollView(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24.r),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(
+                    width: 375.w,
+                    padding: EdgeInsets.only(
+                      top: 27.h,
+                      right: 34.w,
+                      bottom: 27.h,
+                      left: 34.w,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24.r),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.3),
+                      ),
+                      gradient: const LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Color(0x03000000), Color(0x03000000)],
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Discover what the translation reveals…',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        Gap(12.h),
+                        Text(
+                          result.result.hieroglyphs!.translation!,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w600,
+                            height: 1.3,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        backButton,
+        if (!isLoading && result == null)
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: MediaQuery.of(context).padding.bottom + 40,
+            child: Center(
+              child: TextButton.icon(
+                onPressed: () => context.read<ScanCubit>().clearResult(),
+                icon: Icon(
+                  Icons.refresh,
+                  color: Colors.white.withValues(alpha: 0.5),
+                  size: 18.r,
+                ),
+                label: Text(
+                  l10n.scanDifferentPhoto,
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.5),
+                    fontSize: 14.sp,
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 
@@ -189,20 +648,20 @@ class _ScannerBody extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CircularProgressIndicator(color: AppColors.secondary),
-          const SizedBox(height: 24),
+          Gap(24.h),
           Text(
             l10n.scanAnalyzing,
             style: TextStyle(
               color: AppColors.of(context).footer,
-              fontSize: 16,
+              fontSize: 16.sp,
             ),
           ),
-          const SizedBox(height: 8),
+          Gap(8.h),
           Text(
             l10n.scanAnalyzingWait,
             style: TextStyle(
               color: AppColors.of(context).footer.withValues(alpha: 0.5),
-              fontSize: 13,
+              fontSize: 13.sp,
             ),
           ),
         ],
@@ -215,86 +674,114 @@ class _ScannerBody extends StatelessWidget {
     final result = state.result;
     final artifact = result.artifact;
     final hieroglyphs = result.hieroglyphs;
-    print('=== ScannerView _buildResult: hieroglyphs=${hieroglyphs?.translation}, detected=${hieroglyphs?.detected} ===');
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16.r),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Image with favorite overlay
           if (state.imagePath != null)
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: Image.file(File(state.imagePath!), height: 350, width: double.infinity, fit: BoxFit.contain),
+                  borderRadius: BorderRadius.circular(16.r),
+                  child: Image.file(
+                    File(state.imagePath!),
+                    height: 350.h,
+                    width: double.infinity,
+                    fit: BoxFit.contain,
+                  ),
                 ),
                 if (result.scanLogId != null)
                   Positioned(
-                    top: 12,
-                    right: 12,
+                    top: 12.h,
+                    right: 12.w,
                     child: GestureDetector(
                       onTap: () => _saveToFavorites(context, result.scanLogId!),
                       child: Container(
-                        padding: const EdgeInsets.all(10),
+                        padding: EdgeInsets.all(10.r),
                         decoration: BoxDecoration(
                           color: AppColors.c151D18.withValues(alpha: 0.8),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
-                          state.isFavorited ? Icons.favorite : Icons.favorite_border,
-                          color: state.isFavorited ? Colors.redAccent : Colors.white,
-                          size: 24,
+                          state.isFavorited
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          color: state.isFavorited
+                              ? Colors.redAccent
+                              : Colors.white,
+                          size: 24.r,
                         ),
                       ),
                     ),
                   ),
               ],
             ),
-          const SizedBox(height: 20),
+          Gap(20.h),
 
-          // Artifact name + favorite inline
           if (artifact.name != null)
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: Text(artifact.name!, style: TextStyle(
-                    color: AppColors.of(context).footer,
-                    fontSize: 22, fontWeight: FontWeight.w700,
-                  )),
+                  child: Text(
+                    artifact.name!,
+                    style: TextStyle(
+                      color: AppColors.of(context).footer,
+                      fontSize: 22.sp,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
                 if (result.scanLogId != null) ...[
-                  const SizedBox(width: 12),
+                  Gap(12.w),
                   GestureDetector(
                     onTap: () => _saveToFavorites(context, result.scanLogId!),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12.w,
+                        vertical: 6.h,
+                      ),
                       decoration: BoxDecoration(
                         color: state.isFavorited
                             ? Colors.redAccent.withValues(alpha: 0.15)
                             : AppColors.c151D18.withValues(alpha: 0.5),
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(20.r),
                         border: Border.all(
                           color: state.isFavorited
                               ? Colors.redAccent.withValues(alpha: 0.4)
-                              : AppColors.of(context).footer.withValues(alpha: 0.15),
+                              : AppColors.of(
+                                  context,
+                                ).footer.withValues(alpha: 0.15),
                         ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            state.isFavorited ? Icons.favorite : Icons.favorite_border,
-                            color: state.isFavorited ? Colors.redAccent : AppColors.of(context).footer.withValues(alpha: 0.5),
-                            size: 16,
+                            state.isFavorited
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: state.isFavorited
+                                ? Colors.redAccent
+                                : AppColors.of(
+                                    context,
+                                  ).footer.withValues(alpha: 0.5),
+                            size: 16.r,
                           ),
-                          const SizedBox(width: 6),
+                          Gap(6.w),
                           Text(
-                            state.isFavorited ? l10n.scanFavorited : l10n.scanSave,
+                            state.isFavorited
+                                ? l10n.scanFavorited
+                                : l10n.scanSave,
                             style: TextStyle(
-                              color: state.isFavorited ? Colors.redAccent : AppColors.of(context).footer.withValues(alpha: 0.6),
-                              fontSize: 13, fontWeight: FontWeight.w500,
+                              color: state.isFavorited
+                                  ? Colors.redAccent
+                                  : AppColors.of(
+                                      context,
+                                    ).footer.withValues(alpha: 0.6),
+                              fontSize: 13.sp,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
@@ -305,73 +792,112 @@ class _ScannerBody extends StatelessWidget {
               ],
             ),
 
-          // Info chips
           if (artifact.era != null || artifact.material != null) ...[
-            const SizedBox(height: 12),
+            Gap(12.h),
             Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: 8.w,
+              runSpacing: 8.h,
               children: [
                 if (artifact.era != null)
                   _InfoChip(label: artifact.era!, icon: Icons.history),
                 if (artifact.material != null)
-                  _InfoChip(label: artifact.material!, icon: Icons.square_outlined),
+                  _InfoChip(
+                    label: artifact.material!,
+                    icon: Icons.square_outlined,
+                  ),
                 if (artifact.category != null)
-                  _InfoChip(label: artifact.category!, icon: Icons.category_outlined),
+                  _InfoChip(
+                    label: artifact.category!,
+                    icon: Icons.category_outlined,
+                  ),
                 if (artifact.type != null)
                   _InfoChip(label: artifact.type!, icon: Icons.image_outlined),
               ],
             ),
           ],
 
-          // Description
           if (artifact.description != null) ...[
-            const SizedBox(height: 16),
-            Text(artifact.description!, style: TextStyle(
-              color: AppColors.of(context).footer.withValues(alpha: 0.8),
-              fontSize: 14, height: 1.5,
-            )),
+            Gap(16.h),
+            Text(
+              artifact.description!,
+              style: TextStyle(
+                color: AppColors.of(context).footer.withValues(alpha: 0.8),
+                fontSize: 14.sp,
+                height: 1.5,
+              ),
+            ),
           ],
 
-          // Hieroglyphs
-          if (hieroglyphs != null && hieroglyphs.detected && hieroglyphs.translation != null) ...[
-            const SizedBox(height: 24),
+          if (hieroglyphs != null &&
+              hieroglyphs.detected &&
+              hieroglyphs.translation != null) ...[
+            Gap(24.h),
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16.r),
               decoration: BoxDecoration(
                 color: AppColors.c151D18.withValues(alpha: 0.4),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.secondary.withValues(alpha: 0.3)),
+                borderRadius: BorderRadius.circular(16.r),
+                border: Border.all(
+                  color: AppColors.secondary.withValues(alpha: 0.3),
+                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.auto_awesome, color: AppColors.secondary, size: 18),
-                      const SizedBox(width: 8),
-                      Text(l10n.scanHieroglyphsTranslation,
-                          style: TextStyle(color: AppColors.secondary, fontSize: 15, fontWeight: FontWeight.w600)),
+                      Icon(
+                        Icons.auto_awesome,
+                        color: AppColors.secondary,
+                        size: 18.r,
+                      ),
+                      Gap(8.w),
+                      Text(
+                        l10n.scanHieroglyphsTranslation,
+                        style: TextStyle(
+                          color: AppColors.secondary,
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ],
                   ),
-                  const SizedBox(height: 12),
-                  Text(hieroglyphs.translation!, style: TextStyle(
-                    color: AppColors.of(context).footer,
-                    fontSize: 14, height: 1.6,
-                  )),
-                  if (hieroglyphs.totalLines != null || hieroglyphs.totalGlyphs != null) ...[
-                    const SizedBox(height: 12),
-                    Divider(color: AppColors.of(context).footer.withValues(alpha: 0.1)),
-                    const SizedBox(height: 8),
+                  Gap(12.h),
+                  Text(
+                    hieroglyphs.translation!,
+                    style: TextStyle(
+                      color: AppColors.of(context).footer,
+                      fontSize: 14.sp,
+                      height: 1.6,
+                    ),
+                  ),
+                  if (hieroglyphs.totalLines != null ||
+                      hieroglyphs.totalGlyphs != null) ...[
+                    Gap(12.h),
+                    Divider(
+                      color: AppColors.of(
+                        context,
+                      ).footer.withValues(alpha: 0.1),
+                    ),
+                    Gap(8.h),
                     Row(
                       children: [
                         if (hieroglyphs.totalLines != null)
-                          _StatChip('${hieroglyphs.totalLines} lines', Icons.horizontal_rule),
+                          _StatChip(
+                            '${hieroglyphs.totalLines} lines',
+                            Icons.horizontal_rule,
+                          ),
                         if (hieroglyphs.totalGlyphs != null)
-                          _StatChip('${hieroglyphs.totalGlyphs} glyphs', Icons.text_fields),
+                          _StatChip(
+                            '${hieroglyphs.totalGlyphs} glyphs',
+                            Icons.text_fields,
+                          ),
                         if (hieroglyphs.cartoucheCount != null)
-                          _StatChip('${hieroglyphs.cartoucheCount} cartouches', Icons.circle_outlined),
+                          _StatChip(
+                            '${hieroglyphs.cartoucheCount} cartouches',
+                            Icons.circle_outlined,
+                          ),
                       ],
                     ),
                   ],
@@ -380,63 +906,78 @@ class _ScannerBody extends StatelessWidget {
             ),
           ],
           if (hieroglyphs != null && !hieroglyphs.detected) ...[
-            const SizedBox(height: 16),
+            Gap(16.h),
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(12.r),
               decoration: BoxDecoration(
                 color: AppColors.c151D18.withValues(alpha: 0.4),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(12.r),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.info_outline, color: AppColors.of(context).footer.withValues(alpha: 0.5), size: 18),
-                  const SizedBox(width: 8),
-                  Text(l10n.scanNoHieroglyphs,
-                      style: TextStyle(color: AppColors.of(context).footer.withValues(alpha: 0.5))),
+                  Icon(
+                    Icons.info_outline,
+                    color: AppColors.of(context).footer.withValues(alpha: 0.5),
+                    size: 18.r,
+                  ),
+                  Gap(8.w),
+                  Text(
+                    l10n.scanNoHieroglyphs,
+                    style: TextStyle(
+                      color: AppColors.of(
+                        context,
+                      ).footer.withValues(alpha: 0.5),
+                      fontSize: 14.sp,
+                    ),
+                  ),
                 ],
               ),
             ),
           ],
 
-          // Bottom actions
-          const SizedBox(height: 28),
+          Gap(28.h),
           Wrap(
-            spacing: 12,
-            runSpacing: 12,
+            spacing: 12.w,
+            runSpacing: 12.h,
             children: [
-              if (hieroglyphs != null && (hieroglyphs.translation?.isNotEmpty == true))
-                  _ActionButton(
-                    icon: Icons.auto_awesome,
-                    label: l10n.scanHieroglyphs,
-                    color: AppColors.secondary,
-                    onTap: () => _showHieroglyphsSheet(context, hieroglyphs.translation ?? ''),
-                  ),
+              if (hieroglyphs != null &&
+                  (hieroglyphs.translation?.isNotEmpty == true))
                 _ActionButton(
-                  icon: Icons.refresh,
-                  label: l10n.scanNewScan,
-                  color: AppColors.of(context).footer.withValues(alpha: 0.6),
-                  onTap: () => context.read<ScanCubit>().clearResult(),
-                ),
-                if (artifact.artifactModelId != null)
-                  _ActionButton(
-                    icon: Icons.chat_outlined,
-                    label: l10n.scanChat,
-                    color: AppColors.secondary,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ChatView(
-                            artifactId: artifact.artifactModelId,
-                            artifactName: artifact.name ?? artifact.artifactModelId,
-                          ),
-                        ),
-                      );
-                    },
+                  icon: Icons.auto_awesome,
+                  label: l10n.scanHieroglyphs,
+                  color: AppColors.secondary,
+                  onTap: () => _showHieroglyphsSheet(
+                    context,
+                    hieroglyphs.translation ?? '',
                   ),
+                ),
+              _ActionButton(
+                icon: Icons.refresh,
+                label: l10n.scanNewScan,
+                color: AppColors.of(context).footer.withValues(alpha: 0.6),
+                onTap: () => context.read<ScanCubit>().clearResult(),
+              ),
+              if (artifact.artifactModelId != null)
+                _ActionButton(
+                  icon: Icons.chat_outlined,
+                  label: l10n.scanChat,
+                  color: AppColors.secondary,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ChatView(
+                          artifactId: artifact.artifactModelId,
+                          artifactName:
+                              artifact.name ?? artifact.artifactModelId,
+                        ),
+                      ),
+                    );
+                  },
+                ),
             ],
           ),
-          const SizedBox(height: 40),
+          Gap(40.h),
         ],
       ),
     );
@@ -449,42 +990,57 @@ class _ScannerBody extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) => Container(
-        height: MediaQuery.of(ctx).size.height * 0.7,
+        height: 0.7.sh,
         decoration: BoxDecoration(
           color: AppColors.c151D18,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
         ),
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.only(top: 12),
+              padding: EdgeInsets.only(top: 12.h),
               child: Container(
-                width: 40, height: 4,
+                width: 40.w,
+                height: 4.h,
                 decoration: BoxDecoration(
                   color: AppColors.of(ctx).footer.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(2.r),
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+              padding: EdgeInsets.fromLTRB(20.w, 20.h, 20.w, 8.h),
               child: Row(
                 children: [
-                  Icon(Icons.auto_awesome, color: AppColors.secondary, size: 22),
-                  const SizedBox(width: 10),
-                  Text(l10n.scanHieroglyphsTranslation,
-                      style: TextStyle(color: AppColors.secondary, fontSize: 18, fontWeight: FontWeight.w700)),
+                  Icon(
+                    Icons.auto_awesome,
+                    color: AppColors.secondary,
+                    size: 22.r,
+                  ),
+                  Gap(10.w),
+                  Text(
+                    l10n.scanHieroglyphsTranslation,
+                    style: TextStyle(
+                      color: AppColors.secondary,
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ],
               ),
             ),
             Divider(color: AppColors.of(ctx).footer.withValues(alpha: 0.1)),
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: SelectableText(translation, style: TextStyle(
-                  color: AppColors.of(ctx).footer,
-                  fontSize: 16, height: 1.8,
-                )),
+                padding: EdgeInsets.all(20.r),
+                child: SelectableText(
+                  translation,
+                  style: TextStyle(
+                    color: AppColors.of(ctx).footer,
+                    fontSize: 16.sp,
+                    height: 1.8,
+                  ),
+                ),
               ),
             ),
           ],
@@ -496,17 +1052,22 @@ class _ScannerBody extends StatelessWidget {
   Widget _buildError(BuildContext context, ScanError state) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: EdgeInsets.all(ScreenUtils.xl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 64,
-                color: Colors.redAccent.withValues(alpha: 0.6)),
-            const SizedBox(height: 16),
-            Text(state.message,
-                style: TextStyle(color: Colors.redAccent, fontSize: 15),
-                textAlign: TextAlign.center),
-            const SizedBox(height: 24),
+            Icon(
+              Icons.error_outline,
+              size: ScreenUtils.iconXl,
+              color: Colors.redAccent.withValues(alpha: 0.6),
+            ),
+            Gap(ScreenUtils.md),
+            Text(
+              state.message,
+              style: TextStyle(color: Colors.redAccent, fontSize: 15.sp),
+              textAlign: TextAlign.center,
+            ),
+            Gap(ScreenUtils.lg),
             _ScanButton(
               icon: Icons.refresh,
               label: 'Try Again',
@@ -519,11 +1080,80 @@ class _ScannerBody extends StatelessWidget {
   }
 }
 
+class _GlassSelectionCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  const _GlassSelectionCard({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: CustomGlassContainer(
+        borderRadius: BorderRadius.circular(ScreenUtils.radiusMd),
+        padding: EdgeInsets.all(ScreenUtils.md),
+        color: AppColors.of(context).footer.withValues(alpha: 0.03),
+        borderColor: AppColors.of(context).footer.withValues(alpha: 0.08),
+        gradient: LinearGradient(
+          colors: [
+            AppColors.of(context).footer.withValues(alpha: 0.05),
+            Colors.transparent,
+          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+        width: double.infinity,
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(ScreenUtils.sm),
+              decoration: BoxDecoration(
+                color: AppColors.secondary.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(ScreenUtils.radiusSm),
+              ),
+              child: Icon(
+                icon,
+                color: AppColors.secondary,
+                size: ScreenUtils.iconLg,
+              ),
+            ),
+            Gap(ScreenUtils.md),
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: AppColors.of(context).footer,
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: AppColors.of(context).footer.withValues(alpha: 0.3),
+              size: ScreenUtils.iconMd,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _ScanButton extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
-  const _ScanButton({required this.icon, required this.label, required this.onTap});
+  const _ScanButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -531,13 +1161,18 @@ class _ScanButton extends StatelessWidget {
       width: double.infinity,
       child: ElevatedButton.icon(
         onPressed: onTap,
-        icon: Icon(icon, size: 20),
-        label: Text(label, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+        icon: Icon(icon, size: 20.r),
+        label: Text(
+          label,
+          style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600),
+        ),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.secondary.withValues(alpha: 0.2),
           foregroundColor: AppColors.secondary,
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          padding: EdgeInsets.symmetric(vertical: 14.h),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14.r),
+          ),
         ),
       ),
     );
@@ -549,29 +1184,41 @@ class _ActionButton extends StatelessWidget {
   final String label;
   final Color color;
   final VoidCallback onTap;
-  const _ActionButton({required this.icon, required this.label, required this.color, required this.onTap});
+  const _ActionButton({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(14.r),
         border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(14.r),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+            padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 12.h),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(icon, size: 18, color: color),
-                const SizedBox(width: 8),
-                Text(label, style: TextStyle(color: color, fontSize: 14, fontWeight: FontWeight.w600)),
+                Icon(icon, size: 18.r, color: color),
+                Gap(8.w),
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: color,
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ],
             ),
           ),
@@ -589,21 +1236,26 @@ class _InfoChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
       decoration: BoxDecoration(
         color: AppColors.c151D18.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.of(context).footer.withValues(alpha: 0.1)),
+        borderRadius: BorderRadius.circular(20.r),
+        border: Border.all(
+          color: AppColors.of(context).footer.withValues(alpha: 0.1),
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: AppColors.secondary),
-          const SizedBox(width: 6),
-          Text(label, style: TextStyle(
-            color: AppColors.of(context).footer.withValues(alpha: 0.7),
-            fontSize: 12,
-          )),
+          Icon(icon, size: 14.r, color: AppColors.secondary),
+          Gap(6.w),
+          Text(
+            label,
+            style: TextStyle(
+              color: AppColors.of(context).footer.withValues(alpha: 0.7),
+              fontSize: 12.sp,
+            ),
+          ),
         ],
       ),
     );
@@ -618,16 +1270,23 @@ class _StatChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 16),
+      padding: EdgeInsets.only(right: 16.w),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 13, color: AppColors.of(context).footer.withValues(alpha: 0.5)),
-          const SizedBox(width: 4),
-          Text(label, style: TextStyle(
-            color: AppColors.of(context).footer.withValues(alpha: 0.6),
-            fontSize: 12,
-          )),
+          Icon(
+            icon,
+            size: 13.r,
+            color: AppColors.of(context).footer.withValues(alpha: 0.5),
+          ),
+          Gap(4.w),
+          Text(
+            label,
+            style: TextStyle(
+              color: AppColors.of(context).footer.withValues(alpha: 0.6),
+              fontSize: 12.sp,
+            ),
+          ),
         ],
       ),
     );

@@ -1,6 +1,9 @@
 import 'package:echo_explorer/core/constants/app_colors.dart';
+import 'package:echo_explorer/core/helpers/screen_utils.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_container.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gap/gap.dart';
 
 class CustomSettingItem extends StatelessWidget {
   final IconData? leadingIcon;
@@ -29,34 +32,34 @@ class CustomSettingItem extends StatelessWidget {
       child: CustomGlassContainer(
         color: AppColors.of(context).background.withOpacity(0.3),
         borderColor: AppColors.of(context).footer.withOpacity(0.6),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        margin: EdgeInsets.only(bottom: 12),
-        borderRadius: BorderRadius.circular(16),
-        height: 56,
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        margin: EdgeInsets.only(bottom: 12.h),
+        borderRadius: BorderRadius.circular(ScreenUtils.radiusMd),
+        height: 56.h,
         child: Row(
           children: [
             if (leadingIcon != null) ...[
               Icon(
                 leadingIcon,
                 color: AppColors.of(context).footer,
-                size: 24,
+                size: ScreenUtils.iconMd,
               ),
-              const SizedBox(width: 10),
+              Gap(10.w),
             ],
             Expanded(
               child: Text(
                 title,
                 style: TextStyle(
                   color: AppColors.of(context).footer,
-                  fontSize: 14,
+                  fontSize: 14.sp,
                   fontWeight: FontWeight.w500,
                 ),
               ),
             ),
             if (hasSwitch)
               SizedBox(
-                height: 24,
-                width: 38,
+                height: 24.h,
+                width: 38.w,
                 child: Switch(
                   value: switchValue,
                   onChanged: onSwitchChanged,
@@ -66,11 +69,11 @@ class CustomSettingItem extends StatelessWidget {
                   inactiveTrackColor: AppColors.cf9f9f9.withOpacity(0.1),
                 ),
               )
-            else if (onTap != null&& trailingIcon != null) 
+            else if (onTap != null && trailingIcon != null) 
               Icon(
                 trailingIcon,
                 color: AppColors.of(context).footer,
-                size: 32,
+                size: ScreenUtils.xl,
               ),
           ],
         ),

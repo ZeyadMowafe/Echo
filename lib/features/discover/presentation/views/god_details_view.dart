@@ -1,12 +1,15 @@
 import 'package:echo_explorer/core/constants/app_colors.dart';
 import 'package:echo_explorer/core/constants/app_strings.dart';
+import 'package:echo_explorer/core/helpers/screen_utils.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_container.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_drawer.dart';
 import 'package:echo_explorer/features/discover/data/gods_data.dart';
-import 'package:echo_explorer/features/home/presentation/view_model/features_cubit.dart';
+import 'package:echo_explorer/features/home/presentation/cubit/features_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart'; 
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gap/gap.dart';
 
 class GodDetailsView extends StatefulWidget {
   const GodDetailsView({super.key, required this.godIndex});
@@ -42,7 +45,7 @@ class _GodDetailsViewState extends State<GodDetailsView> {
     final godsList = GodsData.getGodsData(context);
 
     return Scaffold(
-      endDrawer: CustomGlassDrawer(
+      drawer: CustomGlassDrawer(
         currentFeature: AppStrings.discoverFeature.key, 
         onTap: (featureKey){
           context.read<FeaturesCubit>().changeFeature(featureName: featureKey);
@@ -50,7 +53,6 @@ class _GodDetailsViewState extends State<GodDetailsView> {
           Navigator.pop(context);
           Navigator.pop(context);
       }),
-      endDrawerEnableOpenDragGesture: false,
       drawerBarrierDismissible: false,
       body: Stack(
         children: [
@@ -86,25 +88,25 @@ class _GodDetailsViewState extends State<GodDetailsView> {
                   end: Alignment.bottomCenter,
                 ),
                 borderColor: AppColors.cffffff.withOpacity(0.05),
-                padding: const EdgeInsets.only(
-                  top: 6,
-                  bottom: 12,
-                  left: 20,
-                  right: 20,
+                padding: EdgeInsets.only(
+                  top: 6.h,
+                  bottom: 12.h,
+                  left: 20.w,
+                  right: 20.w,
                 ),
                 child: SafeArea(
                   bottom: false,
                   child: Row(
-                    spacing: 8,
+                    spacing: 8.w,
                     children: [
                       CustomGlassContainer(
-                        width: 34,
-                        height: 34,
-                        borderRadius: BorderRadius.circular(50),
+                        width: ScreenUtils.glassButtonSize,
+                        height: ScreenUtils.glassButtonSize,
+                        borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
                         borderColor: AppColors.cffffff.withOpacity(0.10),
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
+                        margin: EdgeInsets.symmetric(
+                          horizontal: 8.w,
+                          vertical: 4.h,
                         ),
                         color: AppColors.cffffff.withOpacity(0.10),
                         gradient: LinearGradient(
@@ -117,11 +119,11 @@ class _GodDetailsViewState extends State<GodDetailsView> {
                         ),
           
                         child: CustomGlassContainer(
-                          width: 34,
-                          height: 34,
+                          width: ScreenUtils.glassButtonSize,
+                          height: ScreenUtils.glassButtonSize,
                           color: AppColors.cffffff.withOpacity(0.25),
                           borderColor: AppColors.cffffff.withOpacity(0.04),
-                          borderRadius: BorderRadius.circular(50),
+                          borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
                           gradient: LinearGradient(
                             colors: [
                               AppColors.cffffff.withOpacity(0.30),
@@ -138,7 +140,7 @@ class _GodDetailsViewState extends State<GodDetailsView> {
                                   ? Icons.arrow_forward_rounded 
                                   : Icons.arrow_back_rounded,
                               color: AppColors.cf9f9f9,
-                              size: 22,
+                              size: ScreenUtils.iconMd,
                             ),
                             onPressed: ()=> Navigator.pop(context),
                           ),
@@ -149,21 +151,21 @@ class _GodDetailsViewState extends State<GodDetailsView> {
                         children: [
                           Text(
                             godsList[widget.godIndex].title,
-                            style: TextStyle(
-                              color: AppColors.cffffff,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          style: TextStyle(
+                            color: AppColors.cffffff,
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.bold,
                           ),
-                          if (godsList[widget.godIndex].subtitle != null)
-                          Text(
-                            godsList[widget.godIndex].subtitle!,
-                            style: TextStyle(
-                              color: AppColors.cffffff.withOpacity(0.8),
-                              fontSize: 14,
-                            ),
+                        ),
+                        if (godsList[widget.godIndex].subtitle != null)
+                        Text(
+                          godsList[widget.godIndex].subtitle!,
+                          style: TextStyle(
+                            color: AppColors.cffffff.withOpacity(0.8),
+                            fontSize: 14.sp,
                           ),
-                        ],
+                        ),
+                      ],
                       ),
                       const Spacer(),
                       Builder(
@@ -172,10 +174,10 @@ class _GodDetailsViewState extends State<GodDetailsView> {
                             icon: Icon(
                               Icons.menu,
                               color: AppColors.cf9f9f9,
-                              size: 30,
+                              size: 30.r,
                             ),
                             onPressed: () {
-                              Scaffold.of(innerContext).openEndDrawer();
+                              Scaffold.of(innerContext).openDrawer();
                             },
                           );
                         }
@@ -186,26 +188,26 @@ class _GodDetailsViewState extends State<GodDetailsView> {
               ),
           
               const Spacer(),
-          
+
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(ScreenUtils.md),
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
-                    maxHeight: MediaQuery.of(context).size.height * 0.65,
+                    maxHeight: 0.65.sh,
                   ),
                   child: CustomGlassContainer(
-                    padding: const EdgeInsets.all(24),
-                    borderRadius: BorderRadius.circular(32),
+                    padding: EdgeInsets.all(ScreenUtils.lg),
+                    borderRadius: BorderRadius.circular(ScreenUtils.xl),
                     color: AppColors.cffffff.withOpacity(0.1),
                     borderColor: AppColors.cffffff.withOpacity(0.2),
-          
+
                     child: SingleChildScrollView(
                       physics: const BouncingScrollPhysics(),
                       child: Text(
                         godsList[widget.godIndex].description,
-                        style:  TextStyle(
+                        style: TextStyle(
                           color: AppColors.cffffff,
-                          fontSize: 16,
+                          fontSize: 16.sp,
                           height: 1.6,
                           fontWeight: FontWeight.w500,
                         ),
@@ -214,8 +216,8 @@ class _GodDetailsViewState extends State<GodDetailsView> {
                   ),
                 ),
               ),
-          
-              const SizedBox(height: 40), 
+
+              Gap(40.h), 
             ],
           ),
         ],

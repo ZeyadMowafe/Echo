@@ -93,7 +93,7 @@ class _HomeViewState extends State<HomeView> {
       },
       builder: (context, state) => Scaffold(
         backgroundColor: AppColors.of(context).background,
-        endDrawer: CustomGlassDrawer(
+        drawer: CustomGlassDrawer(
           currentFeature: state.featureName,
           onTap: (featureName) {
             context.read<FeaturesCubit>().changeFeature(
@@ -102,7 +102,6 @@ class _HomeViewState extends State<HomeView> {
             Navigator.pop(context);
           },
         ),
-        endDrawerEnableOpenDragGesture: false,
         drawerBarrierDismissible: false,
         body: _features[state.featureName] ?? _features[AppStrings.homeFeature.key]!,
 

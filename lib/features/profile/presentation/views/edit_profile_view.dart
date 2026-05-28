@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:echo_explorer/core/constants/app_colors.dart';
+import 'package:echo_explorer/core/helpers/screen_utils.dart';
 import 'package:echo_explorer/core/hive/cache_helper.dart';
 import 'package:echo_explorer/core/localization/locale_cubit.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_container.dart';
@@ -7,6 +8,8 @@ import 'package:echo_explorer/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:echo_explorer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
 
 class EditProfileView extends StatefulWidget {
@@ -89,12 +92,12 @@ class _EditProfileViewState extends State<EditProfileView> {
       context: context,
       isScrollControlled: true,
       backgroundColor: appColors.background,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20.r))),
       builder: (sheetContext) {
         return ConstrainedBox(
-          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.8),
+          constraints: BoxConstraints(maxHeight: 0.8.sh),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+            padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 24.h),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -127,11 +130,11 @@ class _EditProfileViewState extends State<EditProfileView> {
                             title: RichText(
                               text: TextSpan(
                                 text: '${entry.value}\n',
-                                style: TextStyle(color: appColors.footer, fontSize: 16),
+                                style: TextStyle(color: appColors.footer, fontSize: 16.sp),
                                 children: <TextSpan>[
                                   TextSpan(
                                     text: _localizedLanguageName(entry.key),
-                                    style: TextStyle(color: appColors.footer.withOpacity(0.6), fontSize: 14),
+                                    style: TextStyle(color: appColors.footer.withOpacity(0.6), fontSize: 14.sp),
                                   ),
                                 ],
                               ),
@@ -203,12 +206,12 @@ class _EditProfileViewState extends State<EditProfileView> {
             child: Column(
               children: [
                 SizedBox(
-                  height: 220,
+                  height: 220.h,
                   child: Stack(
                     clipBehavior: Clip.none,
                     children: [
                       Positioned(
-                        left: 0, right: 0, top: 0, height: 150,
+                        left: 0, right: 0, top: 0, height: 150.h,
                         child: Container(
                           decoration: BoxDecoration(
                             color: const Color(0xFF1B2328),
@@ -224,7 +227,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                         ),
                       ),
                       Positioned(
-                        left: 12, top: topPad + 4,
+                        left: 12.w, top: topPad + 4.h,
                         child: IconButton(
                           icon: Icon(
                             Directionality.of(context) == TextDirection.rtl 
@@ -236,12 +239,12 @@ class _EditProfileViewState extends State<EditProfileView> {
                         ),
                       ),
                       Positioned(
-                        left: MediaQuery.of(context).size.width / 2 - 55, top: 95,
+                        left: 0.5.sw - 55.w, top: 95.h,
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
                             Container(
-                              width: 110, height: 110, padding: const EdgeInsets.all(5),
+                              width: 110.r, height: 110.r, padding: EdgeInsets.all(5.r),
                               decoration: BoxDecoration(color: AppColors.of(context).background, shape: BoxShape.circle),
                               child: Container(
                                 decoration: BoxDecoration(
@@ -249,17 +252,17 @@ class _EditProfileViewState extends State<EditProfileView> {
                                   image: _profileImage != null ? DecorationImage(image: FileImage(_profileImage!), fit: BoxFit.cover) : null,
                                 ),
                                 alignment: Alignment.center,
-                                child: _profileImage == null ? Icon(Icons.person, size: 60, color: AppColors.of(context).background.withOpacity(0.5)) : null,
+                                child: _profileImage == null ? Icon(Icons.person, size: 60.r, color: AppColors.of(context).background.withOpacity(0.5)) : null,
                               ),
                             ),
                             Positioned(
-                              bottom: 5, right: 5,
+                              bottom: 5.r, right: 5.r,
                               child: InkWell(
                                 onTap: () => _pickImage(isCover: false),
                                 child: Container(
-                                  padding: const EdgeInsets.all(8),
+                                  padding: EdgeInsets.all(ScreenUtils.sm),
                                   decoration: const BoxDecoration(color: Colors.black87, shape: BoxShape.circle),
-                                  child: const Icon(Icons.edit, color: Colors.white, size: 16),
+                                  child: Icon(Icons.edit, color: Colors.white, size: ScreenUtils.iconSm),
                                 ),
                               ),
                             ),
@@ -269,84 +272,84 @@ class _EditProfileViewState extends State<EditProfileView> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 40),
+                Gap(40.h),
                 
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(l10n.editProfileName, style: TextStyle(color: AppColors.of(context).footer.withOpacity(0.7), fontSize: 14)),
-                      const SizedBox(height: 8),
+                      Text(l10n.editProfileName, style: TextStyle(color: AppColors.of(context).footer.withOpacity(0.7), fontSize: 14.sp)),
+                      Gap(ScreenUtils.sm),
                       CustomGlassContainer(
-                        width: double.infinity, borderRadius: BorderRadius.circular(16),
+                        width: double.infinity, borderRadius: BorderRadius.circular(ScreenUtils.radiusMd),
                         borderColor: AppColors.of(context).footer.withOpacity(0.15),
                         color: AppColors.of(context).footer.withOpacity(0.02),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
                         child: TextFormField(
                           controller: _nameController,
-                          style: TextStyle(color: AppColors.of(context).footer, fontSize: 16),
+                          style: TextStyle(color: AppColors.of(context).footer, fontSize: 16.sp),
                           decoration: const InputDecoration(border: InputBorder.none),
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      Gap(ScreenUtils.md),
 
-                      Text("Email", style: TextStyle(color: AppColors.of(context).footer.withOpacity(0.7), fontSize: 14)),
-                      const SizedBox(height: 8),
+                      Text("Email", style: TextStyle(color: AppColors.of(context).footer.withOpacity(0.7), fontSize: 14.sp)),
+                      Gap(ScreenUtils.sm),
                       CustomGlassContainer(
-                        width: double.infinity, borderRadius: BorderRadius.circular(16),
+                        width: double.infinity, borderRadius: BorderRadius.circular(ScreenUtils.radiusMd),
                         borderColor: AppColors.of(context).footer.withOpacity(0.15),
                         color: AppColors.of(context).footer.withOpacity(0.02),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
                         child: TextFormField(
                           controller: _emailController,
-                          style: TextStyle(color: AppColors.of(context).footer, fontSize: 16),
+                          style: TextStyle(color: AppColors.of(context).footer, fontSize: 16.sp),
                           decoration: const InputDecoration(border: InputBorder.none),
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      Gap(ScreenUtils.lg),
 
-                      Text(l10n.appLanguage, style: TextStyle(color: AppColors.of(context).footer.withOpacity(0.7), fontSize: 14)),
-                      const SizedBox(height: 8),
+                      Text(l10n.appLanguage, style: TextStyle(color: AppColors.of(context).footer.withOpacity(0.7), fontSize: 14.sp)),
+                      Gap(ScreenUtils.sm),
                       CustomGlassContainer(
-                        width: double.infinity, borderRadius: BorderRadius.circular(16),
+                        width: double.infinity, borderRadius: BorderRadius.circular(ScreenUtils.radiusMd),
                         borderColor: AppColors.of(context).footer.withOpacity(0.15),
                         color: AppColors.of(context).footer.withOpacity(0.02),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
                         child: InkWell(
                           onTap: () => _showLanguagePicker(context, appColors),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            padding: EdgeInsets.symmetric(vertical: 14.h),
                             child: Row(
                               children: [
-                                Icon(Icons.language, color: AppColors.of(context).footer.withOpacity(0.7), size: 22),
-                                const SizedBox(width: 12),
+                                Icon(Icons.language, color: AppColors.of(context).footer.withOpacity(0.7), size: ScreenUtils.iconMd),
+                                Gap(12.w),
                                 Expanded(
                                   child: Text(
                                     _languageNames[_selectedLanguage] ?? _selectedLanguage,
-                                    style: TextStyle(color: AppColors.of(context).footer, fontSize: 16),
+                                    style: TextStyle(color: AppColors.of(context).footer, fontSize: 16.sp),
                                   ),
                                 ),
-                                Icon(Icons.arrow_forward_ios_rounded, color: AppColors.of(context).footer.withOpacity(0.4), size: 16),
+                                Icon(Icons.arrow_forward_ios_rounded, color: AppColors.of(context).footer.withOpacity(0.4), size: ScreenUtils.iconSm),
                               ],
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(height: 40),
+                      Gap(40.h),
                       
                       InkWell(
                         onTap: isLoading ? null : _saveChanges, 
-                        borderRadius: BorderRadius.circular(50),
+                        borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
                         child: CustomGlassContainer(
-                          width: double.infinity, borderRadius: BorderRadius.circular(50),
+                          width: double.infinity, borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
                           borderColor: AppColors.of(context).footer.withOpacity(0.15),
                           color: AppColors.of(context).footer.withOpacity(0.06),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          padding: EdgeInsets.symmetric(vertical: 16.h),
                           child: Center(
                             child: isLoading 
-                              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                              : Text(l10n.editProfileSave, style: TextStyle(color: AppColors.cffffff, fontSize: 16, fontWeight: FontWeight.bold)),
+                              ? SizedBox(width: 20.r, height: 20.r, child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                              : Text(l10n.editProfileSave, style: TextStyle(color: AppColors.cffffff, fontSize: 16.sp, fontWeight: FontWeight.bold)),
                           ),
                         ),
                       ),
@@ -372,16 +375,16 @@ class _EditOverlayButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(ScreenUtils.sm),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(color: Colors.black.withOpacity(0.5), borderRadius: BorderRadius.circular(8)),
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+        decoration: BoxDecoration(color: Colors.black.withOpacity(0.5), borderRadius: BorderRadius.circular(ScreenUtils.sm)),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: Colors.white, size: 18),
-            const SizedBox(width: 8),
-            Text(label, style: const TextStyle(color: Colors.white, fontSize: 12)),
+            Icon(icon, color: Colors.white, size: ScreenUtils.iconSm),
+            Gap(ScreenUtils.sm),
+            Text(label, style: TextStyle(color: Colors.white, fontSize: 12.sp)),
           ],
         ),
       ),

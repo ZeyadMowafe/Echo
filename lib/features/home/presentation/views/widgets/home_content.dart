@@ -6,6 +6,7 @@ import 'package:echo_explorer/features/home/presentation/views/widgets/custom_ho
 import 'package:echo_explorer/features/home/presentation/views/widgets/custom_scan_button.dart';
 import 'package:echo_explorer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeContent extends StatelessWidget {
   const HomeContent({super.key});
@@ -15,9 +16,9 @@ class HomeContent extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Padding(
-      padding: const EdgeInsets.only(left: 9.0, right: 9.0, bottom: 13.0),
+      padding: EdgeInsets.only(left: 9.w, right: 9.w, bottom: 13.h),
       child: Column(
-        spacing: 13,
+        spacing: 13.h,
         children: [
           const CustomHomeAppBar(),
           const CustomHomeSlider(),
@@ -26,7 +27,7 @@ class HomeContent extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.center,
-              spacing: 15,
+              spacing: 15.w,
               children: [
                 CustomSectionButton(
                   image: AppImages.egyptianHistory.egyptionHistoryCover,

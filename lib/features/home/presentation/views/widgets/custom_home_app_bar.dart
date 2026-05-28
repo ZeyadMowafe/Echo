@@ -2,7 +2,8 @@ import 'package:echo_explorer/core/constants/app_colors.dart';
 import 'package:echo_explorer/core/constants/app_images.dart';
 import 'package:echo_explorer/core/themes/theme_cubit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart'; 
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomHomeAppBar extends StatelessWidget {
   const CustomHomeAppBar({super.key});
@@ -13,23 +14,23 @@ class CustomHomeAppBar extends StatelessWidget {
 
     return SafeArea(
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween, 
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Image.asset(
-            isDark 
+            isDark
                 ? AppImages.icons.eyeIconDark
-                : AppImages.icons.eyeIconLight, 
-            width: 57, 
-            height: 45,
+                : AppImages.icons.eyeIconLight,
+            width: 57.w,
+            height: 45.h,
           ),
           IconButton(
             icon: Icon(
-              Icons.menu, 
+              Icons.menu,
               color: AppColors.of(context).icons,
-              size: 30,
+              size: 30.r,
             ),
             onPressed: () {
-              Scaffold.of(context).openEndDrawer();
+              Scaffold.of(context).openDrawer();
             },
           ),
         ],

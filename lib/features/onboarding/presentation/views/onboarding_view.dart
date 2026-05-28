@@ -5,6 +5,7 @@ import 'package:echo_explorer/features/onboarding/data/onboarding_data.dart';
 import 'package:echo_explorer/features/onboarding/presentation/views/widgets/onboarding_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class OnboardingView extends StatefulWidget {
   const OnboardingView({super.key});
@@ -76,7 +77,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                 pageOffset = _pageController.page! - index;
               }
               double opacity = (1 - pageOffset.abs()).clamp(0.0, 1.0);
-              double screenWidth = MediaQuery.of(context).size.width;
+              double screenWidth = 1.sw;
               double dx = pageOffset * screenWidth;
               return Transform.translate(
                 offset: Offset(dx, 0),

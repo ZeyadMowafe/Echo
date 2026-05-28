@@ -1,9 +1,12 @@
 import 'dart:ui';
 import 'package:echo_explorer/core/constants/app_colors.dart';
 import 'package:echo_explorer/core/constants/app_strings.dart';
+import 'package:echo_explorer/core/helpers/screen_utils.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_container.dart';
 import 'package:echo_explorer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gap/gap.dart';
 
 class CustomGlassDrawer extends StatelessWidget {
   const CustomGlassDrawer({
@@ -21,7 +24,7 @@ class CustomGlassDrawer extends StatelessWidget {
     return Drawer(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
       backgroundColor: Colors.transparent,
-      width: MediaQuery.of(context).size.width * 0.7,
+      width: 0.7.sw,
       child: CustomGlassContainer(
         color: AppColors.cffffff.withOpacity(0.10),
         gradient: LinearGradient(
@@ -37,51 +40,52 @@ class CustomGlassDrawer extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CustomGlassContainer(
-                width: 34,
-                height: 34,
-                borderRadius: BorderRadius.circular(50),
-                borderColor: AppColors.cffffff.withOpacity(0.10),
-                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                color: AppColors.cffffff.withOpacity(0.10),
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors.cffffff.withOpacity(0.20),
-                    AppColors.cffffff.withOpacity(0.0),
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
+              Padding(
+                padding: EdgeInsets.all(ScreenUtils.sm),
                 child: CustomGlassContainer(
-                  width: 34,
-                  height: 34,
-                  color: AppColors.cffffff.withOpacity(0.25),
-                  borderColor: AppColors.cffffff.withOpacity(0.04),
-                  borderRadius: BorderRadius.circular(50),
+                  width: ScreenUtils.glassButtonSize,
+                  height: ScreenUtils.glassButtonSize,
+                  borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
+                  borderColor: AppColors.cffffff.withOpacity(0.10),
+                  color: AppColors.cffffff.withOpacity(0.10),
                   gradient: LinearGradient(
                     colors: [
-                      AppColors.cffffff.withOpacity(0.30),
+                      AppColors.cffffff.withOpacity(0.20),
                       AppColors.cffffff.withOpacity(0.0),
                     ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
-                  child: IconButton(
-                    alignment: Alignment.center,
-                    padding: EdgeInsets.zero,
-                    icon: Icon(
-                      Directionality.of(context) == TextDirection.rtl 
-                          ? Icons.arrow_forward_rounded 
-                          : Icons.arrow_back_rounded,
-                      color: AppColors.cf9f9f9,
-                      size: 22,
+                  child: CustomGlassContainer(
+                    width: ScreenUtils.glassButtonSize,
+                    height: ScreenUtils.glassButtonSize,
+                    color: AppColors.cffffff.withOpacity(0.25),
+                    borderColor: AppColors.cffffff.withOpacity(0.04),
+                    borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.cffffff.withOpacity(0.30),
+                        AppColors.cffffff.withOpacity(0.0),
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
                     ),
-                    onPressed: () => Navigator.pop(context),
+                    child: IconButton(
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.zero,
+                      icon: Icon(
+                        Directionality.of(context) == TextDirection.rtl
+                            ? Icons.arrow_forward_rounded
+                            : Icons.arrow_back_rounded,
+                        color: AppColors.cf9f9f9,
+                        size: ScreenUtils.iconMd,
+                      ),
+                      onPressed: () => Navigator.pop(context),
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-
+              Gap(20.h),
               _buildDrawerItem(
                 featureKey: AppStrings.homeFeature.key,
                 icon: currentFeature == AppStrings.homeFeature.key
@@ -95,8 +99,8 @@ class CustomGlassDrawer extends StatelessWidget {
                 icon: currentFeature == AppStrings.discoverFeature.key
                     ? Icons.star
                     : Icons.star_border,
-                title: l10n.drawerDiscover, 
-                isSelected: currentFeature == AppStrings.discoverFeature.key
+                title: l10n.drawerDiscover,
+                isSelected: currentFeature == AppStrings.discoverFeature.key,
               ),
               _buildDrawerItem(
                 featureKey: AppStrings.scanFeature.key,
@@ -111,7 +115,7 @@ class CustomGlassDrawer extends StatelessWidget {
                 icon: currentFeature == AppStrings.chatFeature.key
                     ? Icons.chat
                     : Icons.chat_outlined,
-                title: l10n.drawerChat, 
+                title: l10n.drawerChat,
                 isSelected: currentFeature == AppStrings.chatFeature.key,
               ),
               _buildDrawerItem(
@@ -119,25 +123,23 @@ class CustomGlassDrawer extends StatelessWidget {
                 icon: currentFeature == AppStrings.profileFeature.key
                     ? Icons.person
                     : Icons.person_outline,
-                title: l10n.drawerProfile, 
+                title: l10n.drawerProfile,
                 isSelected: currentFeature == AppStrings.profileFeature.key,
               ),
-
               const Spacer(),
-
               Divider(
                 color: AppColors.cffffff.withOpacity(.5),
                 thickness: 1,
-                indent: 14,
-                endIndent: 14,
+                indent: 14.w,
+                endIndent: 14.w,
               ),
               _buildDrawerItem(
                 featureKey: AppStrings.settingsFeature.key,
                 icon: Icons.settings_outlined,
-                title: l10n.drawerSettings, 
+                title: l10n.drawerSettings,
                 isSelected: currentFeature == AppStrings.settingsFeature.key,
               ),
-              const SizedBox(height: 6),
+              Gap(6.h),
             ],
           ),
         ),
@@ -152,7 +154,7 @@ class CustomGlassDrawer extends StatelessWidget {
     required bool isSelected,
   }) {
     return InkWell(
-      borderRadius: BorderRadius.circular(32),
+      borderRadius: BorderRadius.circular(ScreenUtils.xl),
       onTap: () => onTap(featureKey),
       child: CustomGlassContainer(
         color: isSelected ? AppColors.cffffff.withOpacity(0.10) : null,
@@ -166,19 +168,19 @@ class CustomGlassDrawer extends StatelessWidget {
                 end: Alignment.bottomCenter,
               )
             : null,
-        padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 13),
-        margin: const EdgeInsets.symmetric(vertical: 4),
-        borderRadius: isSelected ? BorderRadius.circular(32) : null,
+        padding: EdgeInsets.symmetric(horizontal: 36.w, vertical: 13.h),
+        margin: EdgeInsets.symmetric(vertical: 4.h),
+        borderRadius: isSelected ? BorderRadius.circular(ScreenUtils.xl) : null,
         borderColor: isSelected ? AppColors.cffffff.withOpacity(0.10) : null,
         child: Row(
-          spacing: 14,
+          spacing: 14.w,
           children: [
-            Icon(icon, color: AppColors.cf9f9f9, size: 22),
+            Icon(icon, color: AppColors.cf9f9f9, size: ScreenUtils.iconMd),
             Text(
               title,
               style: TextStyle(
                 color: AppColors.cffffff,
-                fontSize: 16,
+                fontSize: 16.sp,
                 fontWeight: FontWeight.normal,
               ),
             ),

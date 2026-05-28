@@ -25,6 +25,8 @@ class ChatCubit extends Cubit<ChatState> {
   String? get currentSessionId => _currentSessionId;
   String? _artifactId;
   String? _artifactTitle;
+  List<SessionEntity> _cachedSessions = [];
+  List<SessionEntity> get cachedSessions => _cachedSessions;
 
   ChatCubit({
     required this.sendMessageUseCase,
@@ -107,9 +109,23 @@ class ChatCubit extends Cubit<ChatState> {
         ];
         print('=== ChatCubit.sendMessage success: sessionId=${reply.sessionId}, renaming with title=$_artifactTitle ===');
         await _saveMessages(reply.sessionId, allMessages);
+        final sessionTitle = _artifactTitle ?? text.trim();
         if (_artifactTitle != null) {
           await _renameSessionSilent(reply.sessionId, _artifactTitle!);
           _artifactTitle = null;
+        }
+        if (!_cachedSessions.any((s) => s.id == reply.sessionId)) {
+          _cachedSessions.insert(
+            0,
+            SessionEntity(
+              id: reply.sessionId,
+              title: sessionTitle,
+              language: 'en',
+              messageCount: allMessages.length,
+              startedAt: DateTime.now(),
+              updatedAt: DateTime.now(),
+            ),
+          );
         }
         emit(ChatLoaded(messages: allMessages));
       },
@@ -159,15 +175,15 @@ class ChatCubit extends Cubit<ChatState> {
     result.fold(
       (failure) => debugPrint('[ChatCubit] loadSessions failed: ${failure.message}'),
       (sessions) {
-        final sorted = List<SessionEntity>.from(sessions)
+        _cachedSessions = List<SessionEntity>.from(sessions)
           ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
-        if (sorted.isEmpty) {
+        if (_cachedSessions.isEmpty) {
           if (state is! ChatLoaded && state is! ChatBotLoading) {
             emit(ChatInitial());
           }
         } else {
           if (state is! ChatLoaded && state is! ChatBotLoading && state is! ChatError) {
-            emit(SessionsLoaded(sessions: sorted));
+            emit(SessionsLoaded(sessions: _cachedSessions));
           }
         }
       },

@@ -1,7 +1,10 @@
 import 'package:echo_explorer/core/constants/app_colors.dart';
+import 'package:echo_explorer/core/helpers/screen_utils.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_container.dart';
 import 'package:echo_explorer/features/discover/data/models/section_card_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gap/gap.dart';
 
 class CustomSectionCard extends StatelessWidget {
   const CustomSectionCard({super.key, required this.sectionCardModel,required this.onPressed});
@@ -13,10 +16,10 @@ class CustomSectionCard extends StatelessWidget {
     return Expanded(
       child: Container(
         width: double.infinity,
-        padding: EdgeInsets.only(left: 22, right: 22, bottom: 26),
-        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        padding: EdgeInsets.only(left: 22.w, right: 22.w, bottom: 26.h),
+        margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(ScreenUtils.glassBorderRadius),
           image: DecorationImage(
             image: AssetImage(sectionCardModel.image),
             fit: BoxFit.cover,
@@ -34,14 +37,14 @@ class CustomSectionCard extends StatelessWidget {
               sectionCardModel.title,
               style: TextStyle(
                 color: AppColors.cffffff,
-                fontSize: 32,
+                fontSize: 32.sp,
                 fontWeight: FontWeight.w900,
               ),
             ),
             CustomGlassContainer(
               color: AppColors.cffffff.withOpacity(.10),
-              height: 50,
-              borderRadius: BorderRadius.circular(32),
+              height: 50.h,
+              borderRadius: BorderRadius.circular(ScreenUtils.xl),
               borderColor: AppColors.cffffff.withOpacity(.10),
               gradient: LinearGradient(colors: [AppColors.cffffff.withOpacity(.10),AppColors.cffffff.withOpacity(.10)],begin: AlignmentGeometry.topCenter,end: AlignmentGeometry.bottomCenter),
               child: ElevatedButton(
@@ -56,14 +59,14 @@ class CustomSectionCard extends StatelessWidget {
                       sectionCardModel.buttonText,
                       style: TextStyle(
                         color: AppColors.cffffff,
-                        fontSize: 14,
-                        fontWeight: FontWeight.normal,
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.normal,
                       ),
                     ), // Text first
-                    SizedBox(width: 4),
+                    Gap(4.w),
                     Icon(
                       Icons.arrow_forward,
-                      size: 20.0,
+                      size: 20.r,
                       color: AppColors.cf9f9f9,
                     ),
                   ],

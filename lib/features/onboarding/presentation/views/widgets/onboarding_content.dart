@@ -5,6 +5,7 @@ import 'package:echo_explorer/features/onboarding/data/onboarding_data.dart';
 import 'package:echo_explorer/features/onboarding/presentation/views/widgets/glass_card.dart';
 import 'package:echo_explorer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class OnboardingContent extends StatelessWidget {
   const OnboardingContent({
@@ -40,8 +41,8 @@ class OnboardingContent extends StatelessWidget {
           ),
         ),
         Positioned(
-          top: 52,
-          right: 26,
+          top: 52.h,
+          right: 26.w,
           child: InkWell(
             onTap: () {
               CacheHelper.putData(
@@ -55,9 +56,9 @@ class OnboardingContent extends StatelessWidget {
               children: [
                 Text(
                   l10n.onboardingSkip, 
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
-                    fontSize: 14,
+                    fontSize: 14.sp,
                     fontWeight: FontWeight.normal,
                   ),
                 ),
@@ -66,7 +67,7 @@ class OnboardingContent extends StatelessWidget {
                       ? Icons.arrow_back_ios 
                       : Icons.arrow_forward_ios, 
                   color: Colors.white, 
-                  size: 20
+                  size: 20.r
                 ),
               ],
             ),

@@ -1,8 +1,11 @@
 import 'package:echo_explorer/core/constants/app_colors.dart';
 import 'package:echo_explorer/core/constants/app_images.dart';
+import 'package:echo_explorer/core/helpers/screen_utils.dart';
 import 'package:echo_explorer/features/home/data/models/slider_model.dart';
 import 'package:echo_explorer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gap/gap.dart';
 
 class CustomHomeSlider extends StatefulWidget {
   const CustomHomeSlider({super.key});
@@ -45,7 +48,7 @@ class _CustomHomeSliderState extends State<CustomHomeSlider> {
     return Column(
       children: [
         SizedBox(
-          height: 220,
+          height: 220.h,
           child: PageView.builder(
             controller: _pageController,
             itemCount: sliders.length,
@@ -60,7 +63,7 @@ class _CustomHomeSliderState extends State<CustomHomeSlider> {
             },
           ),
         ),
-        const SizedBox(height: 13),
+        Gap(13.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(
@@ -90,9 +93,9 @@ class _CustomHomeSliderState extends State<CustomHomeSlider> {
         );
       },
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 5.0),
+        margin: EdgeInsets.symmetric(horizontal: 5.w),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(ScreenUtils.radiusSm),
           color: AppColors.of(context).background,
           image: DecorationImage(
             image: AssetImage(sliders[index].imagePath),
@@ -102,11 +105,11 @@ class _CustomHomeSliderState extends State<CustomHomeSlider> {
         child: Align(
           alignment: Alignment.bottomLeft,
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: EdgeInsets.all(20.r),
             child: RichText(
               text: TextSpan(
-                style: const TextStyle(
-                  fontSize: 24,
+                style: TextStyle(
+                  fontSize: 24.sp,
                   fontWeight: FontWeight.normal,
                 ),
                 children: [
@@ -134,14 +137,14 @@ class _CustomHomeSliderState extends State<CustomHomeSlider> {
   Widget _buildDot({required int index}) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
-      margin: const EdgeInsets.only(right: 6),
-      height: 8,
-      width: _currentPage == index ? 12 : 8,
+      margin: EdgeInsets.only(right: 6.w),
+      height: 8.h,
+      width: _currentPage == index ? 12.w : 8.w,
       decoration: BoxDecoration(
         color: _currentPage == index
             ? AppColors.secondary
             : AppColors.cffffff.withOpacity(0.20),
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(4.r),
       ),
     );
   }

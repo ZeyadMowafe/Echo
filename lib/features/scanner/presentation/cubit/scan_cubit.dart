@@ -17,6 +17,7 @@ class ScanCubit extends Cubit<ScanState> {
   final ToggleFavoriteUseCase toggleFavoriteUseCase;
 
   String? _currentImagePath;
+  String? get currentImagePath => _currentImagePath;
 
   ScanCubit({
     required this.analyzeImageUseCase,
@@ -32,12 +33,13 @@ class ScanCubit extends Cubit<ScanState> {
 
   Future<void> analyzeImage() async {
     if (_currentImagePath == null) return;
-    emit(ScanLoading());
+    if (!isClosed) emit(ScanLoading());
     final lang = CacheHelper.getData(key: 'localeLanguageCode') ?? 'en';
     final result = await analyzeImageUseCase(AnalyzeImageParams(
       imagePath: _currentImagePath!,
       language: lang,
     ));
+    if (isClosed) return;
     result.fold(
       (failure) => emit(ScanError(message: failure.message)),
       (response) {
@@ -57,7 +59,7 @@ class ScanCubit extends Cubit<ScanState> {
             }),
           );
         }
-        emit(ScanResultLoaded(result: response, imagePath: _currentImagePath, isFavorited: false));
+        if (!isClosed) emit(ScanResultLoaded(result: response, imagePath: _currentImagePath, isFavorited: false));
       },
     );
   }
@@ -182,6 +184,6 @@ class ScanCubit extends Cubit<ScanState> {
 
   void clearResult() {
     _currentImagePath = null;
-    emit(ScanInitial());
+    if (!isClosed) emit(ScanInitial());
   }
 }

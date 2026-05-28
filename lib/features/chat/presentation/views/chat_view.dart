@@ -1,13 +1,17 @@
+import 'dart:ui';
 import 'package:echo_explorer/core/constants/app_colors.dart';
-import 'package:echo_explorer/core/constants/app_strings.dart';
-import 'package:echo_explorer/features/chat/domain/entities/session_entity.dart';
+import 'package:echo_explorer/core/constants/app_dimensions.dart';
+import 'package:echo_explorer/core/helpers/screen_utils.dart';
+import 'package:echo_explorer/core/widgets/custom_glass_back_button.dart';
 import 'package:echo_explorer/features/chat/domain/entities/message_entity.dart';
 import 'package:echo_explorer/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:echo_explorer/features/chat/presentation/widgets/chat_bubble.dart';
 import 'package:echo_explorer/features/chat/presentation/widgets/chat_input_field.dart';
-import 'package:echo_explorer/features/discover/presentation/widgets/custom_discover_app_bar.dart';
+import 'package:echo_explorer/features/chat/presentation/widgets/chat_side_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gap/gap.dart';
 
 class ChatView extends StatefulWidget {
   final String? artifactId;
@@ -20,36 +24,20 @@ class ChatView extends StatefulWidget {
 
 class _ChatViewState extends State<ChatView> {
   final _scrollController = ScrollController();
-  bool _showSessions = false;
+
   @override
   void initState() {
     super.initState();
     final artifactId = widget.artifactId;
     if (artifactId != null) {
-      print('=== ChatView init: artifactId=$artifactId, artifactName=${widget.artifactName} ===');
       context.read<ChatCubit>().startArtifactSession(
         artifactId: artifactId,
         title: widget.artifactName,
       );
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        context.read<ChatCubit>().sendMessage(artifactId);
-      });
-    } else {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        context.read<ChatCubit>().clearArtifactContext();
-        context.read<ChatCubit>().loadSessions();
-      });
-    }
-  }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (widget.artifactId != null) return;
-    final state = context.read<ChatCubit>().state;
-    _showSessions = state is SessionsLoaded;
+    } else {
+      context.read<ChatCubit>().startNewSession();
+    }
   }
 
   @override
@@ -72,82 +60,203 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.of(context).background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            CustomDiscoverAppBar(
-              previousState: AppStrings.discoverFeature.key,
-              title: '',
-              onPressed: () {
-                if (_showSessions) {
-                  Navigator.of(context).maybePop();
-                } else {
-                  context.read<ChatCubit>().loadSessions();
-                }
-              },
-            ),
-            Expanded(
-              child: BlocConsumer<ChatCubit, ChatState>(
-                listenWhen: (_, current) => current is SessionsLoaded || current is ChatLoaded || current is ChatBotLoading || current is ChatError,
-                listener: (_, state) {
-                  _showSessions = state is SessionsLoaded;
-                },
-                builder: (context, state) {
-                  if (widget.artifactId != null) {
-                    final messages = state is ChatLoaded
-                        ? state.messages
-                        : state is ChatBotLoading
-                            ? state.messages
-                            : state is ChatError
-                                ? state.messages
-                                : <MessageEntity>[];
-                    final isBotLoading = state is ChatBotLoading;
-                    final errorMsg =
-                        state is ChatError ? state.message : null;
-                    return _buildChat(context, messages, isBotLoading, errorMsg);
-                  }
-                  if (state is ChatInitial) {
-                    return _buildWelcome(context);
-                  } else if (state is SessionsLoaded) {
-                    return _buildSessionsList(context, state.sessions);
-                  } else if (state is ChatLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  final messages = state is ChatLoaded
-                      ? state.messages
-                      : state is ChatBotLoading
-                          ? state.messages
-                          : state is ChatError
-                              ? state.messages
-                              : <MessageEntity>[];
-                  final isBotLoading = state is ChatBotLoading;
-                  final errorMsg =
-                      state is ChatError ? state.message : null;
-                  return _buildChat(context, messages, isBotLoading, errorMsg);
-                },
-              ),
-            ),
-            BlocBuilder<ChatCubit, ChatState>(
-              builder: (context, state) {
-                final isLoading = state is ChatLoading || state is ChatBotLoading;
-                final showInput = state is ChatLoaded ||
-                    state is ChatBotLoading ||
-                    state is ChatError;
-                if (!showInput) return const SizedBox.shrink();
-                return AbsorbPointer(
-                  absorbing: isLoading,
-                  child: ChatInputField(
-                    onSend: (text) {
-                      context.read<ChatCubit>().sendMessage(text);
-                      _scrollToBottom();
-                    },
+    return BlocBuilder<ChatCubit, ChatState>(
+      builder: (context, state) {
+        final cubit = context.read<ChatCubit>();
+        final sessions = cubit.cachedSessions;
+
+        Widget body;
+        if (widget.artifactId != null) {
+          body = _buildChatSection(context, state);
+        } else if (state is ChatInitial) {
+          body = _buildWelcome(context);
+        } else if (state is ChatLoading) {
+          body = const Center(child: CircularProgressIndicator());
+        } else {
+          body = _buildChatSection(context, state);
+        }
+
+        return Scaffold(
+          backgroundColor: AppColors.of(context).background,
+          drawer: ChatSideDrawer(
+            sessions: sessions,
+            onNewChat: () => cubit.startNewSession(),
+            onSessionTap: (id) => cubit.loadSession(id),
+            onDeleteSession: (id) {
+              final name = sessions
+                  .where((s) => s.id == id)
+                  .firstOrNull
+                  ?.title;
+              cubit.deleteSession(id);
+              if (name != null && context.mounted) {
+                final overlay = Overlay.of(context);
+                late OverlayEntry entry;
+                entry = OverlayEntry(
+                  builder: (ctx) => Positioned(
+                    top: MediaQuery.of(ctx).padding.top + 12.h,
+                    left: 0,
+                    right: 0,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Center(
+                        child: Container(
+                          width: 300.w,
+                          padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF0D1215).withValues(alpha: 0.92),
+                            borderRadius: BorderRadius.circular(24.r),
+                          ),
+                          child: Center(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.delete_rounded,
+                                  size: 18.r,
+                                  color: Colors.redAccent,
+                                ),
+                                Gap(10.w),
+                                Flexible(
+                                  child: Text(
+                                    'Session "$name" deleted',
+                                    style: TextStyle(
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 15.sp,
+                                      color: Colors.white,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 );
-              },
+                overlay.insert(entry);
+                Future.delayed(const Duration(seconds: 2), () {
+                  if (entry.mounted) entry.remove();
+                });
+              }
+            },
+
+          ),
+          body: Stack(
+            children: [
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/images/chat_background_dark.jpg',
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Positioned.fill(
+                child: Container(color: const Color(0xFF0D1215).withValues(alpha: 0.7)),
+              ),
+              Column(
+                children: [
+                  _buildTopBar(context),
+                  Expanded(
+                    child: SafeArea(
+                      top: false,
+                      child: Column(
+                        children: [
+                          Expanded(child: body),
+                          BlocBuilder<ChatCubit, ChatState>(
+                            builder: (context, state) {
+                              final isLoading = state is ChatLoading || state is ChatBotLoading;
+                              final showInput = state is ChatLoaded ||
+                                  state is ChatBotLoading ||
+                                  state is ChatError;
+                              if (!showInput) return const SizedBox.shrink();
+                              return AbsorbPointer(
+                                absorbing: isLoading,
+                                child: ChatInputField(
+                                  onSend: (text) {
+                                    cubit.sendMessage(text);
+                                    _scrollToBottom();
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildTopBar(BuildContext context) {
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(
+          sigmaX: AppDimensions.glassSigma,
+          sigmaY: AppDimensions.glassSigma,
+        ),
+        child: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: AppColors.cffffff.withValues(alpha: 0.10),
+            gradient: LinearGradient(
+              colors: [
+                AppColors.cffffff.withValues(alpha: 0.15),
+                AppColors.cffffff.withValues(alpha: 0.0),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
-          ],
+            border: Border(
+              bottom: BorderSide(
+                color: AppColors.cffffff.withValues(alpha: 0.08),
+                width: 1,
+              ),
+            ),
+          ),
+          padding: EdgeInsets.only(
+            top: MediaQuery.of(context).padding.top + 6.h,
+            bottom: 6.h,
+            left: 20.w,
+            right: 20.w,
+          ),
+          child: Row(
+            spacing: 8.w,
+            children: [
+              CustomGlassBackButton(
+                onPressed: () => Navigator.pop(context),
+                rtlAware: true,
+              ),
+              Expanded(
+                child: Text(
+                  widget.artifactName ?? '',
+                  style: TextStyle(
+                    color: AppColors.of(context).footer,
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Builder(
+                builder: (ctx) => GestureDetector(
+                  onTap: () => Scaffold.of(ctx).openDrawer(),
+                  child: Icon(
+                    Icons.menu_rounded,
+                    size: 28.r,
+                    color: AppColors.of(context).footer.withValues(alpha: 0.7),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -156,220 +265,53 @@ class _ChatViewState extends State<ChatView> {
   Widget _buildWelcome(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: EdgeInsets.all(ScreenUtils.xl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.chat_outlined,
-                size: 64,
+                size: 64.r,
                 color: AppColors.of(context).footer.withValues(alpha: 0.3)),
-            const SizedBox(height: 16),
+            Gap(ScreenUtils.md),
             Text(
               'Ask me about Ancient Egypt...',
               style: TextStyle(
                 color: AppColors.of(context).footer.withValues(alpha: 0.6),
-                fontSize: 16,
+                fontSize: 16.sp,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 32),
-            _buildNewChatButton(context),
+            Gap(ScreenUtils.xl),
+            ElevatedButton.icon(
+              onPressed: () => context.read<ChatCubit>().startNewSession(),
+              icon: const Icon(Icons.add),
+              label: const Text('New Chat'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.secondary.withValues(alpha: 0.2),
+                foregroundColor: AppColors.secondary,
+                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(ScreenUtils.glassBorderRadius),
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildNewChatButton(BuildContext context) {
-    return ElevatedButton.icon(
-      onPressed: () => context.read<ChatCubit>().startNewSession(),
-      icon: const Icon(Icons.add),
-      label: const Text('New Chat'),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.secondary.withValues(alpha: 0.2),
-        foregroundColor: AppColors.secondary,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
-      ),
-    );
-  }
+  Widget _buildChatSection(BuildContext context, ChatState state) {
+    final messages = state is ChatLoaded
+        ? state.messages
+        : state is ChatBotLoading
+            ? state.messages
+            : state is ChatError
+                ? state.messages
+                : <MessageEntity>[];
+    final isBotLoading = state is ChatBotLoading;
+    final errorMsg = state is ChatError ? state.message : null;
 
-  Widget _buildSessionsList(
-      BuildContext context, List<SessionEntity> sessions) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Chat Sessions',
-                style: TextStyle(
-                  color: AppColors.of(context).footer,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              _buildNewChatButton(context),
-            ],
-          ),
-        ),
-        Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: sessions.length,
-            itemBuilder: (context, index) {
-              final session = sessions[index];
-              return _buildSessionTile(context, session);
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSessionTile(BuildContext context, SessionEntity session) {
-    return Card(
-      color: AppColors.c151D18.withValues(alpha: 0.6),
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: ListTile(
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        leading: Icon(Icons.chat_bubble_outline,
-            color: AppColors.secondary, size: 24),
-        title: Text(
-          session.title.isNotEmpty ? session.title : 'Chat Session',
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(color: AppColors.cf9f9f9, fontSize: 15),
-        ),
-        subtitle: Text(
-          '${session.messageCount} messages',
-          style: TextStyle(
-              color: AppColors.cf9f9f9.withValues(alpha: 0.5), fontSize: 12),
-        ),
-        trailing: Icon(Icons.arrow_forward_ios,
-            color: AppColors.cf9f9f9.withValues(alpha: 0.3), size: 14),
-        onTap: () {
-          context.read<ChatCubit>().loadSession(session.id);
-        },
-        onLongPress: () => _showSessionOptions(context, session),
-      ),
-    );
-  }
-
-  void _showSessionOptions(BuildContext context, SessionEntity session) {
-    final colors = AppColors.of(context, listen: false);
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: colors.background,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (sheetContext) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: colors.footer.withValues(alpha: 0.25),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                Text(
-                  session.title.isNotEmpty ? session.title : 'Chat Session',
-                  style: TextStyle(
-                    color: colors.footer,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                ListTile(
-                  leading: Icon(Icons.edit,
-                      color: AppColors.secondary, size: 22),
-                  title: Text('Rename Session',
-                      style: TextStyle(color: AppColors.secondary, fontSize: 15)),
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    _showRenameDialog(context, session);
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.delete_outline,
-                      color: Colors.redAccent, size: 22),
-                  title: Text('Delete Session',
-                      style: TextStyle(color: Colors.redAccent, fontSize: 15)),
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    context.read<ChatCubit>().deleteSession(session.id);
-                  },
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Future<void> _showRenameDialog(
-      BuildContext context, SessionEntity session) async {
-    final colors = AppColors.of(context, listen: false);
-    final controller = TextEditingController(text: session.title);
-    final newTitle = await showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: colors.background,
-        title: Text('Rename Session',
-            style: TextStyle(color: colors.footer)),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          style: TextStyle(color: colors.footer),
-          decoration: InputDecoration(
-            hintText: 'Enter new name',
-            hintStyle:
-                TextStyle(color: colors.footer.withValues(alpha: 0.4)),
-            border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12)),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel',
-                style: TextStyle(color: colors.footer)),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-            child: Text('Rename',
-                style: TextStyle(color: AppColors.secondary)),
-          ),
-        ],
-      ),
-    );
-    if (newTitle != null && newTitle.isNotEmpty) {
-      context.read<ChatCubit>().renameSession(session.id, newTitle);
-    }
-  }
-
-  Widget _buildChat(
-    BuildContext context,
-    List<MessageEntity> messages,
-    bool isBotLoading,
-    String? errorMsg,
-  ) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
@@ -382,53 +324,12 @@ class _ChatViewState extends State<ChatView> {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          child: Row(
-            children: [
-              IconButton(
-                icon: Icon(Icons.list,
-                    color:
-                        AppColors.of(context).footer.withValues(alpha: 0.6)),
-                onPressed: () {
-                  final state = context.read<ChatCubit>().state;
-                  if (state is SessionsLoaded) {
-                    Navigator.pop(context);
-                  } else {
-                    context.read<ChatCubit>().loadSessions();
-                  }
-                },
-                tooltip: 'Sessions',
-              ),
-              Expanded(
-                child: widget.artifactId != null && widget.artifactName != null
-                    ? Text(
-                        widget.artifactName!,
-                        style: TextStyle(
-                          color: AppColors.of(context).footer,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                      )
-                    : const SizedBox.shrink(),
-              ),
-              IconButton(
-                icon: Icon(Icons.add,
-                    color:
-                        AppColors.of(context).footer.withValues(alpha: 0.6)),
-                onPressed: () => context.read<ChatCubit>().startNewSession(),
-                tooltip: 'New Chat',
-              ),
-            ],
-          ),
-        ),
         Expanded(
           child: ListView.builder(
             controller: _scrollController,
-            padding: const EdgeInsets.only(top: 8, bottom: 8),
-            itemCount: messages.length + (isBotLoading ? 1 : 0) +
+            padding: EdgeInsets.only(top: 8.h, bottom: 8.h),
+            itemCount: messages.length +
+                (isBotLoading ? 1 : 0) +
                 (errorMsg != null ? 1 : 0),
             itemBuilder: (context, index) {
               if (isBotLoading && index == messages.length) {
@@ -437,11 +338,10 @@ class _ChatViewState extends State<ChatView> {
               if (errorMsg != null &&
                   index == messages.length + (isBotLoading ? 1 : 0)) {
                 return Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(ScreenUtils.md),
                   child: Text(
                     errorMsg,
-                    style: const TextStyle(
-                        color: Colors.redAccent, fontSize: 13),
+                    style: TextStyle(color: Colors.redAccent, fontSize: 13.sp),
                     textAlign: TextAlign.center,
                   ),
                 );
@@ -461,25 +361,34 @@ class _ChatViewState extends State<ChatView> {
 
   Widget _buildTypingIndicator() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: EdgeInsets.only(left: 11.w, bottom: 4.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          const SizedBox(width: 8),
-          Flexible(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              decoration: BoxDecoration(
-                color: AppColors.c151D18.withValues(alpha: 0.6),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                  bottomRight: Radius.circular(20),
-                  bottomLeft: Radius.circular(4),
-                ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(24.r),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: AppDimensions.glassSigma,
+                sigmaY: AppDimensions.glassSigma,
               ),
-              child: _TypingDots(),
+              child: Container(
+                padding: EdgeInsets.all(11.r),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0x1A0D1215),
+                      Color(0x1A0D1215),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(24.r),
+                  border: Border.all(color: const Color(0x0DFFFFFF)),
+                ),
+                child: const _TypingDots(),
+              ),
             ),
           ),
         ],
@@ -489,6 +398,8 @@ class _ChatViewState extends State<ChatView> {
 }
 
 class _TypingDots extends StatefulWidget {
+  const _TypingDots();
+
   @override
   State<_TypingDots> createState() => _TypingDotsState();
 }
@@ -519,19 +430,23 @@ class _TypingDotsState extends State<_TypingDots>
       builder: (context, child) {
         return Row(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(3, (i) {
             final delay = i * 0.15;
             final value = ((_controller.value - delay) % 1.0).clamp(0.0, 1.0);
-            final size = 8.0 + (value * 4.0);
-            final opacity = 0.4 + (value * 0.6);
+            final scale = 0.5 + (value * 0.5);
+            final opacity = 0.3 + (value * 0.7);
             return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 3),
-              child: Container(
-                width: size,
-                height: size,
-                decoration: BoxDecoration(
-                  color: AppColors.cf9f9f9.withValues(alpha: opacity),
-                  shape: BoxShape.circle,
+              padding: EdgeInsets.symmetric(horizontal: 3.w),
+              child: Transform.scale(
+                scale: scale,
+                child: Container(
+                  width: 8.r,
+                  height: 8.r,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: opacity),
+                    borderRadius: BorderRadius.circular(50.r),
+                  ),
                 ),
               ),
             );

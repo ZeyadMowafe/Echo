@@ -1,6 +1,9 @@
 import 'package:echo_explorer/core/constants/app_colors.dart';
+import 'package:echo_explorer/core/helpers/screen_utils.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_container.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gap/gap.dart';
 
 class CustomSectionButton extends StatelessWidget {
   const CustomSectionButton({
@@ -17,10 +20,10 @@ class CustomSectionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 224,
-      width: 170,
+      height: 224.h,
+      width: 170.w,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(ScreenUtils.glassBorderRadius),
         image: DecorationImage(
           image: AssetImage(image),
           fit: BoxFit.fill,
@@ -33,18 +36,18 @@ class CustomSectionButton extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(ScreenUtils.glassBorderRadius),
           onTap: onTap,
           child: Stack(
             alignment: Alignment.bottomCenter,
             children: [
               Positioned(
-                bottom: 17,
-                right: 6,
-                left: 12,
+                bottom: 17.h,
+                right: 6.w,
+                left: 12.w,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end, 
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Expanded(
                       child: Text(
@@ -52,18 +55,18 @@ class CustomSectionButton extends StatelessWidget {
                         style: TextStyle(
                           height: 1.2,
                           color: AppColors.cffffff,
-                          fontSize: 16,
+                          fontSize: 16.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8), 
+                    Gap(ScreenUtils.sm),
                     CustomGlassContainer(
-                      width: 28,
-                      height: 28,
+                      width: ScreenUtils.iconLg,
+                      height: ScreenUtils.iconLg,
                       color: AppColors.cffffff.withOpacity(0.25),
                       borderColor: AppColors.cffffff.withOpacity(0.04),
-                      borderRadius: BorderRadius.circular(50),
+                      borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
                       gradient: LinearGradient(
                         colors: [
                           AppColors.cffffff.withOpacity(0.30),
@@ -75,7 +78,7 @@ class CustomSectionButton extends StatelessWidget {
                       child: Icon(
                         Icons.arrow_forward_rounded,
                         color: AppColors.cf9f9f9,
-                        size: 14,
+                        size: ScreenUtils.iconSm,
                       ),
                     ),
                   ],

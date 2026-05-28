@@ -4,7 +4,7 @@ import 'package:echo_explorer/core/routing/routes.dart';
 import 'package:echo_explorer/features/discover/data/models/section_card_model.dart';
 import 'package:echo_explorer/features/discover/presentation/widgets/custom_discover_app_bar.dart';
 import 'package:echo_explorer/features/discover/presentation/widgets/custom_section_card.dart';
-import 'package:echo_explorer/features/home/presentation/view_model/features_cubit.dart';
+import 'package:echo_explorer/features/home/presentation/cubit/features_cubit.dart';
 import 'package:echo_explorer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
