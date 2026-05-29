@@ -6,6 +6,8 @@ import 'package:echo_explorer/core/constants/app_colors.dart';
 
 import 'package:echo_explorer/core/constants/app_strings.dart';
 
+import 'package:echo_explorer/core/routing/app_transitions.dart';
+
 import 'package:echo_explorer/core/widgets/custom_bottom_nav_bar.dart';
 
 import 'package:echo_explorer/core/widgets/custom_floating_action_button.dart';
@@ -415,8 +417,9 @@ class _DetailsViewState extends State<DetailsView> {
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
-                                builder: (_) => ChatView(
+                              SmoothRoute(
+                                type: TransitionType.fadeSlideUp,
+                                page: ChatView(
                                   artifactId:
                                       _result.artifact.artifactModelId ?? '',
                                   artifactName:

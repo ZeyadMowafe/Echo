@@ -3,6 +3,7 @@ import 'package:echo_explorer/core/constants/app_colors.dart';
 import 'package:echo_explorer/core/helpers/screen_utils.dart';
 import 'package:echo_explorer/core/hive/cache_helper.dart';
 import 'package:echo_explorer/core/localization/locale_cubit.dart';
+import 'package:echo_explorer/core/widgets/app_loading.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_container.dart';
 import 'package:echo_explorer/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:echo_explorer/l10n/app_localizations.dart';
@@ -347,8 +348,8 @@ class _EditProfileViewState extends State<EditProfileView> {
                           color: AppColors.of(context).footer.withOpacity(0.06),
                           padding: EdgeInsets.symmetric(vertical: 16.h),
                           child: Center(
-                            child: isLoading 
-                              ? SizedBox(width: 20.r, height: 20.r, child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+              child: isLoading 
+                ? AppLoading.button()
                               : Text(l10n.editProfileSave, style: TextStyle(color: AppColors.cffffff, fontSize: 16.sp, fontWeight: FontWeight.bold)),
                           ),
                         ),

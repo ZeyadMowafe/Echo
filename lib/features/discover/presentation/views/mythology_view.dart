@@ -6,6 +6,7 @@ import 'package:echo_explorer/core/widgets/custom_floating_action_button.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_app_bar.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_drawer.dart';
 import 'package:echo_explorer/core/widgets/custom_section_button.dart';
+import 'package:echo_explorer/core/widgets/entrance_animation.dart';
 import 'package:echo_explorer/features/discover/data/gods_data.dart';
 import 'package:echo_explorer/features/home/presentation/cubit/features_cubit.dart';
 import 'package:echo_explorer/l10n/app_localizations.dart';
@@ -50,16 +51,19 @@ class MythologyView extends StatelessWidget {
                         bottom: 100.h,
                       ),
                       children: [
-                        CustomSectionButton(
-                          onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              AppRoutes.godDetailsView,
-                              arguments: 0,
-                            );
-                          },
-                          image: godsList[0].coverImagePath,
-                          title: godsList[0].title,
+                        EntranceAnimation(
+                          delay: Duration.zero,
+                          child: CustomSectionButton(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                AppRoutes.godDetailsView,
+                                arguments: 0,
+                              );
+                            },
+                            image: godsList[0].coverImagePath,
+                            title: godsList[0].title,
+                          ),
                         ),
 
                         GridView.builder(
@@ -75,16 +79,19 @@ class MythologyView extends StatelessWidget {
                               ),
                           itemCount: godsList.length - 1,
                           itemBuilder: (context, index) {
-                            return CustomSectionButton(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  AppRoutes.godDetailsView,
-                                  arguments: index + 1,
-                                );
-                              },
-                              image: godsList[index + 1].coverImagePath,
-                              title: godsList[index + 1].title,
+                            return EntranceAnimation(
+                              delay: Duration(milliseconds: (index + 1) * 80),
+                              child: CustomSectionButton(
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    AppRoutes.godDetailsView,
+                                    arguments: index + 1,
+                                  );
+                                },
+                                image: godsList[index + 1].coverImagePath,
+                                title: godsList[index + 1].title,
+                              ),
                             );
                           },
                         ),

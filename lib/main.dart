@@ -1,20 +1,37 @@
 import 'package:echo_explorer/core/constants/app_strings.dart';
 import 'package:echo_explorer/core/di/injection_container.dart';
-import 'package:echo_explorer/core/helpers/screen_utils.dart';
 import 'package:echo_explorer/core/localization/locale_cubit.dart';
 import 'package:echo_explorer/core/routing/app_router.dart';
 import 'package:echo_explorer/core/themes/theme_cubit.dart';
+import 'package:echo_explorer/core/widgets/app_loading.dart';
 import 'package:echo_explorer/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:echo_explorer/features/home/presentation/cubit/features_cubit.dart';
 import 'package:echo_explorer/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:echo_explorer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:gap/gap.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // ── أداء عالي: تثبيت الاتجاه الرأسي فقط ──
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
+  // ── تحسين شريط الحالة ليبدو شفافاً ومدمجاً مع التصميم ──
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarIconBrightness: Brightness.light,
+    ),
+  );
+
   await init();
   runApp(const EchoExplorer());
 }
@@ -48,30 +65,26 @@ class EchoExplorer extends StatelessWidget {
                 initialRoute: '/',
                 onGenerateRoute: AppRouter().generateRoute,
                 debugShowCheckedModeBanner: false,
+                // ── أداء عالي: تعطيل الـ debug banner + scroll glow ──
+                scrollBehavior: const _SmoothScrollBehavior(),
+                // ── تأكيد إلغاء أي انيميشن افتراضي من المنصة ──
+                theme: ThemeData(
+                  pageTransitionsTheme: const PageTransitionsTheme(
+                    builders: {
+                      TargetPlatform.android: _NoAnimationPageTransitionsBuilder(),
+                      TargetPlatform.iOS: _NoAnimationPageTransitionsBuilder(),
+                      TargetPlatform.windows: _NoAnimationPageTransitionsBuilder(),
+                      TargetPlatform.macOS: _NoAnimationPageTransitionsBuilder(),
+                      TargetPlatform.linux: _NoAnimationPageTransitionsBuilder(),
+                    },
+                  ),
+                ),
                 builder: (context, materialChild) {
                   return Stack(
                     children: [
                       materialChild!,
                       if (localeState.isLoading)
-                        Container(
-                          color: const Color(0xFF0F1914),
-                          child: Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const CircularProgressIndicator(color: Colors.white),
-                                Gap(ScreenUtils.md),
-                                Text(
-                                  'Updating language...',
-                                  style: TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 15.sp,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                        AppLoading.fullScreen(message: 'Updating language...'),
                     ],
                   );
                 },
@@ -81,5 +94,45 @@ class EchoExplorer extends StatelessWidget {
         },
       ),
     );
+  }
+}
+
+/// ── يزيل تأثير الـ glow عند التمرير للحصول على تجربة سموز احترافية ──
+class _SmoothScrollBehavior extends ScrollBehavior {
+  const _SmoothScrollBehavior();
+
+  @override
+  Widget buildOverscrollIndicator(
+    BuildContext context,
+    Widget child,
+    ScrollableDetails details,
+  ) {
+    // لا glow، لا overscroll indicator - تجربة نظيفة تماماً
+    return child;
+  }
+
+  @override
+  ScrollPhysics getScrollPhysics(BuildContext context) {
+    // BouncingScrollPhysics لتجربة سموز مثل iOS على كل المنصات
+    return const BouncingScrollPhysics(
+      parent: AlwaysScrollableScrollPhysics(),
+    );
+  }
+}
+
+/// ── يلغي أي انيميشن افتراضي من المنصة حتى تعمل SmoothRoute فقط ──
+class _NoAnimationPageTransitionsBuilder extends PageTransitionsBuilder {
+  const _NoAnimationPageTransitionsBuilder();
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    // SmoothRoute يتحكم في الانيميشن بنفسه، هنا نترك الـ child كما هو
+    return child;
   }
 }

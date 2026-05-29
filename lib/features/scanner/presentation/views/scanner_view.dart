@@ -4,6 +4,8 @@ import 'package:echo_explorer/core/constants/app_colors.dart';
 import 'package:echo_explorer/core/constants/app_strings.dart';
 import 'package:echo_explorer/core/di/injection_container.dart';
 import 'package:echo_explorer/core/helpers/screen_utils.dart';
+import 'package:echo_explorer/core/routing/app_transitions.dart';
+import 'package:echo_explorer/core/widgets/app_loading.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_back_button.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_container.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_drawer.dart';
@@ -148,8 +150,9 @@ class _ScannerBodyState extends State<_ScannerBody> {
               label: l10n.scanTakePhoto,
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => BlocProvider.value(
+                SmoothRoute(
+                  type: TransitionType.slideUp,
+                  page: BlocProvider.value(
                     value: context.read<ScanCubit>(),
                     child: const CameraScannerView(),
                   ),
@@ -268,30 +271,16 @@ class _ScannerBodyState extends State<_ScannerBody> {
           top: 202.h,
           width: 346.w,
           height: 463.h,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(8.r),
-              border: Border.all(color: AppColors.cf9f9f9, width: 1),
-            ),
-          ),
-        ),
-        if (isLoading)
-          Positioned(
-            left: 0,
-            right: 0,
-            top: 202.h + 463.h + 20.h,
-            child: Center(
-              child: SizedBox(
-                width: 24.r,
-                height: 24.r,
-                child: CircularProgressIndicator(
-                  color: AppColors.secondary,
-                  strokeWidth: 2.5,
+          child: isLoading
+              ? const FuturisticScanAnalyzerOverlay()
+              : Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.10),
+                    borderRadius: BorderRadius.circular(8.r),
+                    border: Border.all(color: AppColors.cf9f9f9, width: 1),
+                  ),
                 ),
-              ),
-            ),
-          ),
+        ),
         if (result != null && !showTranslation)
           Positioned(
             left: 12.w,
@@ -366,8 +355,9 @@ class _ScannerBodyState extends State<_ScannerBody> {
                                 final artifact = result.result.artifact;
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(
-                                    builder: (_) => ChatView(
+                                  SmoothRoute(
+                                    type: TransitionType.fadeSlideUp,
+                                    page: ChatView(
                                       artifactId:
                                           artifact.artifactModelId ?? '',
                                       artifactName:
@@ -419,8 +409,9 @@ class _ScannerBodyState extends State<_ScannerBody> {
                               onTap: () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(
-                                    builder: (_) => BlocProvider.value(
+                                  SmoothRoute(
+                                    type: TransitionType.fadeSlideUp,
+                                    page: BlocProvider.value(
                                       value: context.read<ScanCubit>(),
                                       child: DetailsView(
                                         args: ScanResultArgs(
@@ -643,30 +634,7 @@ class _ScannerBodyState extends State<_ScannerBody> {
 
   Widget _buildLoading(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircularProgressIndicator(color: AppColors.secondary),
-          Gap(24.h),
-          Text(
-            l10n.scanAnalyzing,
-            style: TextStyle(
-              color: AppColors.of(context).footer,
-              fontSize: 16.sp,
-            ),
-          ),
-          Gap(8.h),
-          Text(
-            l10n.scanAnalyzingWait,
-            style: TextStyle(
-              color: AppColors.of(context).footer.withValues(alpha: 0.5),
-              fontSize: 13.sp,
-            ),
-          ),
-        ],
-      ),
-    );
+    return AppLoading.page(message: l10n.scanAnalyzing);
   }
 
   Widget _buildResult(BuildContext context, ScanResultLoaded state) {
@@ -965,8 +933,9 @@ class _ScannerBodyState extends State<_ScannerBody> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) => ChatView(
+                      SmoothRoute(
+                        type: TransitionType.fadeSlideUp,
+                        page: ChatView(
                           artifactId: artifact.artifactModelId,
                           artifactName:
                               artifact.name ?? artifact.artifactModelId,

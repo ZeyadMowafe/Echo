@@ -5,6 +5,8 @@ import 'dart:ui';
 import 'package:camera/camera.dart';
 import 'package:echo_explorer/core/constants/app_colors.dart';
 import 'package:echo_explorer/core/constants/app_strings.dart';
+import 'package:echo_explorer/core/routing/app_transitions.dart';
+import 'package:echo_explorer/core/widgets/app_loading.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_back_button.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_drawer.dart';
 import 'package:echo_explorer/features/home/presentation/cubit/features_cubit.dart';
@@ -147,22 +149,22 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                 child: CameraPreview(_controller!),
               )
             else
-              const Center(
-                child: CircularProgressIndicator(color: Colors.white),
-              ),
+              AppLoading.page(),
             // Viewfinder overlay
             Positioned(
               left: 22.w,
               top: 202.h,
               width: 346.w,
               height: 463.h,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.10),
-                  borderRadius: BorderRadius.circular(8.r),
-                  border: Border.all(color: AppColors.cf9f9f9, width: 1),
-                ),
-              ),
+              child: (_phase == _ScanPhase.analyzing)
+                  ? const FuturisticScanAnalyzerOverlay()
+                  : Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.10),
+                        borderRadius: BorderRadius.circular(8.r),
+                        border: Border.all(color: AppColors.cf9f9f9, width: 1),
+                      ),
+                    ),
             ),
             // Scanning indicator
             if (_phase == _ScanPhase.scanning && _isScanning)
@@ -170,33 +172,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                 left: 0,
                 right: 0,
                 top: 202.h + 463.h + 20.h,
-                child: Center(
-                  child: SizedBox(
-                    width: 24.r,
-                    height: 24.r,
-                    child: const CircularProgressIndicator(
-                      color: Color(0xFF4CAF50),
-                      strokeWidth: 2.5,
-                    ),
-                  ),
-                ),
-              ),
-            // Analyzing indicator
-            if (_phase == _ScanPhase.analyzing)
-              Positioned(
-                left: 0,
-                right: 0,
-                top: 202.h + 463.h + 20.h,
-                child: Center(
-                  child: SizedBox(
-                    width: 24.r,
-                    height: 24.r,
-                    child: const CircularProgressIndicator(
-                      color: Color(0xFF4CAF50),
-                      strokeWidth: 2.5,
-                    ),
-                  ),
-                ),
+                child: Center(child: AppLoading.scanner()),
               ),
             // Result overlay card (hidden when translation is shown)
             if (_phase == _ScanPhase.result &&
@@ -274,8 +250,9 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                                   final artifact = scanState.result.artifact;
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(
-                                      builder: (_) => ChatView(
+                                    SmoothRoute(
+                                      type: TransitionType.fadeSlideUp,
+                                      page: ChatView(
                                         artifactId:
                                             artifact.artifactModelId ?? '',
                                         artifactName:
@@ -324,8 +301,9 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                                 onTap: () {
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(
-                                      builder: (_) => BlocProvider.value(
+                                    SmoothRoute(
+                                      type: TransitionType.fadeSlideUp,
+                                      page: BlocProvider.value(
                                         value: context.read<ScanCubit>(),
                                         child: DetailsView(
                                           args: ScanResultArgs(

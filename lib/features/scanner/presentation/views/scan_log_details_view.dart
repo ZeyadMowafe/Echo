@@ -1,6 +1,7 @@
 import 'package:echo_explorer/core/constants/app_colors.dart';
 import 'package:echo_explorer/core/di/injection_container.dart';
 import 'package:echo_explorer/core/helpers/screen_utils.dart';
+import 'package:echo_explorer/core/widgets/app_loading.dart';
 import 'package:echo_explorer/core/routing/routes.dart';
 import 'package:echo_explorer/features/discover/presentation/widgets/custom_discover_app_bar.dart';
 import 'package:echo_explorer/features/scanner/domain/entities/scan_log_entity.dart';
@@ -78,7 +79,7 @@ class _ScanLogDetailsViewState extends State<ScanLogDetailsView> {
   }
 
   Widget _buildLoading(BuildContext context) {
-    return Center(child: CircularProgressIndicator(color: AppColors.secondary));
+    return AppLoading.page();
   }
 
   Widget _buildError(BuildContext context, String message) {

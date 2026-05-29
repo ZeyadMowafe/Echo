@@ -1,6 +1,7 @@
 import 'package:echo_explorer/core/constants/app_colors.dart';
 import 'package:echo_explorer/core/helpers/screen_utils.dart';
 import 'package:echo_explorer/core/routing/routes.dart';
+import 'package:echo_explorer/core/widgets/app_loading.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_container.dart';
 import 'package:echo_explorer/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:echo_explorer/l10n/app_localizations.dart';
@@ -245,7 +246,7 @@ class _PrimaryContinueButton extends StatelessWidget {
           padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 24.w),
           child: Center(
             child: isLoading
-                ? SizedBox(width: 20.r, height: 20.r, child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                ? AppLoading.button()
                 : Text(text, style: TextStyle(color: AppColors.cffffff, fontSize: 16.sp, fontWeight: FontWeight.w500)),
           ),
         ),

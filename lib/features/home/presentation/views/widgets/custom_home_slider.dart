@@ -143,7 +143,7 @@ class _CustomHomeSliderState extends State<CustomHomeSlider> {
       decoration: BoxDecoration(
         color: _currentPage == index
             ? AppColors.secondary
-            : AppColors.cffffff.withOpacity(0.20),
+            : AppColors.of(context).icons.withOpacity(0.30),
         borderRadius: BorderRadius.circular(4.r),
       ),
     );

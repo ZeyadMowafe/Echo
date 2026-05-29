@@ -40,7 +40,7 @@ class _SettingsViewState extends State<SettingsView> {
         },
       ),
       drawerBarrierDismissible: false,
-      backgroundColor: appColors.background, 
+      backgroundColor: appColors.background,
 
       body: Column(
         children: [
@@ -55,7 +55,12 @@ class _SettingsViewState extends State<SettingsView> {
               end: Alignment.bottomCenter,
             ),
             borderColor: appColors.discoverAppBar.withOpacity(0.05),
-            padding: EdgeInsets.only(top: 6.h, bottom: 6.h, left: 20.w, right: 20.w),
+            padding: EdgeInsets.only(
+              top: 6.h,
+              bottom: 6.h,
+              left: 20.w,
+              right: 20.w,
+            ),
             child: SafeArea(
               bottom: false,
               child: Row(
@@ -65,13 +70,16 @@ class _SettingsViewState extends State<SettingsView> {
                     width: ScreenUtils.glassButtonSize,
                     height: ScreenUtils.glassButtonSize,
                     borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
-                    borderColor: AppColors.cffffff.withOpacity(0.10),
-                    margin: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                    color: AppColors.cffffff.withOpacity(0.10),
+                    borderColor: appColors.footer.withOpacity(0.12),
+                    margin: EdgeInsets.symmetric(
+                      horizontal: 8.w,
+                      vertical: 4.h,
+                    ),
+                    color: appColors.footer.withOpacity(0.08),
                     gradient: LinearGradient(
                       colors: [
-                        AppColors.cffffff.withOpacity(0.20),
-                        AppColors.cffffff.withOpacity(0.0),
+                        appColors.footer.withOpacity(0.14),
+                        appColors.footer.withOpacity(0.02),
                       ],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
@@ -79,13 +87,15 @@ class _SettingsViewState extends State<SettingsView> {
                     child: CustomGlassContainer(
                       width: ScreenUtils.glassButtonSize,
                       height: ScreenUtils.glassButtonSize,
-                      color: AppColors.cffffff.withOpacity(0.25),
-                      borderColor: AppColors.cffffff.withOpacity(0.04),
-                      borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
+                      color: appColors.footer.withOpacity(0.10),
+                      borderColor: appColors.footer.withOpacity(0.04),
+                      borderRadius: BorderRadius.circular(
+                        ScreenUtils.radiusFull,
+                      ),
                       gradient: LinearGradient(
                         colors: [
-                          AppColors.cffffff.withOpacity(0.30),
-                          AppColors.cffffff.withOpacity(0.0),
+                          appColors.footer.withOpacity(0.18),
+                          appColors.footer.withOpacity(0.02),
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
@@ -93,20 +103,32 @@ class _SettingsViewState extends State<SettingsView> {
                       child: IconButton(
                         alignment: Alignment.center,
                         padding: EdgeInsets.zero,
-                        icon: Icon(Icons.arrow_back_rounded, color: appColors.footer, size: ScreenUtils.iconMd),
+                        icon: Icon(
+                          Icons.arrow_back_rounded,
+                          color: appColors.footer,
+                          size: ScreenUtils.iconMd,
+                        ),
                         onPressed: () => Navigator.pop(context),
                       ),
                     ),
                   ),
                   Text(
                     AppLocalizations.of(context)!.settings,
-                    style: TextStyle(color: appColors.footer, fontSize: 16.sp, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: appColors.footer,
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const Spacer(),
                   Builder(
                     builder: (innerContext) {
                       return IconButton(
-                        icon: Icon(Icons.menu, color: appColors.footer, size: 30.r),
+                        icon: Icon(
+                          Icons.menu,
+                          color: appColors.footer,
+                          size: 30.r,
+                        ),
                         onPressed: () => Scaffold.of(innerContext).openDrawer(),
                       );
                     },
@@ -119,7 +141,10 @@ class _SettingsViewState extends State<SettingsView> {
             child: ListView(
               padding: EdgeInsets.only(top: 48.h, left: 18.w, right: 18.w),
               children: [
-                _buildSectionTitle(AppLocalizations.of(context)!.settingsAppPreferences, appColors),
+                _buildSectionTitle(
+                  AppLocalizations.of(context)!.settingsAppPreferences,
+                  appColors,
+                ),
                 CustomSettingItem(
                   leadingIcon: Icons.language,
                   title: AppLocalizations.of(context)!.language,
@@ -144,7 +169,10 @@ class _SettingsViewState extends State<SettingsView> {
                   },
                 ),
                 Gap(35.h),
-                _buildSectionTitle(AppLocalizations.of(context)!.settingsSupportAbout, appColors),
+                _buildSectionTitle(
+                  AppLocalizations.of(context)!.settingsSupportAbout,
+                  appColors,
+                ),
                 CustomSettingItem(
                   leadingIcon: Icons.info_outline_rounded,
                   title: AppLocalizations.of(context)!.settingsSupportAbout,
@@ -183,7 +211,11 @@ class _SettingsViewState extends State<SettingsView> {
       padding: EdgeInsets.only(bottom: 16.h, left: 4.w),
       child: Text(
         title,
-        style: TextStyle(color: appColors.footer, fontSize: 14.sp, fontWeight: FontWeight.w500),
+        style: TextStyle(
+          color: appColors.footer,
+          fontSize: 14.sp,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }
@@ -196,7 +228,9 @@ class _SettingsViewState extends State<SettingsView> {
       context: context,
       isScrollControlled: true,
       backgroundColor: appColors.background,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20.r))),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+      ),
       builder: (sheetContext) {
         return ConstrainedBox(
           constraints: BoxConstraints(maxHeight: 0.8.sh),
@@ -208,35 +242,129 @@ class _SettingsViewState extends State<SettingsView> {
               children: [
                 Center(
                   child: Container(
-                    width: 40.w, height: 4.h,
-                    decoration: BoxDecoration(color: appColors.footer.withOpacity(0.25), borderRadius: BorderRadius.circular(10.r)),
+                    width: 40.w,
+                    height: 4.h,
+                    decoration: BoxDecoration(
+                      color: appColors.footer.withOpacity(0.25),
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
                   ),
                 ),
                 Row(
                   children: [
-                    IconButton(icon: Icon(Icons.close, color: appColors.footer), onPressed: () => Navigator.pop(sheetContext)),
+                    IconButton(
+                      icon: Icon(Icons.close, color: appColors.footer),
+                      onPressed: () => Navigator.pop(sheetContext),
+                    ),
                     Expanded(
-                      child: Text(l10n.appLanguage, style: TextStyle(color: appColors.footer, fontSize: 20.sp, fontWeight: FontWeight.w500)),
+                      child: Text(
+                        l10n.appLanguage,
+                        style: TextStyle(
+                          color: appColors.footer,
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
                   ],
                 ),
-                Divider(color: appColors.footer.withOpacity(0.6), thickness: 0.5),
+                Divider(
+                  color: appColors.footer.withOpacity(0.6),
+                  thickness: 0.5,
+                ),
                 Flexible(
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
                     child: Column(
                       children: [
-                        _buildLanguageTile(sheetContext, currentCode, 'en', 'English', l10n.english, appColors),
-                        _buildLanguageTile(sheetContext, currentCode, 'ar', 'العربية', l10n.arabic, appColors),
-                        _buildLanguageTile(sheetContext, currentCode, 'fr', 'Français', l10n.french, appColors),
-                        _buildLanguageTile(sheetContext, currentCode, 'de', 'Deutsch', l10n.german, appColors),
-                        _buildLanguageTile(sheetContext, currentCode, 'es', 'Español', l10n.spanish, appColors),
-                        _buildLanguageTile(sheetContext, currentCode, 'zh', '中文', l10n.chinese, appColors),
-                        _buildLanguageTile(sheetContext, currentCode, 'ru', 'Русский', l10n.russian, appColors),
-                        _buildLanguageTile(sheetContext, currentCode, 'it', 'Italiano', l10n.italian, appColors),
-                        _buildLanguageTile(sheetContext, currentCode, 'ja', '日本語', l10n.japanese, appColors),
-                        _buildLanguageTile(sheetContext, currentCode, 'ko', '한국어', l10n.korean, appColors),
-                        _buildLanguageTile(sheetContext, currentCode, 'pt', 'Português', l10n.portuguese, appColors),
+                        _buildLanguageTile(
+                          sheetContext,
+                          currentCode,
+                          'en',
+                          'English',
+                          l10n.english,
+                          appColors,
+                        ),
+                        _buildLanguageTile(
+                          sheetContext,
+                          currentCode,
+                          'ar',
+                          'العربية',
+                          l10n.arabic,
+                          appColors,
+                        ),
+                        _buildLanguageTile(
+                          sheetContext,
+                          currentCode,
+                          'fr',
+                          'Français',
+                          l10n.french,
+                          appColors,
+                        ),
+                        _buildLanguageTile(
+                          sheetContext,
+                          currentCode,
+                          'de',
+                          'Deutsch',
+                          l10n.german,
+                          appColors,
+                        ),
+                        _buildLanguageTile(
+                          sheetContext,
+                          currentCode,
+                          'es',
+                          'Español',
+                          l10n.spanish,
+                          appColors,
+                        ),
+                        _buildLanguageTile(
+                          sheetContext,
+                          currentCode,
+                          'zh',
+                          '中文',
+                          l10n.chinese,
+                          appColors,
+                        ),
+                        _buildLanguageTile(
+                          sheetContext,
+                          currentCode,
+                          'ru',
+                          'Русский',
+                          l10n.russian,
+                          appColors,
+                        ),
+                        _buildLanguageTile(
+                          sheetContext,
+                          currentCode,
+                          'it',
+                          'Italiano',
+                          l10n.italian,
+                          appColors,
+                        ),
+                        _buildLanguageTile(
+                          sheetContext,
+                          currentCode,
+                          'ja',
+                          '日本語',
+                          l10n.japanese,
+                          appColors,
+                        ),
+                        _buildLanguageTile(
+                          sheetContext,
+                          currentCode,
+                          'ko',
+                          '한국어',
+                          l10n.korean,
+                          appColors,
+                        ),
+                        _buildLanguageTile(
+                          sheetContext,
+                          currentCode,
+                          'pt',
+                          'Português',
+                          l10n.portuguese,
+                          appColors,
+                        ),
                       ],
                     ),
                   ),
@@ -249,7 +377,14 @@ class _SettingsViewState extends State<SettingsView> {
     );
   }
 
-  Widget _buildLanguageTile(BuildContext context, String currentCode, String languageCode, String nativeName, String localizedName, BaseThemeColors appColors) {
+  Widget _buildLanguageTile(
+    BuildContext context,
+    String currentCode,
+    String languageCode,
+    String nativeName,
+    String localizedName,
+    BaseThemeColors appColors,
+  ) {
     return RadioListTile<String>(
       value: languageCode,
       groupValue: currentCode,
@@ -261,7 +396,10 @@ class _SettingsViewState extends State<SettingsView> {
           children: <TextSpan>[
             TextSpan(
               text: localizedName,
-              style: TextStyle(color: appColors.footer.withOpacity(0.6), fontSize: 14.sp),
+              style: TextStyle(
+                color: appColors.footer.withOpacity(0.6),
+                fontSize: 14.sp,
+              ),
             ),
           ],
         ),
@@ -283,29 +421,70 @@ class _SettingsViewState extends State<SettingsView> {
       backgroundColor: Colors.transparent,
       builder: (sheetContext) {
         return DraggableScrollableSheet(
-          initialChildSize: 0.7, minChildSize: 0.5, maxChildSize: 0.9,
+          initialChildSize: 0.7,
+          minChildSize: 0.5,
+          maxChildSize: 0.9,
           builder: (_, controller) {
             return CustomGlassContainer(
               color: appColors.background.withOpacity(0.9),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(ScreenUtils.glassBorderRadius)),
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(ScreenUtils.glassBorderRadius),
+              ),
               padding: EdgeInsets.all(ScreenUtils.lg),
               child: ListView(
                 controller: controller,
                 children: [
                   Center(
                     child: Container(
-                    width: 40.w, height: 4.h, margin: EdgeInsets.only(bottom: 20.h),
-                    decoration: BoxDecoration(color: appColors.footer.withOpacity(0.3), borderRadius: BorderRadius.circular(10.r)),
+                      width: 40.w,
+                      height: 4.h,
+                      margin: EdgeInsets.only(bottom: 20.h),
+                      decoration: BoxDecoration(
+                        color: appColors.footer.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(10.r),
+                      ),
                     ),
                   ),
-                  Text(l10n.aboutTitle, style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold, color: appColors.footer), textAlign: TextAlign.center),
+                  Text(
+                    l10n.aboutTitle,
+                    style: TextStyle(
+                      fontSize: 24.sp,
+                      fontWeight: FontWeight.bold,
+                      color: appColors.footer,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                   Gap(ScreenUtils.sm),
-                  Text(l10n.aboutSubtitle, style: TextStyle(fontSize: 14.sp, fontStyle: FontStyle.italic, color: appColors.footer.withOpacity(0.7)), textAlign: TextAlign.center),
+                  Text(
+                    l10n.aboutSubtitle,
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      fontStyle: FontStyle.italic,
+                      color: appColors.footer.withOpacity(0.7),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                   Gap(ScreenUtils.lg),
-                  _buildAboutSection(l10n.aboutPhilosophyTitle, l10n.aboutPhilosophyBody, appColors),
-                  _buildAboutSection(l10n.aboutMoreTitle, l10n.aboutMoreBody, appColors),
-                  _buildAboutSection(l10n.aboutBridgeTitle, l10n.aboutBridgeBody, appColors),
-                  _buildAboutSection(l10n.aboutTeamTitle, l10n.aboutTeamBody, appColors),
+                  _buildAboutSection(
+                    l10n.aboutPhilosophyTitle,
+                    l10n.aboutPhilosophyBody,
+                    appColors,
+                  ),
+                  _buildAboutSection(
+                    l10n.aboutMoreTitle,
+                    l10n.aboutMoreBody,
+                    appColors,
+                  ),
+                  _buildAboutSection(
+                    l10n.aboutBridgeTitle,
+                    l10n.aboutBridgeBody,
+                    appColors,
+                  ),
+                  _buildAboutSection(
+                    l10n.aboutTeamTitle,
+                    l10n.aboutTeamBody,
+                    appColors,
+                  ),
                   Gap(ScreenUtils.lg),
                 ],
               ),
@@ -316,15 +495,33 @@ class _SettingsViewState extends State<SettingsView> {
     );
   }
 
-  Widget _buildAboutSection(String title, String body, BaseThemeColors appColors) {
+  Widget _buildAboutSection(
+    String title,
+    String body,
+    BaseThemeColors appColors,
+  ) {
     return Padding(
       padding: EdgeInsets.only(bottom: 20.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold, color: const Color(0xFF00E676))),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 18.sp,
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF00E676),
+            ),
+          ),
           Gap(ScreenUtils.sm),
-          Text(body, style: TextStyle(fontSize: 14.sp, color: appColors.footer, height: 1.5)),
+          Text(
+            body,
+            style: TextStyle(
+              fontSize: 14.sp,
+              color: appColors.footer,
+              height: 1.5,
+            ),
+          ),
         ],
       ),
     );

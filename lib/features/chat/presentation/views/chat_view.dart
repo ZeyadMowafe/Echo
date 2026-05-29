@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:echo_explorer/core/constants/app_colors.dart';
 import 'package:echo_explorer/core/constants/app_dimensions.dart';
 import 'package:echo_explorer/core/helpers/screen_utils.dart';
+import 'package:echo_explorer/core/widgets/app_loading.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_back_button.dart';
 import 'package:echo_explorer/features/chat/domain/entities/message_entity.dart';
 import 'package:echo_explorer/features/chat/presentation/cubit/chat_cubit.dart';
@@ -71,7 +72,7 @@ class _ChatViewState extends State<ChatView> {
         } else if (state is ChatInitial) {
           body = _buildWelcome(context);
         } else if (state is ChatLoading) {
-          body = const Center(child: CircularProgressIndicator());
+          body = AppLoading.page();
         } else {
           body = _buildChatSection(context, state);
         }

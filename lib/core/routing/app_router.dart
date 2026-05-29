@@ -1,4 +1,4 @@
-import 'package:echo_explorer/core/hive/cache_helper.dart';
+import 'package:echo_explorer/core/routing/app_transitions.dart';
 import 'package:echo_explorer/core/routing/routes.dart';
 import 'package:echo_explorer/features/auth/presentation/views/auth_view.dart';
 import 'package:echo_explorer/features/chat/presentation/views/chat_view.dart';
@@ -10,59 +10,109 @@ import 'package:echo_explorer/features/onboarding/presentation/views/onboarding_
 import 'package:echo_explorer/features/profile/presentation/views/edit_profile_view.dart';
 import 'package:echo_explorer/features/profile/presentation/views/settings_view.dart';
 import 'package:echo_explorer/features/scanner/presentation/views/scanner_view.dart';
+import 'package:echo_explorer/features/splash/presentation/views/splash_view.dart';
 import 'package:flutter/material.dart';
 
 class AppRouter {
   Route generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/':
-        return MaterialPageRoute(
-          builder: (context) => CacheHelper.isOnboardingCompleted
-              ? const HomeView()
-              : const OnboardingView(),
+        return SmoothRoute(
+          settings: settings,
+          type: TransitionType.fade,
+          page: const SplashView(),
         );
-      case AppRoutes.homeView:
-        return MaterialPageRoute(builder: (context) => const HomeView());
-      case AppRoutes.onboardingView:
-        return MaterialPageRoute(builder: (context) => const OnboardingView());
 
-      case AppRoutes.authView: 
-        return MaterialPageRoute(builder: (context) => const AuthView());
+      case AppRoutes.homeView:
+        return SmoothRoute(
+          settings: settings,
+          type: TransitionType.fade,
+          page: const HomeView(),
+        );
+
+      case AppRoutes.onboardingView:
+        return SmoothRoute(
+          settings: settings,
+          type: TransitionType.fade,
+          page: const OnboardingView(),
+        );
+
+      case AppRoutes.authView:
+        return SmoothRoute(
+          settings: settings,
+          type: TransitionType.fadeSlideUp,
+          page: const AuthView(),
+        );
 
       case AppRoutes.chatView:
         final chatArgs = settings.arguments;
         if (chatArgs is Map<String, dynamic>) {
-          print('=== AppRouter: chatView with args: $chatArgs ===');
-          return MaterialPageRoute(
-            builder: (context) => ChatView(
+          return SmoothRoute(
+            settings: settings,
+            type: TransitionType.fadeSlideUp,
+            page: ChatView(
               artifactId: chatArgs['artifactId'] as String?,
               artifactName: chatArgs['artifactName'] as String?,
             ),
           );
         }
-        print('=== AppRouter: chatView with NO args (args type: ${chatArgs?.runtimeType}) ===');
-        return MaterialPageRoute(builder: (context) => const ChatView());
+        return SmoothRoute(
+          settings: settings,
+          type: TransitionType.fadeSlideUp,
+          page: const ChatView(),
+        );
+
       case AppRoutes.scanView:
-        return MaterialPageRoute(builder: (context) => const ScannerView());
+        return SmoothRoute(
+          settings: settings,
+          type: TransitionType.fadeSlideUp,
+          page: const ScannerView(),
+        );
+
       case AppRoutes.settingsView:
-        return MaterialPageRoute(builder: (context) => const SettingsView());
+        return SmoothRoute(
+          settings: settings,
+          type: TransitionType.fadeSlideRight,
+          page: const SettingsView(),
+        );
+
       case AppRoutes.godDetailsView:
         final godIndex = settings.arguments as int;
-        return MaterialPageRoute(
-          builder: (context) => GodDetailsView(godIndex: godIndex),
+        return SmoothRoute(
+          settings: settings,
+          type: TransitionType.fadeSlideUp,
+          page: GodDetailsView(godIndex: godIndex),
         );
+
       case AppRoutes.egyptianHistoryView:
-        return MaterialPageRoute(
-          builder: (context) => const EgyptianHistoryView(),
+        return SmoothRoute(
+          settings: settings,
+          type: TransitionType.fadeSlideUp,
+          page: const EgyptianHistoryView(),
         );
+
       case AppRoutes.mythologyView:
-        return MaterialPageRoute(builder: (context) => const MythologyView());
+        return SmoothRoute(
+          settings: settings,
+          type: TransitionType.fadeSlideUp,
+          page: const MythologyView(),
+        );
+
       case AppRoutes.editProfileView:
-        return MaterialPageRoute(builder: (context) => const EditProfileView());
+        return SmoothRoute(
+          settings: settings,
+          type: TransitionType.fadeSlideRight,
+          page: const EditProfileView(),
+        );
+
       default:
-        return MaterialPageRoute(
-          builder: (context) => Scaffold(
-            body: Center(child: Text('No route defined for ${settings.name}')),
+        return SmoothRoute(
+          settings: settings,
+          type: TransitionType.fade,
+          page: Scaffold(
+            body: Center(
+              child: Text('No route defined for ${settings.name}'),
+            ),
           ),
         );
     }

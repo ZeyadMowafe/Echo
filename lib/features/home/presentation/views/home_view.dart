@@ -9,6 +9,7 @@ import 'package:echo_explorer/features/home/presentation/cubit/features_cubit.da
 import 'package:echo_explorer/features/home/presentation/cubit/features_states.dart';
 import 'package:echo_explorer/features/home/presentation/views/widgets/home_content.dart';
 import 'package:echo_explorer/features/profile/presentation/views/profile_view.dart';
+import 'package:echo_explorer/core/themes/theme_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,12 +28,15 @@ class _HomeViewState extends State<HomeView> {
   void initState() {
     super.initState();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  }
+
+  void _applySystemUiOverlay(bool isDark) {
     SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
+      SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
+        statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
         systemNavigationBarColor: Colors.transparent,
-        systemNavigationBarIconBrightness: Brightness.light,
+        systemNavigationBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
         systemNavigationBarContrastEnforced: false,
       ),
     );
@@ -43,16 +47,20 @@ class _HomeViewState extends State<HomeView> {
     super.dispose();
   }
 
-  late final Map<String, Widget> _features = {
-    AppStrings.homeFeature.key: HomeContent(
-    ),
-    AppStrings.discoverFeature.key: DiscoverBody(
-    ),
-    AppStrings.profileFeature.key: ProfileView(key: ValueKey(_profileTabIndex)),
-  };
+  Widget _buildBody(String featureName) {
+    if (featureName == AppStrings.discoverFeature.key) {
+      return const DiscoverBody(key: ValueKey('discover_body'));
+    } else if (featureName == AppStrings.profileFeature.key) {
+      return ProfileView(key: ValueKey('profile_view'));
+    } else {
+      return const HomeContent(key: ValueKey('home_content'));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.watch<ThemeCubit>().state;
+    _applySystemUiOverlay(isDark);
     return BlocConsumer<FeaturesCubit, FeaturesStates>(
       listenWhen: (previous, current) {
         return current.featureName == AppStrings.chatFeature.key ||
@@ -76,7 +84,6 @@ class _HomeViewState extends State<HomeView> {
             Navigator.pushNamed(context, AppRoutes.scanView).then((result) {
               if (result == 'navigate_to_favorites' && context.mounted) {
                 setState(() => _profileTabIndex++);
-                _features[AppStrings.profileFeature.key] = ProfileView(key: ValueKey(_profileTabIndex));
                 context.read<FeaturesCubit>().changeFeature(featureName: AppStrings.profileFeature.key);
               } else if (context.mounted) {
                 context.read<FeaturesCubit>().changeFeature(featureName: AppStrings.homeFeature.key);
@@ -103,7 +110,21 @@ class _HomeViewState extends State<HomeView> {
           },
         ),
         drawerBarrierDismissible: false,
-        body: _features[state.featureName] ?? _features[AppStrings.homeFeature.key]!,
+        body: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 320),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeInCubic,
+          transitionBuilder: (child, animation) {
+            return FadeTransition(
+              opacity: animation,
+              child: ScaleTransition(
+                scale: Tween<double>(begin: 0.98, end: 1.0).animate(animation),
+                child: child,
+              ),
+            );
+          },
+          child: _buildBody(state.featureName),
+        ),
 
         floatingActionButton: CustomFloatingActionButton(
           onPressed: () {
