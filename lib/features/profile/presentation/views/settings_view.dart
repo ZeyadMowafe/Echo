@@ -39,7 +39,7 @@ class _SettingsViewState extends State<SettingsView> {
           Navigator.pop(context);
         },
       ),
-      drawerBarrierDismissible: false,
+      drawerBarrierDismissible: true,
       backgroundColor: appColors.background,
 
       body: Column(

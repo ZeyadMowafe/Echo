@@ -2,6 +2,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:echo_explorer/core/config/app_config.dart';
 import 'package:echo_explorer/core/constants/app_strings.dart';
+import 'package:echo_explorer/core/error/error_handler.dart';
 import 'package:echo_explorer/core/hive/cache_helper.dart';
 import 'package:echo_explorer/core/network/api_constants.dart';
 import 'package:echo_explorer/core/network/network_info.dart';
@@ -140,6 +141,19 @@ Dio _createDio() {
           options.headers['Authorization'] = 'Bearer $token';
         }
         return handler.next(options);
+      },
+      onError: (error, handler) {
+        ErrorHandler.logError(
+          'Dio error: ${error.requestOptions.uri}',
+          error,
+          error.stackTrace,
+        );
+        if (error.response?.statusCode == 401) {
+          CacheHelper.deleteData(key: 'jwt_token');
+          CacheHelper.deleteData(key: 'user_name');
+          CacheHelper.deleteData(key: 'user_email');
+        }
+        return handler.next(error);
       },
     ),
   );

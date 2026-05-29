@@ -53,7 +53,7 @@ class _GodDetailsViewState extends State<GodDetailsView> {
           Navigator.pop(context);
           Navigator.pop(context);
       }),
-      drawerBarrierDismissible: false,
+      drawerBarrierDismissible: true,
       body: Stack(
         children: [
           Positioned.fill(

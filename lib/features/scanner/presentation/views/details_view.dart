@@ -47,14 +47,22 @@ class _DetailsViewState extends State<DetailsView> {
   bool _showTranslation = false;
   bool _showToast = false;
   bool _toastIsFavorited = false;
+  bool _isFavorited = false;
 
   ScanResponseEntity get _result => widget.args.result;
   String? get _imagePath => widget.args.imagePath;
 
+  @override
+  void initState() {
+    super.initState();
+    final state = context.read<ScanCubit>().state;
+    if (state is ScanResultLoaded) {
+      _isFavorited = state.isFavorited;
+    }
+  }
+
   void _showFavoriteToast() {
-    _toastIsFavorited =
-        context.read<ScanCubit>().state is ScanResultLoaded &&
-        (context.read<ScanCubit>().state as ScanResultLoaded).isFavorited;
+    _toastIsFavorited = _isFavorited;
     setState(() => _showToast = true);
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) setState(() => _showToast = false);
@@ -64,6 +72,7 @@ class _DetailsViewState extends State<DetailsView> {
   void _toggleFavorite() {
     final scanLogId = _result.scanLogId;
     if (scanLogId == null) return;
+    setState(() => _isFavorited = !_isFavorited);
     context.read<ScanCubit>().toggleScanResultFavorite(scanLogId);
     _showFavoriteToast();
   }
@@ -136,8 +145,6 @@ class _DetailsViewState extends State<DetailsView> {
 
   @override
   Widget build(BuildContext context) {
-    final scanState = context.watch<ScanCubit>().state;
-    final isFavorited = scanState is ScanResultLoaded && scanState.isFavorited;
     final hasScanLogId = _result.scanLogId != null;
 
     return Scaffold(
@@ -251,11 +258,11 @@ class _DetailsViewState extends State<DetailsView> {
                               GestureDetector(
                                 onTap: _toggleFavorite,
                                 child: Icon(
-                                  hasScanLogId && isFavorited
+                                  hasScanLogId && _isFavorited
                                       ? Icons.favorite
                                       : Icons.favorite_border_rounded,
                                   size: 24.r,
-                                  color: hasScanLogId && isFavorited
+                                  color: hasScanLogId && _isFavorited
                                       ? Colors.redAccent
                                       : AppColors.of(
                                           context,

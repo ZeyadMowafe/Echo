@@ -1,4 +1,5 @@
 import 'package:echo_explorer/core/constants/app_strings.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 
 class CacheHelper {
@@ -8,17 +9,30 @@ class CacheHelper {
     required String key,
     required dynamic value,
   }) async {
-    var box = Hive.box(_appSettingsBox);
-    await box.put(key, value);
+    try {
+      var box = Hive.box(_appSettingsBox);
+      await box.put(key, value);
+    } catch (e) {
+      debugPrint('[CacheHelper] putData failed: $e');
+    }
   }
 
   static dynamic getData({required String key, dynamic defaultValue}) {
-    var box = Hive.box(_appSettingsBox);
-    return box.get(key, defaultValue: defaultValue);
+    try {
+      var box = Hive.box(_appSettingsBox);
+      return box.get(key, defaultValue: defaultValue);
+    } catch (e) {
+      debugPrint('[CacheHelper] getData failed: $e');
+      return defaultValue;
+    }
   }
 
   static Future<void> deleteData({required String key}) async {
-    var box = Hive.box(_appSettingsBox);
-    await box.delete(key);
+    try {
+      var box = Hive.box(_appSettingsBox);
+      await box.delete(key);
+    } catch (e) {
+      debugPrint('[CacheHelper] deleteData failed: $e');
+    }
   }
 }

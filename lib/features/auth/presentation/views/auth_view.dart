@@ -58,8 +58,10 @@ class _AuthViewState extends State<AuthView> {
 
     return Scaffold(
       backgroundColor: AppColors.of(context).background,
-      body: SafeArea(
-        child: Center(
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: SafeArea(
+          child: Center(
           child: BlocConsumer<AuthCubit, AuthState>(
             listener: (context, state) {
               if (state is Authenticated) {
@@ -157,6 +159,7 @@ class _AuthViewState extends State<AuthView> {
           ),
         ),
       ),
+    )
     );
   }
 }

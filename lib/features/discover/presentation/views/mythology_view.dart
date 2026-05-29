@@ -32,7 +32,7 @@ class MythologyView extends StatelessWidget {
         },
       ),
       drawerEnableOpenDragGesture: false,
-      drawerBarrierDismissible: false,
+      drawerBarrierDismissible: true,
       backgroundColor: AppColors.of(context).background,
 
       body: Stack(

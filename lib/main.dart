@@ -1,5 +1,6 @@
 import 'package:echo_explorer/core/constants/app_strings.dart';
 import 'package:echo_explorer/core/di/injection_container.dart';
+import 'package:echo_explorer/core/error/error_handler.dart';
 import 'package:echo_explorer/core/localization/locale_cubit.dart';
 import 'package:echo_explorer/core/routing/app_router.dart';
 import 'package:echo_explorer/core/themes/theme_cubit.dart';
@@ -12,17 +13,43 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'dart:ui' as ui;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ── أداء عالي: تثبيت الاتجاه الرأسي فقط ──
+  FlutterError.onError = (details) {
+    ErrorHandler.logError(
+      details.exceptionAsString(),
+      details.exception,
+      details.stack,
+    );
+  };
+
+  ui.PlatformDispatcher.instance.onError = (error, stack) {
+    ErrorHandler.logError('Platform error', error, stack);
+    return true;
+  };
+
+  ErrorWidget.builder = (details) => Material(
+    color: Colors.transparent,
+    child: Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Text(
+          'Something went wrong',
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.white70, fontSize: 14),
+        ),
+      ),
+    ),
+  );
+
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
 
-  // ── تحسين شريط الحالة ليبدو شفافاً ومدمجاً مع التصميم ──
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -58,6 +85,7 @@ class EchoExplorer extends StatelessWidget {
             builder: (context, child) {
               return MaterialApp(
                 key: ValueKey(localeState.locale),
+                scaffoldMessengerKey: ErrorHandler.scaffoldMessengerKey,
                 title: AppStrings.appName,
                 locale: localeState.locale,
                 localizationsDelegates: AppLocalizations.localizationsDelegates,

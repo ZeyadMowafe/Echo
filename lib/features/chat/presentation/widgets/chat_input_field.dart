@@ -43,10 +43,7 @@ class _ChatInputFieldState extends State<ChatInputField> {
                   gradient: const LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0x06FFFFFF),
-                      Color(0x06FFFFFF),
-                    ],
+                    colors: [Color(0x06FFFFFF), Color(0x06FFFFFF)],
                   ),
                   borderRadius: BorderRadius.circular(24.r),
                   border: Border.all(color: const Color(0x0DFFFFFF)),
@@ -57,7 +54,7 @@ class _ChatInputFieldState extends State<ChatInputField> {
                   onSubmitted: (_) => _send(),
                   style: TextStyle(color: AppColors.cffffff, fontSize: 14.sp),
                   decoration: InputDecoration(
-                    hintText: 'Type a message...',
+                    hintText: 'message...',
                     hintStyle: TextStyle(
                       color: AppColors.cffffff.withValues(alpha: 0.4),
                     ),
@@ -78,21 +75,14 @@ class _ChatInputFieldState extends State<ChatInputField> {
                 gradient: const LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0x06FFFFFF),
-                    Color(0x06FFFFFF),
-                  ],
+                  colors: [Color(0x06FFFFFF), Color(0x06FFFFFF)],
                 ),
                 borderRadius: BorderRadius.circular(50.r),
                 border: Border.all(color: const Color(0x0DFFFFFF)),
               ),
               child: IconButton(
                 onPressed: _send,
-                icon: Icon(
-                  Icons.send_rounded,
-                  color: AppColors.secondary,
-                  size: 20.r,
-                ),
+                icon: Icon(Icons.send_rounded, color: Colors.white, size: 20.r),
                 padding: EdgeInsets.zero,
               ),
             ),

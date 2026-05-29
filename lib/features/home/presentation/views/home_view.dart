@@ -109,7 +109,7 @@ class _HomeViewState extends State<HomeView> {
             Navigator.pop(context);
           },
         ),
-        drawerBarrierDismissible: false,
+        drawerBarrierDismissible: true,
         body: AnimatedSwitcher(
           duration: const Duration(milliseconds: 320),
           switchInCurve: Curves.easeOutCubic,

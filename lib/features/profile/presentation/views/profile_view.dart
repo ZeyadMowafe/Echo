@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:echo_explorer/core/constants/app_colors.dart';
 import 'package:echo_explorer/core/constants/app_strings.dart';
 import 'package:echo_explorer/core/di/injection_container.dart';
+import 'package:echo_explorer/core/error/error_handler.dart';
+import 'package:echo_explorer/core/error/failures.dart';
 import 'package:echo_explorer/core/helpers/screen_utils.dart';
 import 'package:echo_explorer/core/hive/cache_helper.dart';
 import 'package:echo_explorer/core/routing/app_transitions.dart';
@@ -101,6 +103,8 @@ class _ProfileViewState extends State<ProfileView> {
             setState(() => _favoritesCount = state.favorites.length);
           } else if (state is ScanLogsLoaded) {
             setState(() => _scansCount = state.scanLogs.length);
+          } else if (state is ScanError) {
+            ErrorHandler.showError(context, ServerFailure(state.message));
           }
         },
         child: BlocBuilder<AuthCubit, AuthState>(

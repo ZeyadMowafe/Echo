@@ -173,7 +173,12 @@ class ChatCubit extends Cubit<ChatState> {
     emit(ChatLoading());
     final result = await getSessionsUseCase(NoParams());
     result.fold(
-      (failure) => debugPrint('[ChatCubit] loadSessions failed: ${failure.message}'),
+      (failure) {
+        debugPrint('[ChatCubit] loadSessions failed: ${failure.message}');
+        if (_cachedSessions.isEmpty && state is ChatLoading) {
+          emit(ChatError(messages: [], message: failure.message));
+        }
+      },
       (sessions) {
         _cachedSessions = List<SessionEntity>.from(sessions)
           ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
@@ -212,7 +217,12 @@ class ChatCubit extends Cubit<ChatState> {
   Future<void> renameSession(String id, String title) async {
     final result = await renameSessionUseCase(RenameSessionParams(id: id, title: title));
     result.fold(
-      (failure) => debugPrint('[ChatCubit] renameSession failed: ${failure.message}'),
+      (failure) {
+        debugPrint('[ChatCubit] renameSession failed: ${failure.message}');
+        if (state is SessionsLoaded || state is ChatLoaded) {
+          emit(ChatError(messages: _currentMessages(), message: failure.message));
+        }
+      },
       (_) => loadSessions(),
     );
   }
@@ -224,7 +234,12 @@ class ChatCubit extends Cubit<ChatState> {
   Future<void> deleteSession(String id) async {
     final result = await deleteSessionUseCase(id);
     result.fold(
-      (failure) => debugPrint('[ChatCubit] deleteSession failed: ${failure.message}'),
+      (failure) {
+        debugPrint('[ChatCubit] deleteSession failed: ${failure.message}');
+        if (state is SessionsLoaded || state is ChatLoaded) {
+          emit(ChatError(messages: _currentMessages(), message: failure.message));
+        }
+      },
       (_) async {
       await _deleteMessages(id);
       if (_currentSessionId == id) {
