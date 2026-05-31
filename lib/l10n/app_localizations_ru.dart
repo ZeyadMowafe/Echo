@@ -439,6 +439,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get authRegister => 'Зарегистрироваться';
 
   @override
+  String get authLogin => 'Войти';
+
+  @override
   String get registerTitle => 'Создать аккаунт';
 
   @override

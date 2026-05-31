@@ -206,6 +206,7 @@
   "detailsChatWithMe": "채팅하기",
 
   "authRegister": "등록",
+  "authLogin": "로그인",
   "registerTitle": "계정 만들기",
   "registerNameHint": "전체 이름",
   "registerPhoneHint": "전화번호",

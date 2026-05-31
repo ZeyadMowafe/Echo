@@ -118,7 +118,10 @@ class ChatCubit extends Cubit<ChatState> {
           await _renameSessionSilent(reply.sessionId, _artifactTitle!);
           _artifactTitle = null;
         }
-        if (!_cachedSessions.any((s) => s.id == reply.sessionId)) {
+        final existingIdx = _cachedSessions.indexWhere(
+          (s) => s.id == reply.sessionId,
+        );
+        if (existingIdx == -1) {
           _cachedSessions.insert(
             0,
             SessionEntity(
@@ -132,6 +135,19 @@ class ChatCubit extends Cubit<ChatState> {
               startedAt: DateTime.now(),
               updatedAt: DateTime.now(),
             ),
+          );
+        } else {
+          _cachedSessions[existingIdx] = SessionEntity(
+            id: _cachedSessions[existingIdx].id,
+            title: _cachedSessions[existingIdx].title,
+            language: _cachedSessions[existingIdx].language,
+            messageCount: allMessages.length,
+            startedAt: _cachedSessions[existingIdx].startedAt,
+            updatedAt: DateTime.now(),
+            messages: _cachedSessions[existingIdx].messages,
+          );
+          _cachedSessions.sort(
+            (a, b) => b.updatedAt.compareTo(a.updatedAt),
           );
         }
         emit(ChatLoaded(messages: allMessages));
@@ -149,29 +165,29 @@ class ChatCubit extends Cubit<ChatState> {
   Future<void> loadSession(String sessionId) async {
     emit(ChatLoading());
     final cached = _loadMessages(sessionId);
-    final loggedIn = _isLoggedIn();
 
-    if (!loggedIn && cached.isNotEmpty) {
+    if (cached.isNotEmpty) {
       _currentSessionId = sessionId;
       emit(ChatLoaded(messages: cached));
     }
+
+    if (!_isLoggedIn()) return;
 
     final result = await getSessionByIdUseCase(sessionId);
     result.fold(
       (failure) {
         debugPrint('[ChatCubit] loadSession failed: ${failure.message}');
-        if (loggedIn && cached.isNotEmpty) {
-          _currentSessionId = sessionId;
-          emit(ChatLoaded(messages: cached));
-        } else if (cached.isEmpty) {
+        if (cached.isEmpty) {
           emit(ChatError(messages: [], message: failure.message));
         }
       },
       (session) async {
         _currentSessionId = session.id;
-        final messages = session.messages ?? [];
-        await _saveMessages(session.id, messages);
-        emit(ChatLoaded(messages: messages));
+        final apiMessages = session.messages ?? [];
+        if (cached.isEmpty && apiMessages.isNotEmpty) {
+          await _saveMessages(session.id, apiMessages);
+          emit(ChatLoaded(messages: apiMessages));
+        }
       },
     );
   }
@@ -239,21 +255,14 @@ class ChatCubit extends Cubit<ChatState> {
   }
 
   Future<void> deleteSession(String id) async {
-    final result = await deleteSessionUseCase(id);
-    result.fold(
-      (failure) {
-        debugPrint('[ChatCubit] deleteSession failed: ${failure.message}');
-        if (state is SessionsLoaded || state is ChatLoaded) {
-          emit(ChatError(messages: _currentMessages(), message: failure.message));
-        }
-      },
-      (_) async {
-      await _deleteMessages(id);
-      if (_currentSessionId == id) {
-        _currentSessionId = null;
-        emit(ChatInitial());
-      }
+    await _deleteMessages(id);
+    _cachedSessions.removeWhere((s) => s.id == id);
+    if (_currentSessionId == id) {
+      _currentSessionId = null;
+      emit(ChatInitial());
+    } else {
       loadSessions();
-    });
+    }
+    await deleteSessionUseCase(id);
   }
 }

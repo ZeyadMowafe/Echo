@@ -77,20 +77,6 @@ class _ProfileViewState extends State<ProfileView> {
     }
   }
 
-  String _formatTimeAgo(DateTime dateTime) {
-    final difference = DateTime.now().difference(dateTime);
-    final l10n = AppLocalizations.of(context);
-    if (difference.inDays >= 30) {
-      return l10n.timeAgoMinute((difference.inDays / 30).floor());
-    } else if (difference.inDays >= 1) {
-      return l10n.timeAgoDay(difference.inDays);
-    } else if (difference.inHours >= 1) {
-      return l10n.timeAgoHour(difference.inHours);
-    } else {
-      return l10n.timeAgoJustNow;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -592,141 +578,78 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   Widget _buildLogList(List<ScanLogEntity> logs) {
-    final l10n = AppLocalizations.of(context);
-    final appColors = AppColors.of(context);
-    return ListView.builder(
+    return GridView.builder(
       shrinkWrap: true,
-      padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.zero,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+        childAspectRatio: 78 / 95,
+      ),
       itemCount: logs.length,
       itemBuilder: (context, index) {
         final log = logs[index];
-        final name =
-            log.artifactName ??
-            log.artifactModelId ??
-            l10n.profileUnknownArtifact;
-        return Padding(
-          padding: EdgeInsets.only(bottom: 14.h),
-          child: CustomGlassContainer(
-            borderRadius: BorderRadius.circular(20.r),
-            borderColor: appColors.glassBase.withValues(alpha: 0.08),
-            color: appColors.bottomNavBar.withValues(alpha: 0.2),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                appColors.glassBase.withValues(alpha: 0.06),
-                appColors.glassBase.withValues(alpha: 0.01),
-              ],
-            ),
-            padding: EdgeInsets.all(6.r),
-            child: ListTile(
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: 10.w,
-                vertical: 2.h,
+        final imageUrl = log.imageUrl != null
+            ? 'https://echo-api-441520148279.me-central1.run.app${log.imageUrl}'
+            : null;
+        return GestureDetector(
+          onTap: () {
+            final scanHieroglyphs = log.hieroglyphsTranslation != null
+                ? ScanHieroglyphsEntity(
+                    detected: true,
+                    translation: log.hieroglyphsTranslation,
+                  )
+                : null;
+            final response = ScanResponseEntity(
+              status: 'completed',
+              processingTimeMs: 0,
+              artifact: ScanArtifactEntity(
+                isPrimaryModel: false,
+                artifactModelId: log.artifactModelId,
+                name: log.artifactName,
+                description: log.description,
+                era: log.era,
+                material: log.material,
+                category: log.category,
+                type: log.type,
+                imageUrl: log.imageUrl != null
+                    ? 'https://echo-api-441520148279.me-central1.run.app${log.imageUrl}'
+                    : null,
               ),
-              leading: Container(
-                width: 48.r,
-                height: 48.r,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: AppColors.secondary.withValues(alpha: 0.3),
-                    width: 1.5,
-                  ),
-                  gradient: LinearGradient(
-                    colors: [
-                      AppColors.secondary.withValues(alpha: 0.2),
-                      AppColors.secondary.withValues(alpha: 0.05),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: Icon(
-                  Icons.auto_awesome,
-                  color: AppColors.secondary,
-                  size: 20.r,
-                ),
-              ),
-              title: Text(
-                name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: appColors.footer,
-                  fontSize: 15.sp,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.3,
-                ),
-              ),
-              subtitle: Padding(
-                padding: EdgeInsets.only(top: 4.h),
-                child: Text(
-                  '${log.era ?? l10n.profileUnknownEra} \u2022 ${_formatTimeAgo(log.createdAt)}',
-                  style: TextStyle(
-                    color: appColors.footer.withValues(alpha: 0.5),
-                    fontSize: 12.sp,
+              hieroglyphs: scanHieroglyphs,
+              scanLogId: log.id,
+            );
+            Navigator.push(
+              context,
+              SmoothRoute(
+                type: TransitionType.fadeSlideUp,
+                page: BlocProvider.value(
+                  value: context.read<ScanCubit>(),
+                  child: DetailsView(
+                    args: ScanResultArgs(result: response, imagePath: null),
                   ),
                 ),
               ),
-              onTap: () {
-                final scanHieroglyphs = log.hieroglyphsTranslation != null
-                    ? ScanHieroglyphsEntity(
-                        detected: true,
-                        translation: log.hieroglyphsTranslation,
-                      )
-                    : null;
-                final response = ScanResponseEntity(
-                  status: 'completed',
-                  processingTimeMs: 0,
-                  artifact: ScanArtifactEntity(
-                    isPrimaryModel: false,
-                    artifactModelId: log.artifactModelId,
-                    name: log.artifactName,
-                    description: log.description,
-                    era: log.era,
-                    material: log.material,
-                    category: log.category,
-                    type: log.type,
-                    imageUrl: log.imageUrl != null
-                        ? 'https://echo-api-441520148279.me-central1.run.app${log.imageUrl}'
-                        : null,
-                  ),
-                  hieroglyphs: scanHieroglyphs,
-                  scanLogId: log.id,
-                );
-                Navigator.push(
-                  context,
-                  SmoothRoute(
-                    type: TransitionType.fadeSlideUp,
-                    page: BlocProvider.value(
-                      value: context.read<ScanCubit>(),
-                      child: DetailsView(
-                        args: ScanResultArgs(result: response, imagePath: null),
-                      ),
+            );
+          },
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8.r),
+            child: imageUrl != null
+                ? Image.network(
+                    imageUrl,
+                    width: 78.w,
+                    height: 95.h,
+                    fit: BoxFit.cover,
+                  )
+                : Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
+                    child: Icon(Icons.image_outlined, color: Colors.white54),
                   ),
-                );
-              },
-              trailing: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: appColors.footer.withValues(alpha: 0.03),
-                ),
-                child: IconButton(
-                  icon: Icon(
-                    log.isFavorited ? Icons.favorite : Icons.favorite_border,
-                    color: log.isFavorited
-                        ? Colors.redAccent
-                        : appColors.footer.withValues(alpha: 0.3),
-                    size: 18.r,
-                  ),
-                  onPressed: () =>
-                      context.read<ScanCubit>().toggleFavoriteScan(log.id),
-                ),
-              ),
-            ),
           ),
         );
       },

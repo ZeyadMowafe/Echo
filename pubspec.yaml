@@ -47,6 +47,8 @@ dependencies:
   get_it: ^8.0.3
   connectivity_plus: ^6.1.4
   camera: ^0.12.0+1
+  sensors_plus: ^6.1.1
+  image: ^4.5.3
   flutter_screenutil: ^5.9.0
   gap: ^3.0.1
   google_sign_in: ^6.3.0
@@ -71,10 +73,20 @@ flutter_native_splash:
   image: "assets/images/splash_icon_dark.png"
   android: true
   ios: true
+  fullscreen: true
 
+  # Dark mode (Android <12)
+  color_dark: "#0D1215"
+  image_dark: "assets/images/splash_icon_dark.png"
+
+  # Android 12+ (uses SplashScreen API)
   android_12:
     image: "assets/images/splash_icon_dark_android12.png"
     color: "#0D1215"
+    icon_background_color: "#0D1215"
+    image_dark: "assets/images/splash_icon_dark_android12.png"
+    color_dark: "#0D1215"
+    icon_background_color_dark: "#0D1215"
 
 flutter_launcher_icons:
   android: true

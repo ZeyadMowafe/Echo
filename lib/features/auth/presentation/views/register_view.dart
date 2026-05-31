@@ -139,11 +139,13 @@ class _RegisterViewState extends State<RegisterView> {
         centerTitle: true,
       ),
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFF0D1215), Color(0xFF1C252A)],
+            colors: Theme.of(context).brightness == Brightness.dark
+                ? const [Color(0xFF0D1215), Color(0xFF1C252A)]
+                : [Colors.white, Colors.white],
           ),
         ),
         child: GestureDetector(
@@ -305,7 +307,6 @@ class _RegisterViewState extends State<RegisterView> {
                           text: l10n.registerCreateAccount,
                           isLoading: isLoading,
                           isEnabled: _isFormValid,
-                          color: AppColors.secondary,
                           onTap: _submit,
                         ),
                         Gap(ScreenUtils.lg),

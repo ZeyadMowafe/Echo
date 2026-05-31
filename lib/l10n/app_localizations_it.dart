@@ -439,6 +439,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get authRegister => 'Registrati';
 
   @override
+  String get authLogin => 'Accedi';
+
+  @override
   String get registerTitle => 'Crea account';
 
   @override

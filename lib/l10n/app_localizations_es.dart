@@ -439,6 +439,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get authRegister => 'Registrarse';
 
   @override
+  String get authLogin => 'Iniciar sesión';
+
+  @override
   String get registerTitle => 'Crear cuenta';
 
   @override

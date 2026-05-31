@@ -79,11 +79,13 @@ class _AuthBottomSheetState extends State<AuthBottomSheet> {
     return ClipRRect(
       borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
       child: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFF0D1215), Color(0xFF1C252A)],
+            colors: Theme.of(context).brightness == Brightness.dark
+                ? const [Color(0xFF0D1215), Color(0xFF1C252A)]
+                : [Colors.white, Colors.white],
           ),
         ),
         child: SafeArea(
@@ -125,13 +127,13 @@ class _AuthBottomSheetState extends State<AuthBottomSheet> {
                       Gap(10.h),
                       Text(
                         l10n.authWelcomeBack,
-                        style: TextStyle(color: Colors.white, fontSize: 32.sp, fontWeight: FontWeight.w600, height: 1.2),
+                        style: TextStyle(color: AppColors.of(context).footer, fontSize: 32.sp, fontWeight: FontWeight.w600, height: 1.2),
                       ),
                       Gap(ScreenUtils.md),
                       Text(
                         widget.subtitle,
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 14.sp, fontWeight: FontWeight.w300, height: 1.4),
+                        style: TextStyle(color: AppColors.of(context).footer.withOpacity(0.85), fontSize: 14.sp, fontWeight: FontWeight.w300, height: 1.4),
                       ),
                       Gap(22.h),
                       AuthTextField(
@@ -173,7 +175,7 @@ class _AuthBottomSheetState extends State<AuthBottomSheet> {
                         onTap: _navigateToRegister,
                       ),
                       Gap(ScreenUtils.lg),
-                      Text(l10n.authOr, style: TextStyle(color: Colors.white, fontSize: 12.sp, fontWeight: FontWeight.bold)),
+                      Text(l10n.authOr, style: TextStyle(color: AppColors.of(context).footer, fontSize: 12.sp, fontWeight: FontWeight.bold)),
                       Gap(ScreenUtils.lg),
                       SocialAuthButton(
                         iconPath: "assets/icons/google_icon.svg",
@@ -191,10 +193,10 @@ class _AuthBottomSheetState extends State<AuthBottomSheet> {
                           child: Text(
                             l10n.authStayLoggedOut,
                             style: TextStyle(
-                              color: Colors.white,
+                              color: AppColors.of(context).footer,
                               fontSize: 15.sp,
                               decoration: TextDecoration.underline,
-                              decorationColor: Colors.white,
+                              decorationColor: AppColors.of(context).footer,
                             ),
                           ),
                         ),

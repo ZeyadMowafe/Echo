@@ -157,6 +157,7 @@
   "authPasswordHint": "كلمة المرور",
   "authContinue": "متابعة",
   "authRegister": "إنشاء حساب",
+  "authLogin": "تسجيل الدخول",
   "registerTitle": "إنشاء حساب",
   "registerNameHint": "الاسم الكامل",
   "registerPhoneHint": "رقم الهاتف",

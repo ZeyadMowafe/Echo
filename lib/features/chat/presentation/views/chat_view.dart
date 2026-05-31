@@ -217,6 +217,7 @@ class _ChatViewState extends State<ChatView> {
 
   Widget _buildTopBar(BuildContext context) {
     final isDark = context.watch<ThemeCubit>().state;
+    final l10n = AppLocalizations.of(context)!;
     return ClipRect(
       child: BackdropFilter(
         filter: ImageFilter.blur(
@@ -271,46 +272,53 @@ class _ChatViewState extends State<ChatView> {
                         context,
                         AppRoutes.authView,
                       ),
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 16.w,
-                          vertical: 6.h,
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(24.r),
-                          border: Border.all(
-                            color: isDark
-                                ? const Color(0x1AFFFFFF)
-                                : const Color(0xFF162410),
-                          ),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(24.r),
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: isDark
-                                      ? [
-                                          const Color(0x4D0D1215),
-                                          const Color(0x4D0D1215),
-                                        ]
-                                      : [
-                                          const Color(0x4D162410),
-                                          const Color(0x4D162410),
-                                        ],
-                                ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(50.r),
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 35, sigmaY: 35),
+                          child: Container(
+                            width: 63.w,
+                            height: 29.h,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 14.w,
+                              vertical: 7.h,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50.r),
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors:
+                                    Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? const [
+                                        Color(0x05FFFFFF),
+                                        Color(0x00FFFFFF),
+                                      ]
+                                    : const [
+                                        Color(0x05000000),
+                                        Color(0x00000000),
+                                      ],
                               ),
+                              border: Border.all(
+                                color:
+                                    Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? const Color(0x1AFFFFFF)
+                                    : Colors.black,
+                                width: 1,
+                              ),
+                            ),
+                            child: Center(
                               child: Text(
-                                'Login',
+                                l10n.authLogin,
                                 style: TextStyle(
-                                  color: isDark
-                                      ? AppColors.cffffff
-                                      : AppColors.c000000,
-                                  fontSize: 13.sp,
+                                  color:
+                                      Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black,
+                                  fontSize: 11.sp,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),

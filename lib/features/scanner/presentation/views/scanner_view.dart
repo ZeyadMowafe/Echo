@@ -13,6 +13,8 @@ import 'package:echo_explorer/core/widgets/custom_glass_drawer.dart';
 import 'package:echo_explorer/features/chat/presentation/views/chat_view.dart';
 import 'package:echo_explorer/features/home/presentation/view_model/features_cubit.dart';
 import 'package:echo_explorer/features/scanner/data/models/scan_result_args.dart';
+import 'package:echo_explorer/features/scanner/domain/entities/scan_artifact_entity.dart';
+import 'package:echo_explorer/features/scanner/domain/entities/scan_response_entity.dart';
 import 'package:echo_explorer/features/scanner/presentation/cubit/scan_cubit.dart';
 import 'package:echo_explorer/features/scanner/presentation/views/camera_scanner_view.dart';
 import 'package:echo_explorer/features/scanner/presentation/views/details_view.dart';
@@ -75,6 +77,20 @@ class _ScannerBodyState extends State<_ScannerBody> {
                   onToggleTranslation: () =>
                       setState(() => _showTranslation = !_showTranslation),
                 );
+              if (state is ScanAnchored)
+                return _buildPreview(
+                  context,
+                  imagePath: state.imagePath ?? '',
+                  result: ScanResultLoaded(
+                    result: state.result,
+                    imagePath: state.imagePath,
+                    isFavorited: state.isFavorited,
+                  ),
+                  showTranslation: _showTranslation,
+                  onToggleTranslation: () =>
+                      setState(() => _showTranslation = !_showTranslation),
+                );
+              if (state is ScanFilterRejected) return _buildFilterRejected(context, state);
               if (state is ScanError) return _buildError(context, state);
               return _buildHome(context);
             },
@@ -1044,6 +1060,38 @@ class _ScannerBodyState extends State<_ScannerBody> {
                   ),
                 ),
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilterRejected(BuildContext context, ScanFilterRejected state) {
+    final l10n = AppLocalizations.of(context)!;
+    final isBlurry = state.sharpness != null;
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(ScreenUtils.xl),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              isBlurry ? Icons.blur_on : Icons.image_not_supported_outlined,
+              size: ScreenUtils.iconXl,
+              color: Colors.orange.withValues(alpha: 0.6),
+            ),
+            Gap(ScreenUtils.md),
+            Text(
+              state.reason,
+              style: TextStyle(color: Colors.orange, fontSize: 15.sp),
+              textAlign: TextAlign.center,
+            ),
+            Gap(ScreenUtils.lg),
+            _ScanButton(
+              icon: Icons.refresh,
+              label: l10n.scanTryAgain,
+              onTap: () => context.read<ScanCubit>().clearResult(),
             ),
           ],
         ),

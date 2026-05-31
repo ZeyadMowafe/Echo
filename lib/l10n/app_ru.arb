@@ -206,6 +206,7 @@
   "detailsChatWithMe": "Поговорить со мной",
 
   "authRegister": "Зарегистрироваться",
+  "authLogin": "Войти",
   "registerTitle": "Создать аккаунт",
   "registerNameHint": "Полное имя",
   "registerPhoneHint": "Номер телефона",

@@ -41,6 +41,19 @@ class ScanDetailLoaded extends ScanState {
   ScanDetailLoaded({required this.scanLog});
 }
 
+class ScanFilterRejected extends ScanState {
+  final String reason;
+  final double? sharpness;
+  ScanFilterRejected({required this.reason, this.sharpness});
+}
+
+class ScanAnchored extends ScanState {
+  final ScanResponseEntity result;
+  final String? imagePath;
+  final bool isFavorited;
+  ScanAnchored({required this.result, this.imagePath, this.isFavorited = false});
+}
+
 class ScanError extends ScanState {
   final String message;
   ScanError({required this.message});

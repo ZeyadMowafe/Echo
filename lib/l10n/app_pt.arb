@@ -206,6 +206,7 @@
   "detailsChatWithMe": "Conversar comigo",
 
   "authRegister": "Registrar",
+  "authLogin": "Entrar",
   "registerTitle": "Criar conta",
   "registerNameHint": "Nome completo",
   "registerPhoneHint": "Número de telefone",

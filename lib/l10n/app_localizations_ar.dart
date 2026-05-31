@@ -438,6 +438,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get authRegister => 'إنشاء حساب';
 
   @override
+  String get authLogin => 'تسجيل الدخول';
+
+  @override
   String get registerTitle => 'إنشاء حساب';
 
   @override

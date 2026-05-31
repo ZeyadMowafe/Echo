@@ -74,11 +74,13 @@ class _AuthViewState extends State<AuthView> {
 
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFF0D1215), Color(0xFF1C252A)],
+            colors: Theme.of(context).brightness == Brightness.dark
+                ? const [Color(0xFF0D1215), Color(0xFF1C252A)]
+                : [Colors.white, Colors.white],
           ),
         ),
         child: GestureDetector(
@@ -184,7 +186,7 @@ class _AuthViewState extends State<AuthView> {
                           PrimaryContinueButton(
                             text: l10n.authRegister,
                             isLoading: isLoading,
-                            color: AppColors.secondary,
+                            color: AppColors.c162410,
                             onTap: () => Navigator.pushNamed(
                               context,
                               AppRoutes.registerView,

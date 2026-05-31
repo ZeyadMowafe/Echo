@@ -11,6 +11,7 @@ import 'package:echo_explorer/core/widgets/custom_glass_back_button.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_drawer.dart';
 import 'package:echo_explorer/features/home/presentation/cubit/features_cubit.dart';
 import 'package:echo_explorer/features/scanner/data/models/scan_result_args.dart';
+import 'package:echo_explorer/features/scanner/domain/entities/scan_response_entity.dart';
 import 'package:echo_explorer/features/scanner/presentation/cubit/scan_cubit.dart';
 import 'package:echo_explorer/features/scanner/presentation/views/details_view.dart';
 import 'package:echo_explorer/features/chat/presentation/views/chat_view.dart';
@@ -39,22 +40,52 @@ class _CameraScannerViewState extends State<CameraScannerView> {
   String? _capturedImagePath;
   bool _showTranslation = false;
   bool _showFullTranslation = false;
-  Timer? _scanTimer;
+  bool _isStable = false;
+  Timer? _panAwayTimer;
+  StreamSubscription<bool>? _stabilitySub;
+  StreamSubscription<bool>? _cooldownSub;
 
   @override
   void initState() {
     super.initState();
     if (widget.initialImagePath != null) {
       setState(() => _isInitialized = true);
-      _startScanTimer();
     } else {
       _initCamera();
     }
-  }
-
-  void _startScanTimer() {
-    _scanTimer = Timer(const Duration(seconds: 3), () {
-      if (mounted) _onScanComplete();
+    // Use the unified pipeline from ScanCubit
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final cubit = context.read<ScanCubit>();
+      cubit.pipeline.startMotionDetection();
+      _stabilitySub = cubit.pipeline.stabilityStream.listen((stable) {
+        if (!mounted) return;
+        setState(() => _isStable = stable);
+        // Gate 4 reset: only reset if user keeps moving for ~1.5s
+        if (_phase == _ScanPhase.result && cubit.state is ScanAnchored) {
+          if (!stable) {
+            _panAwayTimer ??= Timer(const Duration(seconds: 3), () {
+              if (!mounted) return;
+              final cubit = context.read<ScanCubit>();
+              if (cubit.state is! ScanAnchored) return;
+              cubit.onPanAway();
+              setState(() {
+                _phase = _ScanPhase.scanning;
+                _isScanning = false;
+                _capturedImagePath = null;
+                _showTranslation = false;
+                _showFullTranslation = false;
+                _controller = null;
+                _isInitialized = false;
+              });
+              _initCamera();
+            });
+          } else {
+            _panAwayTimer?.cancel();
+            _panAwayTimer = null;
+          }
+        }
+      });
     });
   }
 
@@ -65,17 +96,11 @@ class _CameraScannerViewState extends State<CameraScannerView> {
     await _controller!.initialize();
     if (mounted) {
       setState(() => _isInitialized = true);
-      _startScanTimer();
     }
   }
 
-  void _startScan() {
-    setState(() => _isScanning = true);
-  }
-
-  Future<void> _onScanComplete() async {
-    if (_isDone) return;
-    _isDone = true;
+  Future<void> _onCapturePressed() async {
+    if (_isScanning || _isDone) return;
     setState(() => _isScanning = true);
     String? path;
     if (widget.initialImagePath != null) {
@@ -96,7 +121,12 @@ class _CameraScannerViewState extends State<CameraScannerView> {
 
   @override
   void dispose() {
-    _scanTimer?.cancel();
+    _panAwayTimer?.cancel();
+    _stabilitySub?.cancel();
+    _cooldownSub?.cancel();
+    if (mounted) {
+      context.read<ScanCubit>().pipeline.stopMotionDetection();
+    }
     if (!_isDone) {
       _controller?.dispose();
       _controller = null;
@@ -104,14 +134,24 @@ class _CameraScannerViewState extends State<CameraScannerView> {
     super.dispose();
   }
 
+  /// Extract result data from either ScanResultLoaded or ScanAnchored
+  ({bool present, ScanResponseEntity? result, String? imagePath, bool isFav}) _resultFrom(ScanState s) {
+    if (s is ScanResultLoaded) return (present: true, result: s.result, imagePath: s.imagePath, isFav: s.isFavorited);
+    if (s is ScanAnchored) return (present: true, result: s.result, imagePath: s.imagePath, isFav: s.isFavorited);
+    return (present: false, result: null, imagePath: null, isFav: false);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final scanState = context.watch<ScanCubit>().state;
-    if (scanState is ScanResultLoaded && _phase == _ScanPhase.analyzing) {
-      _phase = _ScanPhase.result;
-    } else if (scanState is ScanError && _phase == _ScanPhase.analyzing) {
-      _phase = _ScanPhase.error;
+    final resultData = _resultFrom(scanState);
+    if (_phase == _ScanPhase.analyzing) {
+      if (scanState is ScanResultLoaded || scanState is ScanAnchored) {
+        _phase = _ScanPhase.result;
+      } else if (scanState is ScanError) {
+        _phase = _ScanPhase.error;
+      }
     }
     return Scaffold(
       backgroundColor: Colors.black,
@@ -183,9 +223,58 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                 top: 202.h + 463.h + 20.h,
                 child: Center(child: AppLoading.scanner()),
               ),
+            // Capture button (Gate 1: only visible when stable + not scanning)
+            if (_phase == _ScanPhase.scanning && !_isScanning)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: MediaQuery.of(context).padding.bottom + 70.h,
+                child: Center(
+                  child: GestureDetector(
+                    onTap: _isStable ? _onCapturePressed : null,
+                    child: Container(
+                      width: 72.r,
+                      height: 72.r,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _isStable
+                            ? Colors.white
+                            : Colors.white.withValues(alpha: 0.3),
+                        border: Border.all(
+                          color: _isStable
+                              ? Colors.white
+                              : Colors.white.withValues(alpha: 0.3),
+                          width: 4,
+                        ),
+                        boxShadow: _isStable
+                            ? [
+                                BoxShadow(
+                                  color: Colors.white.withValues(alpha: 0.4),
+                                  blurRadius: 16,
+                                  spreadRadius: 2,
+                                ),
+                              ]
+                            : null,
+                      ),
+                      child: Center(
+                        child: Container(
+                          width: 60.r,
+                          height: 60.r,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: _isStable
+                                ? Colors.white
+                                : Colors.transparent,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             // Result overlay card (hidden when translation is shown)
             if (_phase == _ScanPhase.result &&
-                scanState is ScanResultLoaded &&
+                resultData.present &&
                 !_showTranslation)
               Positioned(
                 left: 12.w,
@@ -217,7 +306,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            scanState.result.artifact.name ?? 'Artifact',
+                            resultData.result?.artifact.name ?? 'Artifact',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 20.sp,
@@ -230,7 +319,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                           Builder(
                             builder: (context) {
                               final parts = <String>[];
-                              final a = scanState.result.artifact;
+                              final a = resultData.result!.artifact;
                               if (a.era != null) parts.add(a.era!);
                               if (a.material != null) parts.add(a.material!);
                               if (a.category != null) parts.add(a.category!);
@@ -254,11 +343,11 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                           SizedBox(height: 12.h),
                           Row(
                             children: [
-                              if (scanState.result.artifact.isPrimaryModel &&
-                                  scanState.result.artifact.artifactModelId != null)
+                              if (resultData.result!.artifact.isPrimaryModel &&
+                                  resultData.result!.artifact.artifactModelId != null)
                                 GestureDetector(
                                   onTap: () {
-                                    final artifact = scanState.result.artifact;
+                                    final artifact = resultData.result!.artifact;
                                     Navigator.push(
                                       context,
                                       SmoothRoute(
@@ -307,8 +396,8 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                                     ),
                                   ),
                                 ),
-                              if (scanState.result.artifact.isPrimaryModel &&
-                                  scanState.result.artifact.artifactModelId != null)
+                              if (resultData.result!.artifact.isPrimaryModel &&
+                                  resultData.result!.artifact.artifactModelId != null)
                                 const Spacer(),
                               GestureDetector(
                                 onTap: () {
@@ -320,8 +409,8 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                                         value: context.read<ScanCubit>(),
                                         child: DetailsView(
                                           args: ScanResultArgs(
-                                            result: scanState.result,
-                                            imagePath: scanState.imagePath,
+                                            result: resultData.result!,
+                                            imagePath: resultData.imagePath,
                                           ),
                                         ),
                                       ),
@@ -383,8 +472,8 @@ class _CameraScannerViewState extends State<CameraScannerView> {
               ),
             // Hieroglyphs translation toggle button
             if (_phase == _ScanPhase.result &&
-                scanState is ScanResultLoaded &&
-                scanState.result.hieroglyphs?.translation != null)
+                resultData.present &&
+                resultData.result?.hieroglyphs?.translation != null)
               PositionedDirectional(
                 end: 17.w,
                 top: 163.h,
@@ -446,8 +535,8 @@ class _CameraScannerViewState extends State<CameraScannerView> {
               ),
             // Translation card overlay (top position)
             if (_phase == _ScanPhase.result &&
-                scanState is ScanResultLoaded &&
-                scanState.result.hieroglyphs?.translation != null &&
+                resultData.present &&
+                resultData.result?.hieroglyphs?.translation != null &&
                 _showTranslation &&
                 !_showFullTranslation)
               Positioned(
@@ -503,7 +592,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                                   setState(() => _showFullTranslation = true),
                               child: Text(
                                 textAlign: TextAlign.center,
-                                scanState.result.hieroglyphs!.translation!,
+                                resultData.result!.hieroglyphs!.translation!,
                                 style: TextStyle(
                                   color: Colors.white.withValues(alpha: 0.85),
                                   fontSize: 14.sp,
@@ -522,8 +611,8 @@ class _CameraScannerViewState extends State<CameraScannerView> {
             // Full translation detail overlay
             if (_showFullTranslation &&
                 _phase == _ScanPhase.result &&
-                scanState is ScanResultLoaded &&
-                scanState.result.hieroglyphs?.translation != null)
+                resultData.present &&
+                resultData.result?.hieroglyphs?.translation != null)
               Positioned(
                 left: 12.w,
                 top: 611.h,
@@ -588,7 +677,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                             Expanded(
                               child: SingleChildScrollView(
                                 child: Text(
-                                  scanState.result.hieroglyphs!.translation!,
+                                  resultData.result!.hieroglyphs!.translation!,
                                   style: TextStyle(
                                     color: Colors.white.withValues(alpha: 0.85),
                                     fontSize: 14.sp,
@@ -657,10 +746,24 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                     CustomGlassBackButton(
                       iconColor: Colors.white,
                       onPressed: () {
-                        _isDone = true;
-                        _controller?.dispose();
-                        _controller = null;
-                        Navigator.pop(context);
+                        if (_phase == _ScanPhase.result) {
+                          context.read<ScanCubit>().clearResult();
+                          setState(() {
+                            _phase = _ScanPhase.scanning;
+                            _isScanning = false;
+                            _capturedImagePath = null;
+                            _showTranslation = false;
+                            _showFullTranslation = false;
+                            _controller = null;
+                            _isInitialized = false;
+                          });
+                          _initCamera();
+                        } else {
+                          _isDone = true;
+                          _controller?.dispose();
+                          _controller = null;
+                          Navigator.pop(context);
+                        }
                       },
                     ),
                     const Spacer(),

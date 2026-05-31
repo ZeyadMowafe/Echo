@@ -1,4 +1,6 @@
+import 'package:echo_explorer/core/hive/cache_helper.dart';
 import 'package:echo_explorer/core/routing/app_transitions.dart';
+import 'package:echo_explorer/core/di/injection_container.dart';
 import 'package:echo_explorer/core/routing/routes.dart';
 import 'package:echo_explorer/features/auth/presentation/views/auth_view.dart';
 import 'package:echo_explorer/features/auth/presentation/views/register_view.dart';
@@ -10,9 +12,10 @@ import 'package:echo_explorer/features/home/presentation/views/home_view.dart';
 import 'package:echo_explorer/features/onboarding/presentation/views/onboarding_view.dart';
 import 'package:echo_explorer/features/profile/presentation/views/edit_profile_view.dart';
 import 'package:echo_explorer/features/profile/presentation/views/settings_view.dart';
-import 'package:echo_explorer/features/scanner/presentation/views/scanner_view.dart';
-import 'package:echo_explorer/core/hive/cache_helper.dart';
+import 'package:echo_explorer/features/scanner/presentation/cubit/scan_cubit.dart';
+import 'package:echo_explorer/features/scanner/presentation/views/camera_scanner_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AppRouter {
   Route generateRoute(RouteSettings settings) {
@@ -69,7 +72,10 @@ class AppRouter {
         return SmoothRoute(
           settings: settings,
           type: TransitionType.fadeSlideUp,
-          page: const ScannerView(),
+          page: BlocProvider(
+            create: (_) => sl<ScanCubit>(),
+            child: const CameraScannerView(),
+          ),
         );
 
       case AppRoutes.settingsView:

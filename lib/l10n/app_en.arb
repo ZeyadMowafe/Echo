@@ -156,6 +156,7 @@
   "authPasswordHint": "Password",
   "authContinue": "Continue",
   "authRegister": "Register",
+  "authLogin": "Login",
   "registerTitle": "Create Account",
   "registerNameHint": "Full Name",
   "registerPhoneHint": "Phone Number",

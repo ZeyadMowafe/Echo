@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:echo_explorer/core/constants/app_colors.dart';
 import 'package:echo_explorer/core/helpers/screen_utils.dart';
+import 'package:echo_explorer/core/routing/routes.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_back_button.dart';
 import 'package:echo_explorer/features/chat/domain/entities/session_entity.dart';
 import 'package:echo_explorer/l10n/app_localizations.dart';
@@ -197,38 +198,37 @@ class _ChatSideDrawerState extends State<ChatSideDrawer> {
   }
 
   Widget _buildNewChatButton() {
-    return Container(
-      width: 77.w,
-      height: 35.h,
-      padding: EdgeInsets.all(10.r),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(ScreenUtils.radiusSm),
-        gradient: LinearGradient(
-          colors: [
-            AppColors.cffffff.withValues(alpha: 0.10),
-            AppColors.cffffff.withValues(alpha: 0.02),
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
+    final l10n = AppLocalizations.of(context)!;
+    return IntrinsicWidth(
+      child: Container(
+        height: 35.h,
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(ScreenUtils.radiusSm),
+          gradient: LinearGradient(
+            colors: [
+              AppColors.cffffff.withValues(alpha: 0.10),
+              AppColors.cffffff.withValues(alpha: 0.02),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
         ),
-      ),
-      child: InkWell(
-        onTap: () {
-          Navigator.pop(context);
-          widget.onNewChat();
-        },
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'New Chat',
+        child: InkWell(
+          onTap: () {
+            Navigator.pop(context);
+            widget.onNewChat();
+          },
+          child: Center(
+            child: Text(
+              l10n.chatNewChat,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w600,
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -338,13 +338,16 @@ class _ChatSideDrawerState extends State<ChatSideDrawer> {
   }
 
   Widget _buildSettings() {
-    return Container(
-      width: 105.w,
-      height: 43.38.h,
+    final l10n = AppLocalizations.of(context)!;
+    return Padding(
       padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 10.h),
       child: InkWell(
-        onTap: () => Navigator.pop(context),
+        onTap: () {
+          Navigator.pop(context);
+          Navigator.pushNamed(context, AppRoutes.settingsView);
+        },
         child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               Icons.settings_outlined,
@@ -352,16 +355,12 @@ class _ChatSideDrawerState extends State<ChatSideDrawer> {
               size: ScreenUtils.iconMd,
             ),
             Gap(8.w),
-
-            Flexible(
-              child: Text(
-                'Settings',
-                style: TextStyle(
-                  color: AppColors.cffffff,
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.normal,
-                ),
-                maxLines: 1,
+            Text(
+              l10n.drawerSettings,
+              style: TextStyle(
+                color: AppColors.cffffff,
+                fontSize: 16.sp,
+                fontWeight: FontWeight.normal,
               ),
             ),
           ],

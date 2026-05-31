@@ -23,7 +23,7 @@ abstract class BaseThemeColors {
 
 class _LightColors implements BaseThemeColors {
   @override
-  final background = const Color(0xFFE9EBE9);
+  final background = const Color(0xFFFFFFFF);
   @override
   final icons = const Color(0xFF162410);
   @override
@@ -86,6 +86,7 @@ class AppColors {
   static var cffffff = const Color(0xFFFFFFFF);
   static var c000000 = const Color(0xFF000000);
   static var secondary = const Color(0xFF568D3F);
+
 
   static final BaseThemeColors light = _LightColors();
   static final BaseThemeColors dark = _DarkColors();

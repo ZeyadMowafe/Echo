@@ -435,6 +435,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get authRegister => '登録';
 
   @override
+  String get authLogin => 'ログイン';
+
+  @override
   String get registerTitle => 'アカウント作成';
 
   @override

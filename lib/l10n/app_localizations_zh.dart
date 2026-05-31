@@ -428,6 +428,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get authRegister => '注册';
 
   @override
+  String get authLogin => '登录';
+
+  @override
   String get registerTitle => '创建账户';
 
   @override

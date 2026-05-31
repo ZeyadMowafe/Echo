@@ -908,6 +908,12 @@ abstract class AppLocalizations {
   /// **'Register'**
   String get authRegister;
 
+  /// No description provided for @authLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Login'**
+  String get authLogin;
+
   /// No description provided for @registerTitle.
   ///
   /// In en, this message translates to:

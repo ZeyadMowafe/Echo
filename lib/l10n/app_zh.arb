@@ -206,6 +206,7 @@
   "detailsChatWithMe": "与我聊天",
 
   "authRegister": "注册",
+  "authLogin": "登录",
   "registerTitle": "创建账户",
   "registerNameHint": "全名",
   "registerPhoneHint": "电话号码",

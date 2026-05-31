@@ -435,6 +435,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get authRegister => '등록';
 
   @override
+  String get authLogin => '로그인';
+
+  @override
   String get registerTitle => '계정 만들기';
 
   @override

@@ -29,41 +29,24 @@ class PrimaryContinueButton extends StatelessWidget {
       child: InkWell(
         onTap: isEnabled && !isLoading ? onTap : null,
         borderRadius: BorderRadius.circular(50.r),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(50.r),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 35, sigmaY: 35),
-            child: Container(
-              width: 290.w,
-              height: 45.h,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50.r),
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.white.withOpacity(0.02 * opacity),
-                    Colors.white.withOpacity(0),
-                  ],
-                ),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.10 * opacity),
-                  strokeAlign: BorderSide.strokeAlignInside,
-                ),
-              ),
-              child: Center(
-                child: isLoading
-                    ? AppLoading.button()
-                    : Text(
-                        text,
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(opacity),
-                          fontSize: 15.sp,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-              ),
-            ),
+        child: Container(
+          width: 290.w,
+          height: 45.h,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(50.r),
+            color: (color ?? AppColors.c162410).withOpacity(opacity),
+          ),
+          child: Center(
+            child: isLoading
+                ? AppLoading.button()
+                : Text(
+                    text,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(opacity),
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
           ),
         ),
       ),
@@ -84,15 +67,18 @@ class SocialAuthButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final baseColor = isDark ? Colors.white : AppColors.of(context).footer;
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(50.r),
+
         child: ClipRRect(
           borderRadius: BorderRadius.circular(50.r),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 35, sigmaY: 35),
+            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
             child: Container(
               width: double.infinity,
               height: 45.h,
@@ -102,12 +88,12 @@ class SocialAuthButton extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.white.withOpacity(0.02),
-                    Colors.white.withOpacity(0),
+                    baseColor.withOpacity(0.02),
+                    baseColor.withOpacity(0),
                   ],
                 ),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.10),
+                  color: baseColor.withOpacity(0.10),
                   strokeAlign: BorderSide.strokeAlignInside,
                 ),
               ),
@@ -120,7 +106,7 @@ class SocialAuthButton extends StatelessWidget {
                   Text(
                     label,
                     style: TextStyle(
-                      color: Colors.white,
+                      color: baseColor,
                       fontSize: 13.sp,
                       fontWeight: FontWeight.w400,
                     ),
@@ -177,11 +163,13 @@ class _AuthTextFieldState extends State<AuthTextField> {
   @override
   Widget build(BuildContext context) {
     final hasError = _errorText != null;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final baseColor = isDark ? Colors.white : AppColors.c162410;
     final borderColor = hasError
         ? Colors.redAccent
         : _isFocused
-        ? Colors.white.withOpacity(0.25)
-        : Colors.white.withOpacity(0.10);
+        ? baseColor
+        : baseColor.withOpacity(0.25);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -198,14 +186,17 @@ class _AuthTextFieldState extends State<AuthTextField> {
               constraints: BoxConstraints(minHeight: 45.h),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.white.withOpacity(0.02),
-                    Colors.white.withOpacity(0),
-                  ],
-                ),
+                color: isDark ? null : AppColors.of(context).background,
+                gradient: isDark
+                    ? LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          baseColor.withOpacity(0.02),
+                          baseColor.withOpacity(0),
+                        ],
+                      )
+                    : null,
                 border: Border.all(
                   color: borderColor,
                   strokeAlign: BorderSide.strokeAlignInside,

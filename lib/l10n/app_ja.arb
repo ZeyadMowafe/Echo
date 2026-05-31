@@ -206,6 +206,7 @@
   "detailsChatWithMe": "チャットする",
 
   "authRegister": "登録",
+  "authLogin": "ログイン",
   "registerTitle": "アカウント作成",
   "registerNameHint": "氏名",
   "registerPhoneHint": "電話番号",
