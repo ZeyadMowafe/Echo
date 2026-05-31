@@ -5,10 +5,13 @@ import 'package:hive/hive.dart';
 class CacheHelper {
   static var isOnboardingCompleted;
   static final String _appSettingsBox = AppStrings.hiveKeys.cacheHelper.boxName;
+  static final _memoryCache = <String, dynamic>{};
+
   static Future<void> putData({
     required String key,
     required dynamic value,
   }) async {
+    _memoryCache[key] = value;
     try {
       var box = Hive.box(_appSettingsBox);
       await box.put(key, value);
@@ -18,9 +21,12 @@ class CacheHelper {
   }
 
   static dynamic getData({required String key, dynamic defaultValue}) {
+    if (_memoryCache.containsKey(key)) return _memoryCache[key] ?? defaultValue;
     try {
       var box = Hive.box(_appSettingsBox);
-      return box.get(key, defaultValue: defaultValue);
+      final value = box.get(key, defaultValue: defaultValue);
+      _memoryCache[key] = value;
+      return value;
     } catch (e) {
       debugPrint('[CacheHelper] getData failed: $e');
       return defaultValue;
@@ -28,6 +34,7 @@ class CacheHelper {
   }
 
   static Future<void> deleteData({required String key}) async {
+    _memoryCache.remove(key);
     try {
       var box = Hive.box(_appSettingsBox);
       await box.delete(key);

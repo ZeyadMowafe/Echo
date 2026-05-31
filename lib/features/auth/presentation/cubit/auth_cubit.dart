@@ -1,18 +1,21 @@
 import 'package:echo_explorer/core/error/failures.dart';
 import 'package:echo_explorer/core/hive/cache_helper.dart';
 import 'package:echo_explorer/core/usecases/usecase.dart';
+import 'package:echo_explorer/features/auth/domain/usecases/google_login_usecase.dart';
 import 'package:echo_explorer/features/auth/domain/usecases/login_usecase.dart';
 import 'package:echo_explorer/features/auth/domain/usecases/register_usecase.dart';
 import 'package:echo_explorer/features/auth/domain/usecases/get_profile_usecase.dart';
 import 'package:echo_explorer/features/auth/domain/usecases/update_profile_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   final LoginUseCase loginUseCase;
   final RegisterUseCase registerUseCase;
+  final GoogleLoginUseCase googleLoginUseCase;
   final GetProfileUseCase getProfileUseCase;
   final UpdateProfileUseCase updateProfileUseCase;
 
@@ -21,6 +24,7 @@ class AuthCubit extends Cubit<AuthState> {
   AuthCubit({
     required this.loginUseCase,
     required this.registerUseCase,
+    required this.googleLoginUseCase,
     required this.getProfileUseCase,
     required this.updateProfileUseCase,
   }) : super(AuthInitial()) {
@@ -64,8 +68,9 @@ class AuthCubit extends Cubit<AuthState> {
       (failure) async {
         final isNotFound = failure is ServerFailure && failure.statusCode == 404;
         if (isNotFound) {
+          final lang = CacheHelper.getData(key: 'localeLanguageCode') ?? 'en';
           final registerResult = await registerUseCase(
-            RegisterParams(email: email, password: password, name: email.split('@').first),
+            RegisterParams(email: email, password: password, name: email.split('@').first, lang: lang),
           );
           registerResult.fold(
             (regFailure) {
@@ -80,6 +85,26 @@ class AuthCubit extends Cubit<AuthState> {
           emit(AuthError(message: failure.message));
         }
       },
+      (user) {
+        _saveUserData(user.token, user.name, user.email);
+        emit(Authenticated(userName: user.name, userEmail: user.email, token: user.token));
+      },
+    );
+  }
+
+  Future<void> registerWithEmail({
+    required String email,
+    required String password,
+    required String name,
+    String? phone,
+    String lang = 'en',
+  }) async {
+    emit(AuthLoading());
+    final result = await registerUseCase(
+      RegisterParams(email: email, password: password, name: name, lang: lang),
+    );
+    result.fold(
+      (failure) => emit(AuthError(message: failure.message)),
       (user) {
         _saveUserData(user.token, user.name, user.email);
         emit(Authenticated(userName: user.name, userEmail: user.email, token: user.token));
@@ -107,6 +132,50 @@ class AuthCubit extends Cubit<AuthState> {
         emit(Authenticated(userName: newName, userEmail: email, token: token));
       },
     );
+  }
+
+  Future<void> googleSignIn() async {
+    emit(AuthLoading());
+    try {
+      final googleUser = await _signInWithGoogle();
+      if (googleUser == null) {
+        emit(AuthError(message: 'Google sign-in cancelled'));
+        return;
+      }
+      final idToken = await googleUser.authentication;
+      if (idToken.idToken == null) {
+        emit(AuthError(message: 'Failed to get Google ID token'));
+        return;
+      }
+      final result = await googleLoginUseCase(GoogleLoginParams(idToken: idToken.idToken!));
+      result.fold(
+        (failure) => emit(AuthError(message: failure.message)),
+        (user) {
+          _saveUserData(user.token, user.name, user.email);
+          emit(Authenticated(userName: user.name, userEmail: user.email, token: user.token));
+        },
+      );
+    } catch (e) {
+      emit(AuthError(message: 'Google sign-in failed: $e'));
+    }
+  }
+
+  Future<dynamic> _signInWithGoogle() async {
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn(
+        // Web Client ID من Google Cloud Console → APIs & Services → Credentials
+        // اختار OAuth 2.0 Client ID → Web client → انسخ Client ID
+        serverClientId: '441520148279-6d0c4rjrb8gl5i0elsf4mi340u1bnb66.apps.googleusercontent.com',
+        scopes: ['email', 'profile'],
+      );
+      await googleSignIn.signOut(); // ensure fresh login every time
+      final account = await googleSignIn.signIn();
+      if (account == null) return null;
+      return account;
+    } catch (e) {
+      debugPrint('Google sign-in error: $e');
+      return null;
+    }
   }
 
   Future<void> logout() async {

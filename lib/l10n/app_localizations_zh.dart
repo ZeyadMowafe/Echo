@@ -413,7 +413,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get authWelcomeBack => '欢迎回来';
 
   @override
-  String get authSubtitleDefault => '要登录或创建帐户，请输入您的电子邮件地址。';
+  String get authSubtitleDefault => '登录您的账户';
 
   @override
   String get authEmailHint => '电子邮件地址';
@@ -423,6 +423,30 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get authContinue => '继续';
+
+  @override
+  String get authRegister => '注册';
+
+  @override
+  String get registerTitle => '创建账户';
+
+  @override
+  String get registerNameHint => '全名';
+
+  @override
+  String get registerPhoneHint => '电话号码';
+
+  @override
+  String get registerLanguageHint => '首选语言';
+
+  @override
+  String get registerConfirmPasswordHint => '确认密码';
+
+  @override
+  String get registerCreateAccount => '创建账户';
+
+  @override
+  String get registerPasswordMismatch => '密码不匹配';
 
   @override
   String get authOr => '或';
@@ -470,60 +494,260 @@ class AppLocalizationsZh extends AppLocalizations {
   String get profileUpdatedSuccessfully => '个人资料更新成功！';
 
   @override
-  String get scanTitle => 'Scan Artifacts & Decode Hieroglyphs';
+  String get scanTitle => '扫描文物并解码象形文字';
 
   @override
-  String get scanSubtitle =>
-      'Take a photo of any ancient Egyptian artifact to identify it and translate its hieroglyphs.';
+  String get scanSubtitle => '拍摄任何古埃及文物的照片，以识别它并翻译其象形文字。';
 
   @override
-  String get scanTakePhoto => 'Take Photo';
+  String get scanTakePhoto => '拍照';
 
   @override
-  String get scanPickGallery => 'Pick from Gallery';
+  String get scanPickGallery => '从相册中选择';
 
   @override
-  String get scanAnalyzeArtifact => 'Analyze Artifact';
+  String get scanAnalyzeArtifact => '分析文物';
 
   @override
-  String get scanDifferentPhoto => 'Choose Different Photo';
+  String get scanDifferentPhoto => '选择不同的照片';
 
   @override
-  String get scanAnalyzing => 'Analyzing your artifact...';
+  String get scanAnalyzing => '正在分析您的文物...';
 
   @override
-  String get scanAnalyzingWait => 'This may take up to a minute';
+  String get scanAnalyzingWait => '这可能需要一分钟';
 
   @override
-  String get scanSaveFavorites => 'Save to Favorites';
+  String get scanSaveFavorites => '保存到收藏夹';
 
   @override
-  String get scanRemoveFavorites => 'Remove from Favorites';
+  String get scanRemoveFavorites => '从收藏夹中移除';
 
   @override
-  String get scanNewScan => 'New Scan';
+  String get scanNewScan => '新扫描';
 
   @override
-  String get scanChat => 'Chat';
+  String get scanChat => '聊天';
 
   @override
-  String get scanHieroglyphs => 'Hieroglyphs';
+  String get scanHieroglyphs => '象形文字';
 
   @override
-  String get scanAddedToFavorites => 'Added to Favorites!';
+  String get scanAddedToFavorites => '已添加到收藏夹！';
 
   @override
-  String get scanRemovedFromFavorites => 'Removed from Favorites';
+  String get scanRemovedFromFavorites => '已从收藏夹移除';
 
   @override
-  String get scanFavorited => 'Favorited';
+  String get scanFavorited => '已收藏';
 
   @override
-  String get scanSave => 'Save';
+  String get scanSave => '保存';
 
   @override
-  String get scanNoHieroglyphs => 'No hieroglyphs detected in this artifact.';
+  String get scanNoHieroglyphs => '在此文物中未检测到象形文字。';
 
   @override
-  String get scanHieroglyphsTranslation => 'Hieroglyphs Translation';
+  String get scanNoArtifactFound => '无法在此图像中识别出任何文物。';
+
+  @override
+  String get scanHieroglyphsTranslation => '象形文字翻译';
+
+  @override
+  String get scanDetails => '详情';
+
+  @override
+  String get scanRevealTranslation => '显示翻译';
+
+  @override
+  String get scanHideTranslation => '隐藏翻译';
+
+  @override
+  String get scanLanguage => '语言';
+
+  @override
+  String get scanNoArtifactRecognized => '在此图像中未识别到文物。';
+
+  @override
+  String get scanRescan => '重新扫描';
+
+  @override
+  String get scanTryAgain => '重试';
+
+  @override
+  String scanStatLines(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 行',
+      one: '1 行',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String scanStatGlyphs(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个符号',
+      one: '1 个符号',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String scanStatCartouches(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个王名圈',
+      one: '1 个王名圈',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get scanStep1 => '正在初始化神经扫描...';
+
+  @override
+  String get scanStep2 => '正在隔离象形文字区域...';
+
+  @override
+  String get scanStep3 => '正在分析对比度渐变...';
+
+  @override
+  String get scanStep4 => '正在解密象形文字形式...';
+
+  @override
+  String get scanStep5 => '正在翻译古老含义...';
+
+  @override
+  String get detailsTitle => '详情';
+
+  @override
+  String get detailsAboutThisArtifact => '关于此文物';
+
+  @override
+  String get detailsRevealTranslation => '显示翻译';
+
+  @override
+  String get detailsHideTranslation => '隐藏翻译';
+
+  @override
+  String get detailsTranslationReveals => '发现翻译揭示的内容...';
+
+  @override
+  String get detailsUnknownArtifact => '文物';
+
+  @override
+  String get detailsDescription => '描述';
+
+  @override
+  String get detailsChatWithMe => '与我聊天';
+
+  @override
+  String get errorNoInternet => '没有网络连接';
+
+  @override
+  String get errorServerError => '服务器错误';
+
+  @override
+  String get errorStorageError => '存储错误';
+
+  @override
+  String get errorUnexpected => '出了点问题';
+
+  @override
+  String get errorTimeout => '连接超时';
+
+  @override
+  String get errorSessionExpired => '会话已过期，请重新登录';
+
+  @override
+  String get errorResourceNotFound => '未找到资源';
+
+  @override
+  String get errorRequestFailed => '请求失败';
+
+  @override
+  String get errorRequestCancelled => '请求已取消';
+
+  @override
+  String get errorSecurityError => '安全错误';
+
+  @override
+  String get chatHintMessage => '消息...';
+
+  @override
+  String get chatWelcomeMessage => '问我关于古埃及的问题...';
+
+  @override
+  String get chatSearchHint => '搜索';
+
+  @override
+  String get chatNewChat => '新聊天';
+
+  @override
+  String get chatDeleteConfirm => '删除会话？';
+
+  @override
+  String get chatDeleteConfirmDesc => '这将删除此会话中的所有消息。';
+
+  @override
+  String get noRouteDefined => '未定义路由';
+
+  @override
+  String get updatingLanguage => '正在更新语言...';
+
+  @override
+  String get profileTitle => '个人资料';
+
+  @override
+  String get profileGuest => '访客';
+
+  @override
+  String get profileUnknownArtifact => '未知文物';
+
+  @override
+  String get profileUnknownEra => '未知时代';
+
+  @override
+  String get profileStartScanning => '开始扫描';
+
+  @override
+  String get timeAgoJustNow => '刚刚';
+
+  @override
+  String timeAgoMinute(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count分钟前',
+      one: '1分钟前',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeAgoHour(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count小时前',
+      one: '1小时前',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeAgoDay(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count天前',
+      one: '1天前',
+    );
+    return '$_temp0';
+  }
 }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:echo_explorer/core/constants/app_strings.dart';
 import 'package:echo_explorer/core/hive/cache_helper.dart';
 import 'package:echo_explorer/core/usecases/usecase.dart';
 import 'package:echo_explorer/features/chat/data/models/message_model.dart';
@@ -81,7 +82,10 @@ class ChatCubit extends Cubit<ChatState> {
     print('=== ChatCubit.sendMessage: artifactId=$_artifactId, sessionId=$_currentSessionId, text="${text.trim()}" ===');
     final result = await sendMessageUseCase(SendMessageParams(
       message: text.trim(),
-      language: 'en',
+      language: CacheHelper.getData(
+                key: AppStrings.hiveKeys.cacheHelper.localeLanguageCode,
+                defaultValue: 'en',
+              ) as String,
       artifactId: _artifactId,
       sessionId: _currentSessionId,
     ));
@@ -120,7 +124,10 @@ class ChatCubit extends Cubit<ChatState> {
             SessionEntity(
               id: reply.sessionId,
               title: sessionTitle,
-              language: 'en',
+      language: CacheHelper.getData(
+        key: AppStrings.hiveKeys.cacheHelper.localeLanguageCode,
+        defaultValue: 'en',
+      ) as String,
               messageCount: allMessages.length,
               startedAt: DateTime.now(),
               updatedAt: DateTime.now(),

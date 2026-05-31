@@ -27,13 +27,27 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, UserEntity>> register({required String email, required String password, required String name}) async {
+  Future<Either<Failure, UserEntity>> register({required String email, required String password, required String name, String lang = 'en'}) async {
     if (await networkInfo.isConnected) {
       try {
-        final remoteUser = await remoteDataSource.register(email: email, password: password, name: name);
+        final remoteUser = await remoteDataSource.register(email: email, password: password, name: name, lang: lang);
         return Right(remoteUser);
       } on ServerException catch (e) {
         return Left(ServerFailure(e.message ?? 'Registration failed', statusCode: e.statusCode));
+      }
+    } else {
+      return Left(NetworkFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserEntity>> googleLogin({required String idToken}) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final remoteUser = await remoteDataSource.googleLogin(idToken: idToken);
+        return Right(remoteUser);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(e.message ?? 'Google login failed', statusCode: e.statusCode));
       }
     } else {
       return Left(NetworkFailure());

@@ -40,9 +40,9 @@ class OnboardingContent extends StatelessWidget {
             ),
           ),
         ),
-        Positioned(
+        PositionedDirectional(
           top: 52.h,
-          right: 26.w,
+          end: 26.w,
           child: InkWell(
             onTap: () {
               CacheHelper.putData(

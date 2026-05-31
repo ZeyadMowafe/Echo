@@ -98,8 +98,19 @@ class _HomeViewState extends State<HomeView> {
           }
         }
       },
-      builder: (context, state) => Scaffold(
-        backgroundColor: AppColors.of(context).background,
+      builder: (context, state) => Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              AppColors.of(context).surface,
+              AppColors.of(context).background,
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Scaffold(
+        backgroundColor: Colors.transparent,
         drawer: CustomGlassDrawer(
           currentFeature: state.featureName,
           onTap: (featureName) {
@@ -143,6 +154,7 @@ class _HomeViewState extends State<HomeView> {
             );
           },
         ),
+      ),
       ),
     );
   }

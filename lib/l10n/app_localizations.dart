@@ -881,7 +881,7 @@ abstract class AppLocalizations {
   /// No description provided for @authSubtitleDefault.
   ///
   /// In en, this message translates to:
-  /// **'To log in or create an account, please enter your email address.'**
+  /// **'Log in to your account'**
   String get authSubtitleDefault;
 
   /// No description provided for @authEmailHint.
@@ -901,6 +901,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Continue'**
   String get authContinue;
+
+  /// No description provided for @authRegister.
+  ///
+  /// In en, this message translates to:
+  /// **'Register'**
+  String get authRegister;
+
+  /// No description provided for @registerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Account'**
+  String get registerTitle;
+
+  /// No description provided for @registerNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Name'**
+  String get registerNameHint;
+
+  /// No description provided for @registerPhoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone Number'**
+  String get registerPhoneHint;
+
+  /// No description provided for @registerLanguageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred Language'**
+  String get registerLanguageHint;
+
+  /// No description provided for @registerConfirmPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get registerConfirmPasswordHint;
+
+  /// No description provided for @registerCreateAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Account'**
+  String get registerCreateAccount;
+
+  /// No description provided for @registerPasswordMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get registerPasswordMismatch;
 
   /// No description provided for @authOr.
   ///
@@ -1100,11 +1148,317 @@ abstract class AppLocalizations {
   /// **'No hieroglyphs detected in this artifact.'**
   String get scanNoHieroglyphs;
 
+  /// No description provided for @scanNoArtifactFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No artifact could be recognized in this image.'**
+  String get scanNoArtifactFound;
+
   /// No description provided for @scanHieroglyphsTranslation.
   ///
   /// In en, this message translates to:
   /// **'Hieroglyphs Translation'**
   String get scanHieroglyphsTranslation;
+
+  /// No description provided for @scanDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get scanDetails;
+
+  /// No description provided for @scanRevealTranslation.
+  ///
+  /// In en, this message translates to:
+  /// **'Reveal Translation'**
+  String get scanRevealTranslation;
+
+  /// No description provided for @scanHideTranslation.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Translation'**
+  String get scanHideTranslation;
+
+  /// No description provided for @scanLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get scanLanguage;
+
+  /// No description provided for @scanNoArtifactRecognized.
+  ///
+  /// In en, this message translates to:
+  /// **'No artifact recognized in this image.'**
+  String get scanNoArtifactRecognized;
+
+  /// No description provided for @scanRescan.
+  ///
+  /// In en, this message translates to:
+  /// **'Rescan'**
+  String get scanRescan;
+
+  /// No description provided for @scanTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try Again'**
+  String get scanTryAgain;
+
+  /// No description provided for @scanStatLines.
+  ///
+  /// In en, this message translates to:
+  /// **'{count,plural, =1{1 line} other{{count} lines}}'**
+  String scanStatLines(int count);
+
+  /// No description provided for @scanStatGlyphs.
+  ///
+  /// In en, this message translates to:
+  /// **'{count,plural, =1{1 glyph} other{{count} glyphs}}'**
+  String scanStatGlyphs(int count);
+
+  /// No description provided for @scanStatCartouches.
+  ///
+  /// In en, this message translates to:
+  /// **'{count,plural, =1{1 cartouche} other{{count} cartouches}}'**
+  String scanStatCartouches(int count);
+
+  /// No description provided for @scanStep1.
+  ///
+  /// In en, this message translates to:
+  /// **'Initializing Neural Scan...'**
+  String get scanStep1;
+
+  /// No description provided for @scanStep2.
+  ///
+  /// In en, this message translates to:
+  /// **'Isolating Glyphic Regions...'**
+  String get scanStep2;
+
+  /// No description provided for @scanStep3.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyzing Contrast Gradients...'**
+  String get scanStep3;
+
+  /// No description provided for @scanStep4.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrypting Hieroglyphic Forms...'**
+  String get scanStep4;
+
+  /// No description provided for @scanStep5.
+  ///
+  /// In en, this message translates to:
+  /// **'Translating Ancient Meanings...'**
+  String get scanStep5;
+
+  /// No description provided for @detailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get detailsTitle;
+
+  /// No description provided for @detailsAboutThisArtifact.
+  ///
+  /// In en, this message translates to:
+  /// **'About This Artifact'**
+  String get detailsAboutThisArtifact;
+
+  /// No description provided for @detailsRevealTranslation.
+  ///
+  /// In en, this message translates to:
+  /// **'Reveal Translation'**
+  String get detailsRevealTranslation;
+
+  /// No description provided for @detailsHideTranslation.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Translation'**
+  String get detailsHideTranslation;
+
+  /// No description provided for @detailsTranslationReveals.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover what the translation reveals…'**
+  String get detailsTranslationReveals;
+
+  /// No description provided for @detailsUnknownArtifact.
+  ///
+  /// In en, this message translates to:
+  /// **'Artifact'**
+  String get detailsUnknownArtifact;
+
+  /// No description provided for @detailsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get detailsDescription;
+
+  /// No description provided for @detailsChatWithMe.
+  ///
+  /// In en, this message translates to:
+  /// **'chat with me'**
+  String get detailsChatWithMe;
+
+  /// No description provided for @errorNoInternet.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection'**
+  String get errorNoInternet;
+
+  /// No description provided for @errorServerError.
+  ///
+  /// In en, this message translates to:
+  /// **'Server error occurred'**
+  String get errorServerError;
+
+  /// No description provided for @errorStorageError.
+  ///
+  /// In en, this message translates to:
+  /// **'Storage error occurred'**
+  String get errorStorageError;
+
+  /// No description provided for @errorUnexpected.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong'**
+  String get errorUnexpected;
+
+  /// No description provided for @errorTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection timed out'**
+  String get errorTimeout;
+
+  /// No description provided for @errorSessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Session expired. Please login again'**
+  String get errorSessionExpired;
+
+  /// No description provided for @errorResourceNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Resource not found'**
+  String get errorResourceNotFound;
+
+  /// No description provided for @errorRequestFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Request failed'**
+  String get errorRequestFailed;
+
+  /// No description provided for @errorRequestCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Request was cancelled'**
+  String get errorRequestCancelled;
+
+  /// No description provided for @errorSecurityError.
+  ///
+  /// In en, this message translates to:
+  /// **'Security error occurred'**
+  String get errorSecurityError;
+
+  /// No description provided for @chatHintMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'message...'**
+  String get chatHintMessage;
+
+  /// No description provided for @chatWelcomeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask me about Ancient Egypt...'**
+  String get chatWelcomeMessage;
+
+  /// No description provided for @chatSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get chatSearchHint;
+
+  /// No description provided for @chatNewChat.
+  ///
+  /// In en, this message translates to:
+  /// **'New Chat'**
+  String get chatNewChat;
+
+  /// No description provided for @chatDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete session?'**
+  String get chatDeleteConfirm;
+
+  /// No description provided for @chatDeleteConfirmDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'This will delete all messages in this session.'**
+  String get chatDeleteConfirmDesc;
+
+  /// No description provided for @noRouteDefined.
+  ///
+  /// In en, this message translates to:
+  /// **'No route defined for'**
+  String get noRouteDefined;
+
+  /// No description provided for @updatingLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Updating language...'**
+  String get updatingLanguage;
+
+  /// No description provided for @profileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profileTitle;
+
+  /// No description provided for @profileGuest.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest'**
+  String get profileGuest;
+
+  /// No description provided for @profileUnknownArtifact.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Artifact'**
+  String get profileUnknownArtifact;
+
+  /// No description provided for @profileUnknownEra.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Era'**
+  String get profileUnknownEra;
+
+  /// No description provided for @profileStartScanning.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Scanning'**
+  String get profileStartScanning;
+
+  /// No description provided for @timeAgoJustNow.
+  ///
+  /// In en, this message translates to:
+  /// **'just now'**
+  String get timeAgoJustNow;
+
+  /// Time ago in minutes
+  ///
+  /// In en, this message translates to:
+  /// **'{count,plural, =1{1m ago} other{{count}m ago}}'**
+  String timeAgoMinute(int count);
+
+  /// Time ago in hours
+  ///
+  /// In en, this message translates to:
+  /// **'{count,plural, =1{1h ago} other{{count}h ago}}'**
+  String timeAgoHour(int count);
+
+  /// Time ago in days
+  ///
+  /// In en, this message translates to:
+  /// **'{count,plural, =1{1d ago} other{{count}d ago}}'**
+  String timeAgoDay(int count);
 }
 
 class _AppLocalizationsDelegate

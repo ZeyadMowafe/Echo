@@ -127,7 +127,7 @@
   "editProfileChangeCover": "更改封面",
   "editProfileChangeAvatar": "更改照片",
   "authWelcomeBack": "欢迎回来",
-  "authSubtitleDefault": "要登录或创建帐户，请输入您的电子邮件地址。",
+  "authSubtitleDefault": "登录您的账户",
   "authEmailHint": "电子邮件地址",
   "authPasswordHint": "密码",
   "authContinue": "继续",
@@ -146,23 +146,122 @@
   "networkError": "网络错误。请检查您的连接。",
   "socialComingSoon": "社交登录即将推出！",
   "profileUpdatedSuccessfully": "个人资料更新成功！",
-  "scanTitle": "Scan Artifacts & Decode Hieroglyphs",
-  "scanSubtitle": "Take a photo of any ancient Egyptian artifact to identify it and translate its hieroglyphs.",
-  "scanTakePhoto": "Take Photo",
-  "scanPickGallery": "Pick from Gallery",
-  "scanAnalyzeArtifact": "Analyze Artifact",
-  "scanDifferentPhoto": "Choose Different Photo",
-  "scanAnalyzing": "Analyzing your artifact...",
-  "scanAnalyzingWait": "This may take up to a minute",
-  "scanSaveFavorites": "Save to Favorites",
-  "scanRemoveFavorites": "Remove from Favorites",
-  "scanNewScan": "New Scan",
-  "scanChat": "Chat",
-  "scanHieroglyphs": "Hieroglyphs",
-  "scanAddedToFavorites": "Added to Favorites!",
-  "scanRemovedFromFavorites": "Removed from Favorites",
-  "scanFavorited": "Favorited",
-  "scanSave": "Save",
-  "scanNoHieroglyphs": "No hieroglyphs detected in this artifact.",
-  "scanHieroglyphsTranslation": "Hieroglyphs Translation"
+  "scanTitle": "扫描文物并解码象形文字",
+  "scanSubtitle": "拍摄任何古埃及文物的照片，以识别它并翻译其象形文字。",
+  "scanTakePhoto": "拍照",
+  "scanPickGallery": "从相册中选择",
+  "scanAnalyzeArtifact": "分析文物",
+  "scanDifferentPhoto": "选择不同的照片",
+  "scanAnalyzing": "正在分析您的文物...",
+  "scanAnalyzingWait": "这可能需要一分钟",
+  "scanSaveFavorites": "保存到收藏夹",
+  "scanRemoveFavorites": "从收藏夹中移除",
+  "scanNewScan": "新扫描",
+  "scanChat": "聊天",
+  "scanHieroglyphs": "象形文字",
+  "scanAddedToFavorites": "已添加到收藏夹！",
+  "scanRemovedFromFavorites": "已从收藏夹移除",
+  "scanFavorited": "已收藏",
+  "scanSave": "保存",
+  "scanNoHieroglyphs": "在此文物中未检测到象形文字。",
+  "scanHieroglyphsTranslation": "象形文字翻译",
+  "scanNoArtifactFound": "无法在此图像中识别出任何文物。",
+  "scanDetails": "详情",
+  "scanRevealTranslation": "显示翻译",
+  "scanHideTranslation": "隐藏翻译",
+  "scanLanguage": "语言",
+  "scanNoArtifactRecognized": "在此图像中未识别到文物。",
+  "scanRescan": "重新扫描",
+  "scanTryAgain": "重试",
+  "scanStatLines": "{count,plural, =1{1 行} other{{count} 行}}",
+  "@scanStatLines": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "scanStatGlyphs": "{count,plural, =1{1 个符号} other{{count} 个符号}}",
+  "@scanStatGlyphs": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "scanStatCartouches": "{count,plural, =1{1 个王名圈} other{{count} 个王名圈}}",
+  "@scanStatCartouches": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "scanStep1": "正在初始化神经扫描...",
+  "scanStep2": "正在隔离象形文字区域...",
+  "scanStep3": "正在分析对比度渐变...",
+  "scanStep4": "正在解密象形文字形式...",
+  "scanStep5": "正在翻译古老含义...",
+  "detailsTitle": "详情",
+  "detailsAboutThisArtifact": "关于此文物",
+  "detailsRevealTranslation": "显示翻译",
+  "detailsHideTranslation": "隐藏翻译",
+  "detailsTranslationReveals": "发现翻译揭示的内容...",
+  "detailsUnknownArtifact": "文物",
+  "detailsDescription": "描述",
+  "detailsChatWithMe": "与我聊天",
+
+  "authRegister": "注册",
+  "registerTitle": "创建账户",
+  "registerNameHint": "全名",
+  "registerPhoneHint": "电话号码",
+  "registerLanguageHint": "首选语言",
+  "registerConfirmPasswordHint": "确认密码",
+  "registerCreateAccount": "创建账户",
+  "registerPasswordMismatch": "密码不匹配",
+
+  "chatHintMessage": "消息...",
+  "chatWelcomeMessage": "问我关于古埃及的问题...",
+  "chatSearchHint": "搜索",
+  "chatNewChat": "新聊天",
+  "chatDeleteConfirm": "删除会话？",
+  "chatDeleteConfirmDesc": "这将删除此会话中的所有消息。",
+
+  "noRouteDefined": "未定义路由",
+
+  "updatingLanguage": "正在更新语言...",
+
+  "profileTitle": "个人资料",
+  "profileGuest": "访客",
+  "profileUnknownArtifact": "未知文物",
+  "profileUnknownEra": "未知时代",
+  "profileStartScanning": "开始扫描",
+
+  "timeAgoJustNow": "刚刚",
+  "timeAgoMinute": "{count,plural, =1{1分钟前} other{{count}分钟前}}",
+  "@timeAgoMinute": {
+    "description": "Time ago in minutes",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeAgoHour": "{count,plural, =1{1小时前} other{{count}小时前}}",
+  "@timeAgoHour": {
+    "description": "Time ago in hours",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeAgoDay": "{count,plural, =1{1天前} other{{count}天前}}",
+  "@timeAgoDay": {
+    "description": "Time ago in days",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "errorNoInternet": "没有网络连接",
+  "errorServerError": "服务器错误",
+  "errorStorageError": "存储错误",
+  "errorUnexpected": "出了点问题",
+  "errorTimeout": "连接超时",
+  "errorSessionExpired": "会话已过期，请重新登录",
+  "errorResourceNotFound": "未找到资源",
+  "errorRequestFailed": "请求失败",
+  "errorRequestCancelled": "请求已取消",
+  "errorSecurityError": "安全错误"
 }

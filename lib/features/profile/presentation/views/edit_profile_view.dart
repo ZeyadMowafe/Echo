@@ -215,7 +215,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                         left: 0, right: 0, top: 0, height: 150.h,
                         child: Container(
                           decoration: BoxDecoration(
-                            color: const Color(0xFF1B2328),
+                            color: AppColors.of(context).surface,
                             image: _coverImage != null ? DecorationImage(image: FileImage(_coverImage!), fit: BoxFit.cover) : null,
                           ),
                           child: Center(
@@ -227,8 +227,8 @@ class _EditProfileViewState extends State<EditProfileView> {
                           ),
                         ),
                       ),
-                      Positioned(
-                        left: 12.w, top: topPad + 4.h,
+                      PositionedDirectional(
+                        start: 12.w, top: topPad + 4.h,
                         child: IconButton(
                           icon: Icon(
                             Directionality.of(context) == TextDirection.rtl 
@@ -256,8 +256,8 @@ class _EditProfileViewState extends State<EditProfileView> {
                                 child: _profileImage == null ? Icon(Icons.person, size: 60.r, color: AppColors.of(context).background.withOpacity(0.5)) : null,
                               ),
                             ),
-                            Positioned(
-                              bottom: 5.r, right: 5.r,
+                            PositionedDirectional(
+                              bottom: 5.r, end: 5.r,
                               child: InkWell(
                                 onTap: () => _pickImage(isCover: false),
                                 child: Container(
@@ -350,7 +350,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                           child: Center(
               child: isLoading 
                 ? AppLoading.button()
-                              : Text(l10n.editProfileSave, style: TextStyle(color: AppColors.cffffff, fontSize: 16.sp, fontWeight: FontWeight.bold)),
+                              : Text(l10n.editProfileSave, style: TextStyle(color: AppColors.of(context).footer, fontSize: 16.sp, fontWeight: FontWeight.bold)),
                           ),
                         ),
                       ),

@@ -110,7 +110,9 @@ class _ScanLogDetailsViewState extends State<ScanLogDetailsView> {
               borderRadius: BorderRadius.circular(ScreenUtils.radiusMd),
               child: Image.network(
                 'https://echo-api-441520148279.me-central1.run.app${log.imageUrl}',
-                height: 350.h, width: double.infinity, fit: BoxFit.contain,
+                height: 350.h, width: double.infinity,
+                cacheWidth: 400,
+                fit: BoxFit.contain,
               ),
             ),
           Gap(20.h),
@@ -149,7 +151,7 @@ class _ScanLogDetailsViewState extends State<ScanLogDetailsView> {
               width: double.infinity,
               padding: EdgeInsets.all(ScreenUtils.md),
               decoration: BoxDecoration(
-                color: AppColors.c151D18.withValues(alpha: 0.4),
+                color: AppColors.of(context).surface.withValues(alpha: 0.4),
                 borderRadius: BorderRadius.circular(ScreenUtils.radiusMd),
                 border: Border.all(color: AppColors.secondary.withValues(alpha: 0.3)),
               ),
@@ -193,18 +195,19 @@ class _ScanLogDetailsViewState extends State<ScanLogDetailsView> {
                 ),
               ),
               Gap(12.w),
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: () => Navigator.pushNamed(context, AppRoutes.chatView),
-                  icon: Icon(Icons.chat_outlined, color: AppColors.secondary, size: ScreenUtils.iconSm),
-                  label: Text(l10n.scanChat, style: TextStyle(color: AppColors.secondary)),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.secondary.withValues(alpha: 0.2),
-                    padding: EdgeInsets.symmetric(vertical: 14.h),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.r)),
+              if (log.isPrimaryModel && log.artifactModelId != null)
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () => Navigator.pushNamed(context, AppRoutes.chatView),
+                    icon: Icon(Icons.chat_outlined, color: AppColors.secondary, size: ScreenUtils.iconSm),
+                    label: Text(l10n.scanChat, style: TextStyle(color: AppColors.secondary)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.secondary.withValues(alpha: 0.2),
+                      padding: EdgeInsets.symmetric(vertical: 14.h),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.r)),
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
           Gap(40.h),
@@ -224,7 +227,7 @@ class _InfoChip extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
       decoration: BoxDecoration(
-        color: AppColors.c151D18.withValues(alpha: 0.5),
+        color: AppColors.of(context).surface.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(20.r),
         border: Border.all(color: AppColors.of(context).footer.withValues(alpha: 0.1)),
       ),

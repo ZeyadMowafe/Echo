@@ -1,8 +1,10 @@
+import 'dart:ui';
 import 'package:echo_explorer/core/constants/app_colors.dart';
 import 'package:echo_explorer/core/helpers/screen_utils.dart';
-import 'package:echo_explorer/core/widgets/app_loading.dart';
+import 'package:echo_explorer/core/routing/routes.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_container.dart';
 import 'package:echo_explorer/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:echo_explorer/features/auth/presentation/widgets/auth_widgets.dart';
 import 'package:echo_explorer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,11 +24,27 @@ class _AuthBottomSheetState extends State<AuthBottomSheet> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  
-  String? _infoMessage; 
+
+  bool _isFormValid = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController.addListener(_onFieldChanged);
+    _passwordController.addListener(_onFieldChanged);
+  }
+
+  void _onFieldChanged() {
+    final valid = _formKey.currentState?.validate() ?? false;
+    if (valid != _isFormValid) {
+      setState(() => _isFormValid = valid);
+    }
+  }
 
   @override
   void dispose() {
+    _emailController.removeListener(_onFieldChanged);
+    _passwordController.removeListener(_onFieldChanged);
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -34,25 +52,22 @@ class _AuthBottomSheetState extends State<AuthBottomSheet> {
 
   void _completeAuthWithEmail() {
     if (!_formKey.currentState!.validate()) return;
-    
+
     final email = _emailController.text.trim();
     final password = _passwordController.text;
-    
+
     context.read<AuthCubit>().submitAuth(email, password);
   }
 
-  void _completeSocialAuth() {
-    setState(() {
-      _infoMessage = AppLocalizations.of(context)!.socialComingSoon;
-    });
-
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        setState(() {
-          _infoMessage = null;
-        });
-      }
-    });
+  void _navigateToRegister() {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    Navigator.pop(context);
+    Navigator.pushNamed(
+      context,
+      AppRoutes.registerView,
+      arguments: {'email': email, 'password': password},
+    );
   }
 
   @override
@@ -62,159 +77,129 @@ class _AuthBottomSheetState extends State<AuthBottomSheet> {
     final topPad = MediaQuery.of(context).padding.top;
 
     return ClipRRect(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(ScreenUtils.glassBorderRadius)),
-      child: CustomGlassContainer(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(ScreenUtils.glassBorderRadius)),
-        borderColor: AppColors.cffffff.withOpacity(0.10),
-        color: AppColors.cffffff.withOpacity(0.01),
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            AppColors.cffffff.withOpacity(0.06),
-            const Color(0xFF091822),
-          ],
+      borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+      child: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF0D1215), Color(0xFF1C252A)],
+          ),
         ),
         child: SafeArea(
-          top: false, 
+          top: false,
           child: BlocConsumer<AuthCubit, AuthState>(
             listener: (context, state) {
               if (state is Authenticated) {
                 Navigator.pop(context);
+              } else if (state is AuthError) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      state.message == 'network_error'
+                          ? l10n.networkError
+                          : state.message,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    backgroundColor: Colors.redAccent,
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
               }
             },
             builder: (context, state) {
               final isLoading = state is AuthLoading;
-              
-              String? errorMessage;
-              if (state is AuthError) {
-                errorMessage = state.message == 'network_error' 
-                    ? l10n.networkError 
-                    : state.message;
-              }
 
               return SingleChildScrollView(
-                padding: EdgeInsets.fromLTRB(16.w, topPad + 10.h, 16.w, bottomInset + 24.h),
+                padding: EdgeInsets.fromLTRB(24.w, topPad + 10.h, 24.w, bottomInset + 24.h),
                 child: Form(
                   key: _formKey,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   child: Column(
-                    mainAxisSize: MainAxisSize.min, 
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Align(
-                        alignment: Alignment.topRight,
+                        alignment: AlignmentDirectional.topEnd,
                         child: _CircleAction(icon: Icons.close_rounded, onTap: () => Navigator.pop(context)),
                       ),
-                      Gap(ScreenUtils.sm),
+                      Gap(10.h),
                       Text(
                         l10n.authWelcomeBack,
-                        style: TextStyle(color: AppColors.cffffff, fontSize: 36.sp, fontWeight: FontWeight.w500, height: 1.1),
+                        style: TextStyle(color: Colors.white, fontSize: 32.sp, fontWeight: FontWeight.w600, height: 1.2),
                       ),
-                      Gap(20.h),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 18.w),
-                        child: Text(
-                          l10n.authSubtitleDefault,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: AppColors.cffffff.withOpacity(0.85), fontSize: 14.sp, fontWeight: FontWeight.w300),
-                        ),
+                      Gap(ScreenUtils.md),
+                      Text(
+                        widget.subtitle,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 14.sp, fontWeight: FontWeight.w300, height: 1.4),
                       ),
                       Gap(22.h),
-                      if (errorMessage != null) ...[
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-                          decoration: BoxDecoration(
-                            color: Colors.redAccent.withOpacity(0.1),
-                            border: Border.all(color: Colors.redAccent.withOpacity(0.4)),
-                            borderRadius: BorderRadius.circular(ScreenUtils.radiusMd),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.error_outline_rounded, color: Colors.redAccent, size: 20),
-                              Gap(ScreenUtils.sm),
-                              Expanded(
-                                child: Text(
-                                  errorMessage,
-                                  style: TextStyle(color: Colors.redAccent, fontSize: 13.sp, fontWeight: FontWeight.w500),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Gap(ScreenUtils.md),
-                      ],
-                      if (_infoMessage != null) ...[
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-                          decoration: BoxDecoration(
-                            color: Colors.blueAccent.withOpacity(0.1),
-                            border: Border.all(color: Colors.blueAccent.withOpacity(0.4)),
-                            borderRadius: BorderRadius.circular(ScreenUtils.radiusMd),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.info_outline_rounded, color: Colors.blueAccent, size: 20),
-                              Gap(ScreenUtils.sm),
-                              Expanded(
-                                child: Text(
-                                  _infoMessage!,
-                                  style: TextStyle(color: Colors.blueAccent, fontSize: 13.sp, fontWeight: FontWeight.w500),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Gap(ScreenUtils.md),
-                      ],
-                      
-                      _AuthTextField(
+                      AuthTextField(
                         hintText: l10n.authEmailHint,
                         controller: _emailController,
+                        onChanged: _onFieldChanged,
                         validator: (value) {
                           if (value == null || value.isEmpty) return l10n.authEmailRequired;
-                          final emailRegex = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+                          final emailRegex = RegExp(
+                            r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
+                          );
                           if (!emailRegex.hasMatch(value)) return l10n.authEmailInvalid;
                           return null;
                         },
                       ),
-                      const SizedBox(height: 8),
-                      _AuthTextField(
-                          hintText: l10n.authPasswordHint,
-                          controller: _passwordController,
-                          isPassword: true,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) return l10n.authPasswordRequired;
-                            if (value.length < 8) return l10n.authPasswordTooShort;
-                            return null;
-                          },
-                        ),
                       Gap(12.h),
-                      
-                      _PrimaryContinueButton(
+                      AuthTextField(
+                        hintText: l10n.authPasswordHint,
+                        controller: _passwordController,
+                        isPassword: true,
+                        onChanged: _onFieldChanged,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) return l10n.authPasswordRequired;
+                          if (value.length < 8) return l10n.authPasswordTooShort;
+                          return null;
+                        },
+                      ),
+                      Gap(ScreenUtils.lg),
+                      PrimaryContinueButton(
                         text: l10n.authContinue,
                         isLoading: isLoading,
-                        onTap: isLoading ? () {} : _completeAuthWithEmail,
+                        isEnabled: _isFormValid,
+                        onTap: _completeAuthWithEmail,
                       ),
-                      
-                      Gap(14.h),
-                      Text(l10n.authOr, style: TextStyle(color: AppColors.cffffff, fontSize: 12.sp, fontWeight: FontWeight.bold)),
-                      Gap(14.h),
-
-                      _SocialAuthButton(icon: Icons.g_mobiledata_rounded, label: l10n.authGoogle, onTap: isLoading ? () {} : _completeSocialAuth),
-                      Gap(ScreenUtils.sm),
-                      _SocialAuthButton(icon: Icons.apple_rounded, label: l10n.authApple, onTap: isLoading ? () {} : _completeSocialAuth),
-                      Gap(ScreenUtils.sm),
-                      _SocialAuthButton(icon: Icons.window_rounded, label: l10n.authMicrosoft, onTap: isLoading ? () {} : _completeSocialAuth),
-                      Gap(ScreenUtils.sm),
-                      _SocialAuthButton(icon: Icons.phone_outlined, label: l10n.authPhone, onTap: isLoading ? () {} : _completeSocialAuth),
-
-                      Gap(18.h),
-                      
-                      Text(l10n.authGuestPrompt, textAlign: TextAlign.center, style: TextStyle(color: AppColors.cffffff.withOpacity(0.9), fontSize: 14.sp, fontWeight: FontWeight.w300)),
-                      Gap(ScreenUtils.sm),
+                      Gap(ScreenUtils.md),
+                      PrimaryContinueButton(
+                        text: l10n.authRegister,
+                        isLoading: isLoading,
+                        onTap: _navigateToRegister,
+                      ),
+                      Gap(ScreenUtils.lg),
+                      Text(l10n.authOr, style: TextStyle(color: Colors.white, fontSize: 12.sp, fontWeight: FontWeight.bold)),
+                      Gap(ScreenUtils.lg),
+                      SocialAuthButton(
+                        iconPath: "assets/icons/google_icon.svg",
+                        label: l10n.authGoogle,
+                        onTap: isLoading
+                            ? () {}
+                            : () => context.read<AuthCubit>().googleSignIn(),
+                      ),
+                      Gap(12.h),
                       InkWell(
                         onTap: isLoading ? null : () => Navigator.pop(context),
-                        child: Text(l10n.authStayLoggedOut, style: TextStyle(color: AppColors.cffffff, fontSize: 15.sp, decoration: TextDecoration.underline)),
+                        borderRadius: BorderRadius.circular(4.r),
+                        child: Padding(
+                          padding: EdgeInsets.all(4.r),
+                          child: Text(
+                            l10n.authStayLoggedOut,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15.sp,
+                              decoration: TextDecoration.underline,
+                              decorationColor: Colors.white,
+                            ),
+                          ),
+                        ),
                       ),
+                      Gap(20.h),
                     ],
                   ),
                 ),
@@ -243,107 +228,10 @@ class _CircleAction extends StatelessWidget {
           width: 30.r,
           height: 30.r,
           borderRadius: BorderRadius.circular(20.r),
-          borderColor: AppColors.cffffff.withOpacity(0.10),
-          color: AppColors.cffffff.withOpacity(0.02),
-          gradient: LinearGradient(colors: [AppColors.cffffff.withOpacity(0.10), AppColors.cffffff.withOpacity(0)]),
-          child: Icon(icon, size: 16.r, color: AppColors.cffffff),
-        ),
-      ),
-    );
-  }
-}
-
-class _SocialAuthButton extends StatelessWidget {
-  const _SocialAuthButton({required this.icon, required this.label, required this.onTap});
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
-        child: CustomGlassContainer(
-          width: double.infinity,
-          borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
-          borderColor: AppColors.cffffff.withOpacity(0.10),
-          color: AppColors.cffffff.withOpacity(0.02),
-          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppColors.cffffff.withOpacity(0.05), AppColors.cffffff.withOpacity(0)]),
-          padding: EdgeInsets.symmetric(vertical: 13.h, horizontal: 14.w),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 18.r, color: AppColors.cffffff),
-              Gap(12.w),
-              Text(label, style: TextStyle(color: AppColors.cffffff, fontSize: 12.sp, fontWeight: FontWeight.w400)),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _AuthTextField extends StatelessWidget {
-  const _AuthTextField({required this.hintText, required this.controller, this.isPassword = false, this.validator});
-  final String hintText;
-  final TextEditingController controller;
-  final bool isPassword;
-  final String? Function(String?)? validator;
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomGlassContainer(
-      width: double.infinity,
-      borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
-      borderColor: AppColors.cffffff.withOpacity(0.10),
-      color: AppColors.cffffff.withOpacity(0.02),
-      gradient: LinearGradient(colors: [AppColors.cffffff.withOpacity(0.04), AppColors.cffffff.withOpacity(0)]),
-      padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 20.w),
-      child: TextFormField(
-        controller: controller,
-        obscureText: isPassword,
-        validator: validator,
-        style: TextStyle(color: AppColors.cffffff, fontSize: 14.sp),
-        decoration: InputDecoration(
-          hintText: hintText,
-          hintStyle: TextStyle(color: AppColors.cffffff.withOpacity(0.50), fontSize: 13.sp),
-          border: InputBorder.none,
-          errorStyle: TextStyle(color: Colors.redAccent, height: 0.8),
-        ),
-      ),
-    );
-  }
-}
-
-class _PrimaryContinueButton extends StatelessWidget {
-  const _PrimaryContinueButton({required this.onTap, required this.text, this.isLoading = false});
-  final VoidCallback onTap;
-  final String text;
-  final bool isLoading;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
-        child: CustomGlassContainer(
-          width: 290.w,
-          borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
-          borderColor: AppColors.cffffff.withOpacity(0.10),
-          color: AppColors.cffffff.withOpacity(0.04),
-          gradient: LinearGradient(colors: [AppColors.cffffff.withOpacity(0.10), AppColors.cffffff.withOpacity(0)]),
-          padding: EdgeInsets.symmetric(vertical: 11.h, horizontal: 24.w),
-          child: Center(
-            child: isLoading
-                ? AppLoading.button()
-                : Text(text, style: TextStyle(color: AppColors.cffffff, fontSize: 15.sp, fontWeight: FontWeight.w400)),
-          ),
+          borderColor: AppColors.of(context).footer.withOpacity(0.10),
+          color: AppColors.of(context).footer.withOpacity(0.02),
+          gradient: LinearGradient(colors: [AppColors.of(context).footer.withOpacity(0.10), AppColors.of(context).footer.withOpacity(0)]),
+          child: Icon(icon, size: 16.r, color: AppColors.of(context).footer),
         ),
       ),
     );

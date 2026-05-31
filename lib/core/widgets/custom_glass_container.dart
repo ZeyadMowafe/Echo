@@ -13,7 +13,7 @@ class CustomGlassContainer extends StatelessWidget {
     this.gradient,
     this.margin,
     this.width,
-    this.height,
+    this.height, this.sigmaX =AppDimensions.glassSigma, this.sigmaY =AppDimensions.glassSigma,
   });
 
   final Widget child;
@@ -25,6 +25,8 @@ class CustomGlassContainer extends StatelessWidget {
   final EdgeInsetsGeometry? margin;
   final double? width;
   final double? height;
+  final double? sigmaX;
+  final double? sigmaY;
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +34,8 @@ class CustomGlassContainer extends StatelessWidget {
       borderRadius: borderRadius ?? BorderRadius.circular(0),
       child: BackdropFilter(
         filter: ImageFilter.blur(
-          sigmaX: AppDimensions.glassSigma,
-          sigmaY: AppDimensions.glassSigma,
+          sigmaX: sigmaX ?? AppDimensions.glassSigma,
+          sigmaY: sigmaY ?? AppDimensions.glassSigma,
         ),
         child: Container(
           width: width,
@@ -44,10 +46,14 @@ class CustomGlassContainer extends StatelessWidget {
             color: color ?? Colors.transparent,
             gradient: gradient,
             borderRadius: borderRadius,
-            border: Border.all(
-              color: borderColor ?? Colors.transparent,
-              width: AppDimensions.borderWidth,
-            ),
+            border: borderColor != null
+                ? Border.all(
+                    color: borderColor!,
+                    width: AppDimensions.borderWidth,
+                    strokeAlign:
+                        BorderSide.strokeAlignInside, // border من جوه بس
+                  )
+                : null,
           ),
           child: child,
         ),

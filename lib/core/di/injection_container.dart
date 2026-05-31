@@ -10,6 +10,7 @@ import 'package:echo_explorer/features/auth/data/datasources/auth_remote_data_so
 import 'package:echo_explorer/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:echo_explorer/features/auth/domain/repositories/auth_repository.dart';
 import 'package:echo_explorer/features/auth/domain/usecases/get_profile_usecase.dart' as auth;
+import 'package:echo_explorer/features/auth/domain/usecases/google_login_usecase.dart';
 import 'package:echo_explorer/features/auth/domain/usecases/login_usecase.dart';
 import 'package:echo_explorer/features/auth/domain/usecases/register_usecase.dart';
 import 'package:echo_explorer/features/auth/domain/usecases/update_profile_usecase.dart' as auth_up;
@@ -48,6 +49,7 @@ Future<void> init() async {
   sl.registerFactory(() => AuthCubit(
         loginUseCase: sl(),
         registerUseCase: sl(),
+        googleLoginUseCase: sl(),
         getProfileUseCase: sl(),
         updateProfileUseCase: sl(),
       ));
@@ -55,6 +57,7 @@ Future<void> init() async {
   // Use cases
   sl.registerLazySingleton(() => LoginUseCase(sl()));
   sl.registerLazySingleton(() => RegisterUseCase(sl()));
+  sl.registerLazySingleton(() => GoogleLoginUseCase(sl()));
   sl.registerLazySingleton<auth.GetProfileUseCase>(() => auth.GetProfileUseCase(sl()));
   sl.registerLazySingleton<auth_up.UpdateProfileUseCase>(() => auth_up.UpdateProfileUseCase(sl()));
 

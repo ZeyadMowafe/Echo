@@ -79,14 +79,15 @@ class _ProfileViewState extends State<ProfileView> {
 
   String _formatTimeAgo(DateTime dateTime) {
     final difference = DateTime.now().difference(dateTime);
+    final l10n = AppLocalizations.of(context);
     if (difference.inDays >= 30) {
-      return '${(difference.inDays / 30).floor()}m ago';
+      return l10n.timeAgoMinute((difference.inDays / 30).floor());
     } else if (difference.inDays >= 1) {
-      return '${difference.inDays}d ago';
+      return l10n.timeAgoDay(difference.inDays);
     } else if (difference.inHours >= 1) {
-      return '${difference.inHours}h ago';
+      return l10n.timeAgoHour(difference.inHours);
     } else {
-      return 'just now';
+      return l10n.timeAgoJustNow;
     }
   }
 
@@ -217,9 +218,9 @@ class _ProfileViewState extends State<ProfileView> {
                 return CustomGlassContainer(
                   width: ScreenUtils.glassButtonSize,
                   height: ScreenUtils.glassButtonSize,
-                  color: AppColors.cffffff.withValues(alpha: 0.10),
+                  color: appColors.glassBase.withValues(alpha: 0.10),
                   borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
-                  borderColor: AppColors.cffffff.withValues(alpha: 0.15),
+                  borderColor: appColors.glassBase.withValues(alpha: 0.15),
                   padding: EdgeInsets.zero,
                   child: IconButton(
                     padding: EdgeInsets.zero,
@@ -235,7 +236,7 @@ class _ProfileViewState extends State<ProfileView> {
             ),
             Gap(12.w),
             Text(
-              "Profile",
+              l10n.profileTitle,
               style: TextStyle(
                 color: appColors.footer,
                 fontSize: 18.sp,
@@ -246,9 +247,9 @@ class _ProfileViewState extends State<ProfileView> {
             CustomGlassContainer(
               width: ScreenUtils.glassButtonSize,
               height: ScreenUtils.glassButtonSize,
-              color: AppColors.cffffff.withValues(alpha: 0.10),
+              color: appColors.glassBase.withValues(alpha: 0.10),
               borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
-              borderColor: AppColors.cffffff.withValues(alpha: 0.15),
+              borderColor: appColors.glassBase.withValues(alpha: 0.15),
               padding: EdgeInsets.zero,
               child: IconButton(
                 padding: EdgeInsets.zero,
@@ -281,7 +282,7 @@ class _ProfileViewState extends State<ProfileView> {
 
     return CustomGlassContainer(
       color: appColors.bottomNavBar.withValues(alpha: 0.35),
-      borderColor: AppColors.cffffff.withValues(alpha: 0.10),
+      borderColor: appColors.glassBase.withValues(alpha: 0.10),
       borderRadius: BorderRadius.circular(ScreenUtils.radiusLg),
       padding: EdgeInsets.zero,
       child: Column(
@@ -291,16 +292,18 @@ class _ProfileViewState extends State<ProfileView> {
             child: Stack(
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(ScreenUtils.radiusLg),
-                    topRight: Radius.circular(ScreenUtils.radiusLg),
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(ScreenUtils.radiusLg),
                   ),
                   child: Container(
                     decoration: BoxDecoration(
                       color: appColors.discoverAppBar.withValues(alpha: 0.2),
                       image: coverImagePath != null
                           ? DecorationImage(
-                              image: FileImage(File(coverImagePath)),
+                              image: ResizeImage(
+                                FileImage(File(coverImagePath)),
+                                width: 800,
+                              ),
                               fit: BoxFit.cover,
                             )
                           : null,
@@ -310,9 +313,8 @@ class _ProfileViewState extends State<ProfileView> {
                 // Cover Overlay for soft transition
                 Container(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(ScreenUtils.radiusLg),
-                      topRight: Radius.circular(ScreenUtils.radiusLg),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(ScreenUtils.radiusLg),
                     ),
                     gradient: LinearGradient(
                       colors: [
@@ -324,15 +326,15 @@ class _ProfileViewState extends State<ProfileView> {
                     ),
                   ),
                 ),
-                Positioned(
-                  right: 12.w,
+                PositionedDirectional(
+                  end: 12.w,
                   top: 12.h,
                   child: CustomGlassContainer(
                     width: 34.r,
                     height: 34.r,
-                    color: AppColors.cffffff.withValues(alpha: 0.25),
+                    color: appColors.glassBase.withValues(alpha: 0.25),
                     borderRadius: BorderRadius.circular(17.r),
-                    borderColor: AppColors.cffffff.withValues(alpha: 0.15),
+                    borderColor: appColors.glassBase.withValues(alpha: 0.15),
                     padding: EdgeInsets.zero,
                     child: IconButton(
                       padding: EdgeInsets.zero,
@@ -375,7 +377,7 @@ class _ProfileViewState extends State<ProfileView> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                loggedIn ? userName : "Guest",
+                                loggedIn ? userName : l10n.profileGuest,
                                 style: TextStyle(
                                   color: appColors.footer,
                                   fontSize: 22.sp,
@@ -483,7 +485,7 @@ class _ProfileViewState extends State<ProfileView> {
       padding: EdgeInsets.all(4.r),
       borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
       color: appColors.bottomNavBar.withValues(alpha: 0.35),
-      borderColor: AppColors.cffffff.withValues(alpha: 0.05),
+      borderColor: appColors.glassBase.withValues(alpha: 0.05),
       child: Row(
         children: [
           Expanded(
@@ -499,7 +501,7 @@ class _ProfileViewState extends State<ProfileView> {
                     ? appColors.footer.withValues(alpha: 0.15)
                     : Colors.transparent,
                 borderColor: _selectedTabIndex == 0
-                    ? AppColors.cffffff.withValues(alpha: 0.1)
+                    ? appColors.glassBase.withValues(alpha: 0.1)
                     : Colors.transparent,
                 child: Center(
                   child: Text(
@@ -531,7 +533,7 @@ class _ProfileViewState extends State<ProfileView> {
                     ? appColors.footer.withValues(alpha: 0.15)
                     : Colors.transparent,
                 borderColor: _selectedTabIndex == 1
-                    ? AppColors.cffffff.withValues(alpha: 0.1)
+                    ? appColors.glassBase.withValues(alpha: 0.1)
                     : Colors.transparent,
                 child: Center(
                   child: Text(
@@ -590,6 +592,7 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   Widget _buildLogList(List<ScanLogEntity> logs) {
+    final l10n = AppLocalizations.of(context);
     final appColors = AppColors.of(context);
     return ListView.builder(
       shrinkWrap: true,
@@ -599,19 +602,21 @@ class _ProfileViewState extends State<ProfileView> {
       itemBuilder: (context, index) {
         final log = logs[index];
         final name =
-            log.artifactName ?? log.artifactModelId ?? 'Unknown Artifact';
+            log.artifactName ??
+            log.artifactModelId ??
+            l10n.profileUnknownArtifact;
         return Padding(
           padding: EdgeInsets.only(bottom: 14.h),
           child: CustomGlassContainer(
             borderRadius: BorderRadius.circular(20.r),
-            borderColor: AppColors.cffffff.withValues(alpha: 0.08),
+            borderColor: appColors.glassBase.withValues(alpha: 0.08),
             color: appColors.bottomNavBar.withValues(alpha: 0.2),
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                AppColors.cffffff.withValues(alpha: 0.06),
-                AppColors.cffffff.withValues(alpha: 0.01),
+                appColors.glassBase.withValues(alpha: 0.06),
+                appColors.glassBase.withValues(alpha: 0.01),
               ],
             ),
             padding: EdgeInsets.all(6.r),
@@ -658,7 +663,7 @@ class _ProfileViewState extends State<ProfileView> {
               subtitle: Padding(
                 padding: EdgeInsets.only(top: 4.h),
                 child: Text(
-                  '${log.era ?? 'Unknown Era'} \u2022 ${_formatTimeAgo(log.createdAt)}',
+                  '${log.era ?? l10n.profileUnknownEra} \u2022 ${_formatTimeAgo(log.createdAt)}',
                   style: TextStyle(
                     color: appColors.footer.withValues(alpha: 0.5),
                     fontSize: 12.sp,
@@ -738,7 +743,7 @@ class _ProfileViewState extends State<ProfileView> {
         padding: EdgeInsets.symmetric(vertical: 40.h, horizontal: 16.w),
         child: CustomGlassContainer(
           borderRadius: BorderRadius.circular(24.r),
-          borderColor: AppColors.cffffff.withValues(alpha: 0.05),
+          borderColor: appColors.glassBase.withValues(alpha: 0.05),
           color: appColors.bottomNavBar.withValues(alpha: 0.15),
           padding: EdgeInsets.all(24.r),
           child: Column(
@@ -770,44 +775,8 @@ class _ProfileViewState extends State<ProfileView> {
                 textAlign: TextAlign.center,
               ),
               Gap(18.h),
+
               // Tactile interactive glass shortcut to scan!
-              GestureDetector(
-                onTap: () {
-                  final featuresCubit = context.read<FeaturesCubit>();
-                  featuresCubit.changeFeature(
-                    featureName: AppStrings.scanFeature.key,
-                  );
-                },
-                child: CustomGlassContainer(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 24.w,
-                    vertical: 12.h,
-                  ),
-                  borderRadius: BorderRadius.circular(30.r),
-                  color: AppColors.secondary.withValues(alpha: 0.25),
-                  borderColor: AppColors.secondary.withValues(alpha: 0.20),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.camera_alt_outlined,
-                        color: Colors.white,
-                        size: 18.r,
-                      ),
-                      Gap(8.w),
-                      Text(
-                        "Start Scanning",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 13.sp,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
             ],
           ),
         ),
@@ -985,7 +954,10 @@ class _PulsatingAvatarState extends State<_PulsatingAvatar>
                           : appColors.footer.withValues(alpha: 0.8),
                       image: widget.imagePath != null
                           ? DecorationImage(
-                              image: FileImage(File(widget.imagePath!)),
+                              image: ResizeImage(
+                                FileImage(File(widget.imagePath!)),
+                                width: 150,
+                              ),
                               fit: BoxFit.cover,
                             )
                           : null,

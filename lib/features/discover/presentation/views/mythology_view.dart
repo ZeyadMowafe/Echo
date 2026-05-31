@@ -26,9 +26,8 @@ class MythologyView extends StatelessWidget {
       drawer: CustomGlassDrawer(
         currentFeature: AppStrings.discoverFeature.key,
         onTap: (featureKey) {
+          Navigator.popUntil(context, (route) => route.isFirst);
           context.read<FeaturesCubit>().changeFeature(featureName: featureKey);
-          Navigator.pop(context);
-          Navigator.pop(context);
         },
       ),
       drawerEnableOpenDragGesture: false,
@@ -75,7 +74,7 @@ class MythologyView extends StatelessWidget {
                                 crossAxisCount: 2,
                                 crossAxisSpacing: 16.w,
                                 mainAxisSpacing: 16.h,
-                                childAspectRatio: 170 / 224, 
+                                childAspectRatio: 170 / 224,
                               ),
                           itemCount: godsList.length - 1,
                           itemBuilder: (context, index) {
@@ -140,7 +139,7 @@ class MythologyView extends StatelessWidget {
           ),
 
           Positioned(
-            bottom: 60.h,
+            bottom: 35.h,
             left: 0,
             right: 0,
             child: Center(

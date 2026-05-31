@@ -8,7 +8,8 @@ class RegisterParams {
   final String email;
   final String password;
   final String name;
-  RegisterParams({required this.email, required this.password, required this.name});
+  final String lang;
+  RegisterParams({required this.email, required this.password, required this.name, this.lang = 'en'});
 }
 
 class RegisterUseCase implements UseCase<UserEntity, RegisterParams> {
@@ -21,6 +22,7 @@ class RegisterUseCase implements UseCase<UserEntity, RegisterParams> {
       email: params.email,
       password: params.password,
       name: params.name,
+      lang: params.lang,
     );
   }
 }

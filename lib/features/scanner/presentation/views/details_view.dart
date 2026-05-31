@@ -27,6 +27,7 @@ import 'package:echo_explorer/features/scanner/domain/entities/scan_response_ent
 
 import 'package:echo_explorer/features/scanner/presentation/cubit/scan_cubit.dart';
 
+import 'package:echo_explorer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -78,6 +79,7 @@ class _DetailsViewState extends State<DetailsView> {
   }
 
   Widget _buildTopBar(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return ClipRect(
       child: BackdropFilter(
         filter: ImageFilter.blur(
@@ -87,18 +89,18 @@ class _DetailsViewState extends State<DetailsView> {
         child: Container(
           width: double.infinity,
           decoration: BoxDecoration(
-            color: AppColors.cffffff.withValues(alpha: 0.10),
+            color: AppColors.of(context).glassBase.withValues(alpha: 0.10),
             gradient: LinearGradient(
               colors: [
-                AppColors.cffffff.withValues(alpha: 0.15),
-                AppColors.cffffff.withValues(alpha: 0.0),
+                AppColors.of(context).glassBase.withValues(alpha: 0.15),
+                AppColors.of(context).glassBase.withValues(alpha: 0.0),
               ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
             border: Border(
               bottom: BorderSide(
-                color: AppColors.cffffff.withValues(alpha: 0.08),
+                color: AppColors.of(context).glassBase.withValues(alpha: 0.08),
                 width: 1,
               ),
             ),
@@ -118,7 +120,7 @@ class _DetailsViewState extends State<DetailsView> {
               ),
               Expanded(
                 child: Text(
-                  'Details',
+                  l10n.detailsTitle,
                   style: TextStyle(
                     color: AppColors.of(context).footer,
                     fontSize: 16.sp,
@@ -145,10 +147,11 @@ class _DetailsViewState extends State<DetailsView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final hasScanLogId = _result.scanLogId != null;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0D1215),
+      backgroundColor: AppColors.of(context, listen: false).background,
       drawer: CustomGlassDrawer(
         currentFeature: AppStrings.scanFeature.key,
         onTap: (featureName) {
@@ -214,15 +217,17 @@ class _DetailsViewState extends State<DetailsView> {
                                           24.r,
                                         ),
                                         border: Border.all(
-                                          color: Colors.white.withValues(
-                                            alpha: 0.1,
-                                          ),
+                                          color: AppColors.of(
+                                            context,
+                                          ).glassBase.withValues(alpha: 0.1),
                                         ),
-                                        gradient: const LinearGradient(
+                                        gradient: LinearGradient(
                                           begin: Alignment.topCenter,
                                           end: Alignment.bottomCenter,
                                           colors: [
-                                            Color(0x05FFFFFF),
+                                            AppColors.of(
+                                              context,
+                                            ).glassBase.withValues(alpha: 0.05),
                                             Colors.transparent,
                                           ],
                                         ),
@@ -234,16 +239,18 @@ class _DetailsViewState extends State<DetailsView> {
                                             _showTranslation
                                                 ? Icons.format_list_bulleted
                                                 : Icons.visibility_rounded,
-                                            color: Colors.white,
+                                            color: AppColors.of(context).footer,
                                             size: 12.r,
                                           ),
                                           Gap(4.w),
                                           Text(
                                             _showTranslation
-                                                ? 'About This Artifact'
-                                                : 'Reveal Translation',
+                                                ? l10n.detailsAboutThisArtifact
+                                                : l10n.detailsRevealTranslation,
                                             style: TextStyle(
-                                              color: Colors.white,
+                                              color: AppColors.of(
+                                                context,
+                                              ).footer,
                                               fontSize: 11.sp,
                                               fontWeight: FontWeight.w400,
                                             ),
@@ -270,18 +277,6 @@ class _DetailsViewState extends State<DetailsView> {
                                 ),
                               ),
                               Gap(10.w),
-                              GestureDetector(
-                                onTap: () {
-                                  /* share */
-                                },
-                                child: Icon(
-                                  Icons.share_outlined,
-                                  size: 24.r,
-                                  color: AppColors.of(
-                                    context,
-                                  ).footer.withValues(alpha: 0.6),
-                                ),
-                              ),
                             ],
                           ),
                         ),
@@ -318,9 +313,9 @@ class _DetailsViewState extends State<DetailsView> {
                           _result.hieroglyphs?.translation != null) ...[
                         Gap(32.h),
                         Text(
-                          'Discover what the translation reveals…',
+                          l10n.detailsTranslationReveals,
                           style: TextStyle(
-                            color: Colors.white,
+                            color: AppColors.of(context).footer,
                             fontSize: 20.sp,
                             height: 1.2,
                             fontWeight: FontWeight.w400,
@@ -330,7 +325,9 @@ class _DetailsViewState extends State<DetailsView> {
                         Text(
                           _result.hieroglyphs!.translation!,
                           style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.85),
+                            color: AppColors.of(
+                              context,
+                            ).footer.withValues(alpha: 0.85),
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w400,
                             height: 1.4,
@@ -341,9 +338,9 @@ class _DetailsViewState extends State<DetailsView> {
                         Gap(32.h),
                         // Artifact name
                         Text(
-                          _result.artifact.name ?? 'Artifact',
+                          _result.artifact.name ?? l10n.detailsUnknownArtifact,
                           style: TextStyle(
-                            color: Colors.white,
+                            color: AppColors.of(context).footer,
                             fontSize: 22.sp,
                             fontWeight: FontWeight.w700,
                           ),
@@ -370,7 +367,7 @@ class _DetailsViewState extends State<DetailsView> {
                               child: Text(
                                 parts.join('  |  '),
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color: AppColors.of(context).footer,
                                   fontSize: 14.sp,
                                   fontWeight: FontWeight.w400,
                                 ),
@@ -398,9 +395,9 @@ class _DetailsViewState extends State<DetailsView> {
                         ),
                         Gap(32.h),
                         Text(
-                          'Description',
+                          l10n.detailsDescription,
                           style: TextStyle(
-                            color: Colors.white,
+                            color: AppColors.of(context).footer,
                             fontSize: 22.sp,
                             fontWeight: FontWeight.w900,
                           ),
@@ -410,61 +407,72 @@ class _DetailsViewState extends State<DetailsView> {
                         Text(
                           _result.artifact.description ?? '',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: AppColors.of(context).footer,
                             fontSize: 16.sp,
                             height: 1.2,
                             fontWeight: FontWeight.w400,
                           ),
                         ),
                       ],
-                      Gap(32.h),
-                      // Chat with me button (glass style)
-                      Center(
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              SmoothRoute(
-                                type: TransitionType.fadeSlideUp,
-                                page: ChatView(
-                                  artifactId:
-                                      _result.artifact.artifactModelId ?? '',
-                                  artifactName:
-                                      _result.artifact.name ??
-                                      _result.artifact.artifactModelId ??
-                                      '',
-                                ),
-                              ),
-                            );
-                          },
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(24.r),
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-                              child: Container(
-                                width: 335.w,
-                                height: 43.h,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(24.r),
-                                  border: Border.all(
-                                    color: Colors.white.withValues(alpha: 0.15),
-                                  ),
-                                  gradient: const LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      Color(0x03000000),
-                                      Color(0x03000000),
-                                    ],
+                      if (_result.artifact.isPrimaryModel &&
+                          _result.artifact.artifactModelId != null) ...[
+                        Gap(32.h),
+                        Center(
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                SmoothRoute(
+                                  type: TransitionType.fadeSlideUp,
+                                  page: ChatView(
+                                    artifactId:
+                                        _result.artifact.artifactModelId ?? '',
+                                    artifactName:
+                                        _result.artifact.name ??
+                                        _result.artifact.artifactModelId ??
+                                        '',
                                   ),
                                 ),
-                                child: Center(
-                                  child: Text(
-                                    'chat with me',
-                                    style: TextStyle(
-                                      fontSize: 17.sp,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white,
+                              );
+                            },
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(24.r),
+                              child: BackdropFilter(
+                                filter: ImageFilter.blur(
+                                  sigmaX: 15,
+                                  sigmaY: 15,
+                                ),
+                                child: Container(
+                                  width: 335.w,
+                                  height: 43.h,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(24.r),
+                                    border: Border.all(
+                                      color: AppColors.of(
+                                        context,
+                                      ).glassBase.withValues(alpha: 0.15),
+                                    ),
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: [
+                                        AppColors.of(
+                                          context,
+                                        ).glassBase.withValues(alpha: 0.02),
+                                        AppColors.of(
+                                          context,
+                                        ).glassBase.withValues(alpha: 0.02),
+                                      ],
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      l10n.detailsChatWithMe,
+                                      style: TextStyle(
+                                        fontSize: 17.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.of(context).footer,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -472,7 +480,7 @@ class _DetailsViewState extends State<DetailsView> {
                             ),
                           ),
                         ),
-                      ),
+                      ],
                       Gap(40.h),
                     ],
                   ),
@@ -490,9 +498,9 @@ class _DetailsViewState extends State<DetailsView> {
                           horizontal: 16.w,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(
-                            0xFF0D1215,
-                          ).withValues(alpha: 0.92),
+                          color: AppColors.of(
+                            context,
+                          ).background.withValues(alpha: 0.92),
                           borderRadius: BorderRadius.circular(24.r),
                         ),
                         child: Center(
@@ -504,18 +512,17 @@ class _DetailsViewState extends State<DetailsView> {
                                     ? Icons.favorite
                                     : Icons.favorite_border,
                                 size: 18.r,
-                                color: Colors.white,
+                                color: AppColors.of(context).footer,
                               ),
                               Gap(10.w),
                               Text(
                                 _toastIsFavorited
-                                    ? 'Added to Your Favorites'
-                                    : 'Removed from Favorites',
+                                    ? l10n.scanAddedToFavorites
+                                    : l10n.scanRemovedFromFavorites,
                                 style: TextStyle(
-                                  fontFamily: 'Inter',
                                   fontWeight: FontWeight.w500,
                                   fontSize: 15.sp,
-                                  color: Colors.white,
+                                  color: AppColors.of(context).footer,
                                 ),
                               ),
                             ],

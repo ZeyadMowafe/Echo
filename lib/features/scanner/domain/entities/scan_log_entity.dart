@@ -10,6 +10,7 @@ class ScanLogEntity {
   final String? imageUrl;
   final String? hieroglyphsTranslation;
   final bool isFavorited;
+  final bool isPrimaryModel;
   final DateTime createdAt;
 
   ScanLogEntity({
@@ -24,6 +25,7 @@ class ScanLogEntity {
     this.imageUrl,
     this.hieroglyphsTranslation,
     required this.isFavorited,
+    this.isPrimaryModel = false,
     required this.createdAt,
   });
 }

@@ -31,10 +31,10 @@ class ScanCubit extends Cubit<ScanState> {
     emit(ScanImagePicked(imagePath: path));
   }
 
-  Future<void> analyzeImage() async {
+  Future<void> analyzeImage({String? language}) async {
     if (_currentImagePath == null) return;
     if (!isClosed) emit(ScanLoading());
-    final lang = CacheHelper.getData(key: 'localeLanguageCode') ?? 'en';
+    final lang = language ?? CacheHelper.getData(key: 'localeLanguageCode') ?? 'en';
     final result = await analyzeImageUseCase(AnalyzeImageParams(
       imagePath: _currentImagePath!,
       language: lang,
@@ -101,6 +101,7 @@ class ScanCubit extends Cubit<ScanState> {
           imageUrl: initialData?.imageUrl,
           hieroglyphsTranslation: data['hieroglyphsTranslation'] ?? initialData?.hieroglyphsTranslation,
           isFavorited: initialData?.isFavorited ?? false,
+          isPrimaryModel: initialData?.isPrimaryModel ?? false,
           createdAt: initialData?.createdAt ?? DateTime.now(),
         )));
         return;
@@ -133,6 +134,7 @@ class ScanCubit extends Cubit<ScanState> {
         imageUrl: current.scanLog.imageUrl,
         hieroglyphsTranslation: current.scanLog.hieroglyphsTranslation,
         isFavorited: !current.scanLog.isFavorited,
+        isPrimaryModel: current.scanLog.isPrimaryModel,
         createdAt: current.scanLog.createdAt,
       );
       emit(ScanDetailLoaded(scanLog: updated));
@@ -142,7 +144,6 @@ class ScanCubit extends Cubit<ScanState> {
       (failure) => emit(ScanError(message: failure.message)),
       (_) {
         if (state is ScanDetailLoaded) {
-          // Reload details to sync with backend
           loadScanLogById(scanLogId, initialData: (state as ScanDetailLoaded).scanLog);
         } else if (state is ScanLogsLoaded) {
           loadScanLogs();
@@ -153,14 +154,11 @@ class ScanCubit extends Cubit<ScanState> {
     );
   }
 
-  /// Just toggles favorite via API without any local state changes or side effects.
-  /// Returns true if the API call succeeded.
   Future<bool> silentToggleFavorite(String scanLogId) async {
     final result = await toggleFavoriteUseCase(scanLogId);
     return result.isRight();
   }
 
-  /// Toggles favorite visually in ScanResultLoaded state and calls the API.
   Future<bool> toggleScanResultFavorite(String scanLogId) async {
     if (state is ScanResultLoaded) {
       final current = state as ScanResultLoaded;

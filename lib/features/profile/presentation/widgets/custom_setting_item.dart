@@ -5,6 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 
+IconData? _rtlFlipIcon(BuildContext context, IconData? icon) {
+  if (icon == null || Directionality.of(context) == TextDirection.ltr) return icon;
+  if (icon == Icons.arrow_forward_rounded) return Icons.arrow_back_rounded;
+  if (icon == Icons.arrow_forward_ios_rounded) return Icons.arrow_back_ios_rounded;
+  if (icon == Icons.arrow_forward) return Icons.arrow_back;
+  return icon;
+}
+
 class CustomSettingItem extends StatelessWidget {
   final IconData? leadingIcon;
   final String title;
@@ -71,7 +79,7 @@ class CustomSettingItem extends StatelessWidget {
               )
             else if (onTap != null && trailingIcon != null) 
               Icon(
-                trailingIcon,
+                _rtlFlipIcon(context, trailingIcon),
                 color: AppColors.of(context).footer,
                 size: ScreenUtils.xl,
               ),

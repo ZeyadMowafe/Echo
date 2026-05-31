@@ -10,7 +10,7 @@ class CustomGlassBackButton extends StatelessWidget {
     this.size = 34,
     this.iconSize = 22,
     this.iconColor,
-    this.rtlAware = false,
+    this.rtlAware = true,
   });
 
   final VoidCallback? onPressed;
@@ -21,7 +21,8 @@ class CustomGlassBackButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = iconColor ?? AppColors.of(context).footer;
+    final appColors = AppColors.of(context);
+    final color = iconColor ?? appColors.footer;
     final icon = rtlAware && Directionality.of(context) == TextDirection.rtl
         ? Icons.arrow_forward_rounded
         : Icons.arrow_back_rounded;
@@ -30,12 +31,12 @@ class CustomGlassBackButton extends StatelessWidget {
       width: size.w,
       height: size.h,
       borderRadius: BorderRadius.circular(50.r),
-      borderColor: AppColors.cffffff.withValues(alpha: 0.10),
-      color: AppColors.cffffff.withValues(alpha: 0.10),
+      borderColor: appColors.glassBase.withValues(alpha: 0.10),
+      color: appColors.glassBase.withValues(alpha: 0.10),
       gradient: LinearGradient(
         colors: [
-          AppColors.cffffff.withValues(alpha: 0.20),
-          AppColors.cffffff.withValues(alpha: 0.0),
+          appColors.glassBase.withValues(alpha: 0.20),
+          appColors.glassBase.withValues(alpha: 0.0),
         ],
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
@@ -43,13 +44,13 @@ class CustomGlassBackButton extends StatelessWidget {
       child: CustomGlassContainer(
         width: size.w,
         height: size.h,
-        color: AppColors.cffffff.withValues(alpha: 0.25),
-        borderColor: AppColors.cffffff.withValues(alpha: 0.04),
+        color: appColors.glassBase.withValues(alpha: 0.25),
+        borderColor: appColors.glassBase.withValues(alpha: 0.04),
         borderRadius: BorderRadius.circular(50.r),
         gradient: LinearGradient(
           colors: [
-            AppColors.cffffff.withValues(alpha: 0.30),
-            AppColors.cffffff.withValues(alpha: 0.0),
+            appColors.glassBase.withValues(alpha: 0.30),
+            appColors.glassBase.withValues(alpha: 0.0),
           ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,

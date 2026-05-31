@@ -24,6 +24,7 @@ class ScreenUtils {
   static double get iconMd => 22.r;
   static double get iconLg => 28.r;
   static double get iconXl => 36.r;
+  static double get icon2Xl => 48.r;
 
   static double get buttonHeight => 48.h;
   static double get fabSize => 72.r;

@@ -17,28 +17,27 @@ class CustomBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = AppColors.of(context);
     return CustomGlassContainer(
-      borderColor: AppColors.cffffff.withOpacity(0.04),
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(ScreenUtils.glassBorderRadius),
-        topRight: Radius.circular(ScreenUtils.glassBorderRadius),
+      borderColor: appColors.glassBase.withValues(alpha: 0.04),
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(ScreenUtils.glassBorderRadius),
       ),
-      color: AppColors.cffffff.withOpacity(0.25),
+      color: appColors.glassBase.withValues(alpha: 0.25),
       gradient: LinearGradient(
         colors: [
-          AppColors.cffffff.withOpacity(0.30),
-          AppColors.cffffff.withOpacity(0.0),
+          appColors.glassBase.withValues(alpha: 0.30),
+          appColors.glassBase.withValues(alpha: 0.0),
         ],
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
       ),
       child: CustomGlassContainer(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(ScreenUtils.glassBorderRadius),
-          topRight: Radius.circular(ScreenUtils.glassBorderRadius),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(ScreenUtils.glassBorderRadius),
         ),
-        color: AppColors.of(context).bottomNavBar.withOpacity(0.35),
-        borderColor: AppColors.c162410.withOpacity(0.50),
+        color: appColors.bottomNavBar.withValues(alpha: 0.35),
+        borderColor: appColors.glassBase.withValues(alpha: 0.50),
         padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 2),
         child: SafeArea(
           top: false,
@@ -91,11 +90,11 @@ class CustomBottomNavBar extends StatelessWidget {
     required String featureKey,
   }) {
     return IconButton(
-      icon: Icon(
-        icon,
-        color: AppColors.of(context).icons,
-        size: ScreenUtils.iconMd,
-      ),
+          icon: Icon(
+            icon,
+            color: AppColors.of(context).icons,
+            size: ScreenUtils.iconMd,
+          ),
       onPressed: () => onTap(featureKey),
     );
   }

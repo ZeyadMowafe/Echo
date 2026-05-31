@@ -127,7 +127,7 @@
   "editProfileChangeCover": "Изменить обложку",
   "editProfileChangeAvatar": "Изменить фото",
   "authWelcomeBack": "С возвращением",
-  "authSubtitleDefault": "Чтобы войти или создать учетную запись, введите свой адрес электронной почты.",
+  "authSubtitleDefault": "Войдите в свою учетную запись",
   "authEmailHint": "Адрес электронной почты",
   "authPasswordHint": "Пароль",
   "authContinue": "Продолжить",
@@ -146,23 +146,122 @@
   "networkError": "Ошибка сети. Пожалуйста, проверьте ваше соединение.",
   "socialComingSoon": "Социальный вход скоро появится!",
   "profileUpdatedSuccessfully": "Профиль успешно обновлен!",
-  "scanTitle": "Scan Artifacts & Decode Hieroglyphs",
-  "scanSubtitle": "Take a photo of any ancient Egyptian artifact to identify it and translate its hieroglyphs.",
-  "scanTakePhoto": "Take Photo",
-  "scanPickGallery": "Pick from Gallery",
-  "scanAnalyzeArtifact": "Analyze Artifact",
-  "scanDifferentPhoto": "Choose Different Photo",
-  "scanAnalyzing": "Analyzing your artifact...",
-  "scanAnalyzingWait": "This may take up to a minute",
-  "scanSaveFavorites": "Save to Favorites",
-  "scanRemoveFavorites": "Remove from Favorites",
-  "scanNewScan": "New Scan",
-  "scanChat": "Chat",
-  "scanHieroglyphs": "Hieroglyphs",
-  "scanAddedToFavorites": "Added to Favorites!",
-  "scanRemovedFromFavorites": "Removed from Favorites",
-  "scanFavorited": "Favorited",
-  "scanSave": "Save",
-  "scanNoHieroglyphs": "No hieroglyphs detected in this artifact.",
-  "scanHieroglyphsTranslation": "Hieroglyphs Translation"
+  "scanTitle": "Сканируйте артефакты и расшифровывайте иероглифы",
+  "scanSubtitle": "Сфотографируйте любой древнеегипетский артефакт, чтобы определить его и перевести его иероглифы.",
+  "scanTakePhoto": "Сделать фото",
+  "scanPickGallery": "Выбрать из галереи",
+  "scanAnalyzeArtifact": "Анализировать артефакт",
+  "scanDifferentPhoto": "Выбрать другое фото",
+  "scanAnalyzing": "Анализ вашего артефакта...",
+  "scanAnalyzingWait": "Это может занять до минуты",
+  "scanSaveFavorites": "Сохранить в избранное",
+  "scanRemoveFavorites": "Удалить из избранного",
+  "scanNewScan": "Новый скан",
+  "scanChat": "Чат",
+  "scanHieroglyphs": "Иероглифы",
+  "scanAddedToFavorites": "Добавлено в избранное!",
+  "scanRemovedFromFavorites": "Удалено из избранного",
+  "scanFavorited": "В избранном",
+  "scanSave": "Сохранить",
+  "scanNoHieroglyphs": "В этом артефакте не обнаружено иероглифов.",
+  "scanHieroglyphsTranslation": "Перевод иероглифов",
+  "scanNoArtifactFound": "Не удалось распознать артефакт на этом изображении.",
+  "scanDetails": "Детали",
+  "scanRevealTranslation": "Показать перевод",
+  "scanHideTranslation": "Скрыть перевод",
+  "scanLanguage": "Язык",
+  "scanNoArtifactRecognized": "На изображении не распознан артефакт.",
+  "scanRescan": "Пересканировать",
+  "scanTryAgain": "Попробовать снова",
+  "scanStatLines": "{count,plural, =1{1 строка} other{{count} строк}}",
+  "@scanStatLines": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "scanStatGlyphs": "{count,plural, =1{1 иероглиф} other{{count} иероглифов}}",
+  "@scanStatGlyphs": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "scanStatCartouches": "{count,plural, =1{1 картуш} other{{count} картушей}}",
+  "@scanStatCartouches": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "scanStep1": "Инициализация нейронного сканирования...",
+  "scanStep2": "Изоляция областей с иероглифами...",
+  "scanStep3": "Анализ градиентов контрастности...",
+  "scanStep4": "Расшифровка иероглифических форм...",
+  "scanStep5": "Перевод древних значений...",
+  "detailsTitle": "Детали",
+  "detailsAboutThisArtifact": "Об этом артефакте",
+  "detailsRevealTranslation": "Показать перевод",
+  "detailsHideTranslation": "Скрыть перевод",
+  "detailsTranslationReveals": "Узнайте, что раскрывает перевод...",
+  "detailsUnknownArtifact": "Артефакт",
+  "detailsDescription": "Описание",
+  "detailsChatWithMe": "Поговорить со мной",
+
+  "authRegister": "Зарегистрироваться",
+  "registerTitle": "Создать аккаунт",
+  "registerNameHint": "Полное имя",
+  "registerPhoneHint": "Номер телефона",
+  "registerLanguageHint": "Предпочитаемый язык",
+  "registerConfirmPasswordHint": "Подтвердите пароль",
+  "registerCreateAccount": "Создать аккаунт",
+  "registerPasswordMismatch": "Пароли не совпадают",
+
+  "chatHintMessage": "Сообщение...",
+  "chatWelcomeMessage": "Спросите меня о Древнем Египте...",
+  "chatSearchHint": "Поиск",
+  "chatNewChat": "Новый чат",
+  "chatDeleteConfirm": "Удалить сессию?",
+  "chatDeleteConfirmDesc": "Это удалит все сообщения в этой сессии.",
+
+  "noRouteDefined": "Не указан маршрут для",
+
+  "updatingLanguage": "Обновление языка...",
+
+  "profileTitle": "Профиль",
+  "profileGuest": "Гость",
+  "profileUnknownArtifact": "Неизвестный артефакт",
+  "profileUnknownEra": "Неизвестная эпоха",
+  "profileStartScanning": "Начать сканирование",
+
+  "timeAgoJustNow": "только что",
+  "timeAgoMinute": "{count,plural, =1{1 мин. назад} other{{count} мин. назад}}",
+  "@timeAgoMinute": {
+    "description": "Time ago in minutes",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeAgoHour": "{count,plural, =1{1 ч. назад} other{{count} ч. назад}}",
+  "@timeAgoHour": {
+    "description": "Time ago in hours",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeAgoDay": "{count,plural, =1{1 д. назад} other{{count} д. назад}}",
+  "@timeAgoDay": {
+    "description": "Time ago in days",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "errorNoInternet": "Нет подключения к интернету",
+  "errorServerError": "Произошла ошибка сервера",
+  "errorStorageError": "Произошла ошибка хранения",
+  "errorUnexpected": "Что-то пошло не так",
+  "errorTimeout": "Время ожидания истекло",
+  "errorSessionExpired": "Сессия истекла. Пожалуйста, войдите снова",
+  "errorResourceNotFound": "Ресурс не найден",
+  "errorRequestFailed": "Запрос не удался",
+  "errorRequestCancelled": "Запрос был отменен",
+  "errorSecurityError": "Произошла ошибка безопасности"
 }

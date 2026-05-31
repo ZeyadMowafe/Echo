@@ -2,13 +2,17 @@ import 'dart:ui';
 import 'package:echo_explorer/core/constants/app_colors.dart';
 import 'package:echo_explorer/core/constants/app_dimensions.dart';
 import 'package:echo_explorer/core/helpers/screen_utils.dart';
+import 'package:echo_explorer/core/routing/routes.dart';
+import 'package:echo_explorer/core/themes/theme_cubit.dart';
 import 'package:echo_explorer/core/widgets/app_loading.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_back_button.dart';
+import 'package:echo_explorer/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:echo_explorer/features/chat/domain/entities/message_entity.dart';
 import 'package:echo_explorer/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:echo_explorer/features/chat/presentation/widgets/chat_bubble.dart';
 import 'package:echo_explorer/features/chat/presentation/widgets/chat_input_field.dart';
 import 'package:echo_explorer/features/chat/presentation/widgets/chat_side_drawer.dart';
+import 'package:echo_explorer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -35,7 +39,6 @@ class _ChatViewState extends State<ChatView> {
         artifactId: artifactId,
         title: widget.artifactName,
       );
-
     } else {
       context.read<ChatCubit>().startNewSession();
     }
@@ -61,146 +64,159 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ChatCubit, ChatState>(
-      builder: (context, state) {
-        final cubit = context.read<ChatCubit>();
-        final sessions = cubit.cachedSessions;
+    final cubit = context.read<ChatCubit>();
 
-        Widget body;
-        if (widget.artifactId != null) {
-          body = _buildChatSection(context, state);
-        } else if (state is ChatInitial) {
-          body = _buildWelcome(context);
-        } else if (state is ChatLoading) {
-          body = AppLoading.page();
-        } else {
-          body = _buildChatSection(context, state);
-        }
+    final isDark = context.watch<ThemeCubit>().state;
 
-        return Scaffold(
-          backgroundColor: AppColors.of(context).background,
-          drawer: ChatSideDrawer(
-            sessions: sessions,
-            onNewChat: () => cubit.startNewSession(),
-            onSessionTap: (id) => cubit.loadSession(id),
-            onDeleteSession: (id) {
-              final name = sessions
-                  .where((s) => s.id == id)
-                  .firstOrNull
-                  ?.title;
-              cubit.deleteSession(id);
-              if (name != null && context.mounted) {
-                final overlay = Overlay.of(context);
-                late OverlayEntry entry;
-                entry = OverlayEntry(
-                  builder: (ctx) => Positioned(
-                    top: MediaQuery.of(ctx).padding.top + 12.h,
-                    left: 0,
-                    right: 0,
-                    child: Material(
-                      color: Colors.transparent,
+    return Scaffold(
+      backgroundColor: isDark
+          ? AppColors.of(context).background
+          : AppColors.cffffff,
+      drawer: ChatSideDrawer(
+        sessions: cubit.cachedSessions,
+        onNewChat: () => cubit.startNewSession(),
+        onSessionTap: (id) => cubit.loadSession(id),
+        onDeleteSession: (id) {
+          final name = cubit.cachedSessions
+              .where((s) => s.id == id)
+              .firstOrNull
+              ?.title;
+          cubit.deleteSession(id);
+          if (name != null && context.mounted) {
+            final overlay = Overlay.of(context);
+            final isDark = context.read<ThemeCubit>().state;
+            late OverlayEntry entry;
+            entry = OverlayEntry(
+              builder: (ctx) => Positioned(
+                top: MediaQuery.of(ctx).padding.top + 12.h,
+                left: 0,
+                right: 0,
+                child: Material(
+                  color: Colors.transparent,
+                  child: Center(
+                    child: Container(
+                      width: 300.w,
+                      padding: EdgeInsets.symmetric(
+                        vertical: 10.h,
+                        horizontal: 16.w,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? const Color(0xFF0D1215).withValues(alpha: 0.92)
+                            : AppColors.cffffff.withValues(alpha: 0.92),
+                        borderRadius: BorderRadius.circular(24.r),
+                      ),
                       child: Center(
-                        child: Container(
-                          width: 300.w,
-                          padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF0D1215).withValues(alpha: 0.92),
-                            borderRadius: BorderRadius.circular(24.r),
-                          ),
-                          child: Center(
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.delete_rounded,
-                                  size: 18.r,
-                                  color: Colors.redAccent,
-                                ),
-                                Gap(10.w),
-                                Flexible(
-                                  child: Text(
-                                    'Session "$name" deleted',
-                                    style: TextStyle(
-                                      fontFamily: 'Inter',
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 15.sp,
-                                      color: Colors.white,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.delete_rounded,
+                              size: 18.r,
+                              color: Colors.redAccent,
                             ),
-                          ),
+                            Gap(10.w),
+                            Flexible(
+                              child: Text(
+                                'Session "$name" deleted',
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 15.sp,
+                                  color: Colors.white,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
-                );
-                overlay.insert(entry);
-                Future.delayed(const Duration(seconds: 2), () {
-                  if (entry.mounted) entry.remove();
-                });
-              }
-            },
-
-          ),
-          body: GestureDetector(
-            onTap: () => FocusScope.of(context).unfocus(),
-            child: Stack(
-              children: [
+                ),
+              ),
+            );
+            overlay.insert(entry);
+            Future.delayed(const Duration(seconds: 2), () {
+              if (entry.mounted) entry.remove();
+            });
+          }
+        },
+      ),
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Stack(
+          children: [
+            if (isDark)
               Positioned.fill(
                 child: Image.asset(
                   'assets/images/chat_background_dark.jpg',
                   fit: BoxFit.cover,
                 ),
               ),
+            if (isDark)
               Positioned.fill(
-                child: Container(color: const Color(0xFF0D1215).withValues(alpha: .9)),
+                child: Container(
+                  color: const Color(0xFF0D1215).withOpacity(0.7),
+                ),
               ),
-              Column(
-                children: [
-                  _buildTopBar(context),
-                  Expanded(
-                    child: SafeArea(
-                      top: false,
-                      child: Column(
-                        children: [
-                          Expanded(child: body),
-                          BlocBuilder<ChatCubit, ChatState>(
+            Column(
+              children: [
+                _buildTopBar(context),
+                Expanded(
+                  child: SafeArea(
+                    top: false,
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: BlocBuilder<ChatCubit, ChatState>(
                             builder: (context, state) {
-                              final isLoading = state is ChatLoading || state is ChatBotLoading;
-                              final showInput = state is ChatLoaded ||
-                                  state is ChatBotLoading ||
-                                  state is ChatError;
-                              if (!showInput) return const SizedBox.shrink();
-                              return AbsorbPointer(
-                                absorbing: isLoading,
-                                child: ChatInputField(
-                                  onSend: (text) {
-                                    cubit.sendMessage(text);
-                                    _scrollToBottom();
-                                  },
-                                ),
-                              );
+                              if (widget.artifactId != null) {
+                                return _buildChatSection(context, state);
+                              }
+                              if (state is ChatInitial)
+                                return _buildWelcome(context);
+                              if (state is ChatLoading)
+                                return AppLoading.page();
+                              return _buildChatSection(context, state);
                             },
                           ),
-                        ],
-                      ),
+                        ),
+                        BlocBuilder<ChatCubit, ChatState>(
+                          builder: (context, state) {
+                            final isLoading =
+                                state is ChatLoading || state is ChatBotLoading;
+                            final showInput =
+                                state is ChatLoaded ||
+                                state is ChatBotLoading ||
+                                state is ChatError;
+                            if (!showInput) return const SizedBox.shrink();
+                            return AbsorbPointer(
+                              absorbing: isLoading,
+                              child: ChatInputField(
+                                onSend: (text) {
+                                  cubit.sendMessage(text);
+                                  _scrollToBottom();
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ],
-          ),
-          ),
-        );
-      },
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   Widget _buildTopBar(BuildContext context) {
+    final isDark = context.watch<ThemeCubit>().state;
     return ClipRect(
       child: BackdropFilter(
         filter: ImageFilter.blur(
@@ -210,18 +226,18 @@ class _ChatViewState extends State<ChatView> {
         child: Container(
           width: double.infinity,
           decoration: BoxDecoration(
-            color: AppColors.cffffff.withValues(alpha: 0.10),
+            color: AppColors.of(context).glassBase.withValues(alpha: 0.10),
             gradient: LinearGradient(
               colors: [
-                AppColors.cffffff.withValues(alpha: 0.15),
-                AppColors.cffffff.withValues(alpha: 0.0),
+                AppColors.of(context).glassBase.withValues(alpha: 0.15),
+                AppColors.of(context).glassBase.withValues(alpha: 0.0),
               ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
             border: Border(
               bottom: BorderSide(
-                color: AppColors.cffffff.withValues(alpha: 0.08),
+                color: AppColors.of(context).glassBase.withValues(alpha: 0.08),
                 width: 1,
               ),
             ),
@@ -249,16 +265,72 @@ class _ChatViewState extends State<ChatView> {
                   ),
                 ),
               ),
-              Builder(
-                builder: (ctx) => GestureDetector(
-                  onTap: () => Scaffold.of(ctx).openDrawer(),
-                  child: Icon(
-                    Icons.menu_rounded,
-                    size: 28.r,
-                    color: AppColors.of(context).footer.withValues(alpha: 0.7),
-                  ),
-                ),
-              ),
+              context.watch<AuthCubit>().state is UnAuthenticated
+                  ? GestureDetector(
+                      onTap: () => Navigator.pushReplacementNamed(
+                        context,
+                        AppRoutes.authView,
+                      ),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16.w,
+                          vertical: 6.h,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(24.r),
+                          border: Border.all(
+                            color: isDark
+                                ? const Color(0x1AFFFFFF)
+                                : const Color(0xFF162410),
+                          ),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(24.r),
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: isDark
+                                      ? [
+                                          const Color(0x4D0D1215),
+                                          const Color(0x4D0D1215),
+                                        ]
+                                      : [
+                                          const Color(0x4D162410),
+                                          const Color(0x4D162410),
+                                        ],
+                                ),
+                              ),
+                              child: Text(
+                                'Login',
+                                style: TextStyle(
+                                  color: isDark
+                                      ? AppColors.cffffff
+                                      : AppColors.c000000,
+                                  fontSize: 13.sp,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  : Builder(
+                      builder: (ctx) => GestureDetector(
+                        onTap: () => Scaffold.of(ctx).openDrawer(),
+                        child: Icon(
+                          Icons.menu_rounded,
+                          size: 28.r,
+                          color: AppColors.of(
+                            context,
+                          ).footer.withValues(alpha: 0.7),
+                        ),
+                      ),
+                    ),
             ],
           ),
         ),
@@ -267,18 +339,22 @@ class _ChatViewState extends State<ChatView> {
   }
 
   Widget _buildWelcome(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Center(
       child: Padding(
         padding: EdgeInsets.all(ScreenUtils.xl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.chat_outlined,
-                size: 64.r,
-                color: AppColors.of(context).footer.withValues(alpha: 0.3)),
+            Icon(
+              Icons.chat_outlined,
+              size: 64.r,
+              color: AppColors.of(context).footer.withValues(alpha: 0.3),
+            ),
             Gap(ScreenUtils.md),
             Text(
-              'Ask me about Ancient Egypt...',
+              l10n.chatWelcomeMessage,
               style: TextStyle(
                 color: AppColors.of(context).footer.withValues(alpha: 0.6),
                 fontSize: 16.sp,
@@ -295,7 +371,9 @@ class _ChatViewState extends State<ChatView> {
                 foregroundColor: AppColors.secondary,
                 padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(ScreenUtils.glassBorderRadius),
+                  borderRadius: BorderRadius.circular(
+                    ScreenUtils.glassBorderRadius,
+                  ),
                 ),
               ),
             ),
@@ -309,10 +387,10 @@ class _ChatViewState extends State<ChatView> {
     final messages = state is ChatLoaded
         ? state.messages
         : state is ChatBotLoading
-            ? state.messages
-            : state is ChatError
-                ? state.messages
-                : <MessageEntity>[];
+        ? state.messages
+        : state is ChatError
+        ? state.messages
+        : <MessageEntity>[];
     final isBotLoading = state is ChatBotLoading;
     final errorMsg = state is ChatError ? state.message : null;
 
@@ -332,7 +410,8 @@ class _ChatViewState extends State<ChatView> {
           child: ListView.builder(
             controller: _scrollController,
             padding: EdgeInsets.only(top: 8.h, bottom: 8.h),
-            itemCount: messages.length +
+            itemCount:
+                messages.length +
                 (isBotLoading ? 1 : 0) +
                 (errorMsg != null ? 1 : 0),
             itemBuilder: (context, index) {
@@ -341,12 +420,74 @@ class _ChatViewState extends State<ChatView> {
               }
               if (errorMsg != null &&
                   index == messages.length + (isBotLoading ? 1 : 0)) {
+                final isDark = context.watch<ThemeCubit>().state;
+                final lastUserMsg = messages.reversed
+                    .where((m) => m.role == 'user')
+                    .firstOrNull
+                    ?.content;
                 return Padding(
                   padding: EdgeInsets.all(ScreenUtils.md),
-                  child: Text(
-                    errorMsg,
-                    style: TextStyle(color: Colors.redAccent, fontSize: 13.sp),
-                    textAlign: TextAlign.center,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (lastUserMsg != null)
+                        GestureDetector(
+                          onTap: () => context.read<ChatCubit>().sendMessage(
+                            lastUserMsg,
+                          ),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 24.w,
+                              vertical: 10.h,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(24.r),
+                              border: Border.all(
+                                color: isDark
+                                    ? const Color(0x1AFFFFFF)
+                                    : const Color(0xFF162410),
+                              ),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(23.r),
+                              child: BackdropFilter(
+                                filter: ImageFilter.blur(
+                                  sigmaX: 15,
+                                  sigmaY: 15,
+                                ),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: isDark
+                                          ? [
+                                              const Color(0x4D0D1215),
+                                              const Color(0x4D0D1215),
+                                            ]
+                                          : [
+                                              const Color(0x4D162410),
+                                              const Color(0x4D162410),
+                                            ],
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'Try Again',
+                                    style: TextStyle(
+                                      color: isDark
+                                          ? AppColors.cffffff
+                                          : AppColors.c000000,
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 );
               }
@@ -364,8 +505,9 @@ class _ChatViewState extends State<ChatView> {
   }
 
   Widget _buildTypingIndicator() {
+    final isDark = context.watch<ThemeCubit>().state;
     return Padding(
-      padding: EdgeInsets.only(left: 11.w, bottom: 4.h),
+      padding: EdgeInsetsDirectional.only(start: 11.w, bottom: 4.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -380,18 +522,21 @@ class _ChatViewState extends State<ChatView> {
               child: Container(
                 padding: EdgeInsets.all(11.r),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
+                  gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0x1A0D1215),
-                      Color(0x1A0D1215),
-                    ],
+                    colors: isDark
+                        ? [const Color(0x1A0D1215), const Color(0x1A0D1215)]
+                        : [const Color(0x1A162410), const Color(0x1A162410)],
                   ),
                   borderRadius: BorderRadius.circular(24.r),
-                  border: Border.all(color: const Color(0x0DFFFFFF)),
+                  border: Border.all(
+                    color: isDark
+                        ? const Color(0x0DFFFFFF)
+                        : const Color(0xFF162410),
+                  ),
                 ),
-                child: const _TypingDots(),
+                child: _TypingDots(isDark: isDark),
               ),
             ),
           ),
@@ -402,7 +547,8 @@ class _ChatViewState extends State<ChatView> {
 }
 
 class _TypingDots extends StatefulWidget {
-  const _TypingDots();
+  final bool isDark;
+  const _TypingDots({this.isDark = true});
 
   @override
   State<_TypingDots> createState() => _TypingDotsState();
@@ -448,7 +594,9 @@ class _TypingDotsState extends State<_TypingDots>
                   width: 8.r,
                   height: 8.r,
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: opacity),
+                    color:
+                        (widget.isDark ? Colors.white : const Color(0xFF162410))
+                            .withValues(alpha: opacity),
                     borderRadius: BorderRadius.circular(50.r),
                   ),
                 ),

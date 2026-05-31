@@ -76,7 +76,9 @@ class CustomSectionCard extends StatelessWidget {
                   ),
                   Gap(4.w),
                   Icon(
-                    Icons.arrow_forward,
+                    Directionality.of(context) == TextDirection.rtl
+                        ? Icons.arrow_back
+                        : Icons.arrow_forward,
                     size: 20.r,
                     color: AppColors.cf9f9f9,
                   ),

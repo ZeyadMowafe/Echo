@@ -152,10 +152,18 @@
   "editProfileChangeAvatar": "تغيير الصورة",
   
   "authWelcomeBack": "مرحباً بعودتك",
-  "authSubtitleDefault": "لتسجيل الدخول أو إنشاء حساب، يرجى إدخال عنوان بريدك الإلكتروني.",
+  "authSubtitleDefault": "سجل الدخول إلى حسابك",
   "authEmailHint": "عنوان البريد الإلكتروني",
   "authPasswordHint": "كلمة المرور",
   "authContinue": "متابعة",
+  "authRegister": "إنشاء حساب",
+  "registerTitle": "إنشاء حساب",
+  "registerNameHint": "الاسم الكامل",
+  "registerPhoneHint": "رقم الهاتف",
+  "registerLanguageHint": "اللغة المفضلة",
+  "registerConfirmPasswordHint": "تأكيد كلمة المرور",
+  "registerCreateAccount": "إنشاء حساب",
+  "registerPasswordMismatch": "كلمة المرور غير متطابقة",
   "authOr": "أو",
   "authGoogle": "المتابعة باستخدام جوجل",
   "authApple": "المتابعة باستخدام آبل",
@@ -189,5 +197,97 @@
   "scanFavorited": "مفضل",
   "scanSave": "حفظ",
   "scanNoHieroglyphs": "لم يتم اكتشاف هيروغليفية في هذه القطعة.",
-  "scanHieroglyphsTranslation": "ترجمة الهيروغليفية"
+  "scanNoArtifactFound": "لم يتم التعرف على أي قطعة أثرية في هذه الصورة.",
+  "scanHieroglyphsTranslation": "ترجمة الهيروغليفية",
+  "scanDetails": "التفاصيل",
+  "scanRevealTranslation": "إظهار الترجمة",
+  "scanHideTranslation": "إخفاء الترجمة",
+  "scanLanguage": "اللغة",
+  "scanNoArtifactRecognized": "لم يتم التعرف على قطعة أثرية في هذه الصورة.",
+  "scanRescan": "إعادة المسح",
+  "scanTryAgain": "حاول مرة أخرى",
+  "scanStatLines": "{count,plural, =1{سطر واحد} other{{count} أسطر}}",
+  "@scanStatLines": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "scanStatGlyphs": "{count,plural, =1{رمز واحد} other{{count} رموز}}",
+  "@scanStatGlyphs": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "scanStatCartouches": "{count,plural, =1{خرطوشة واحدة} other{{count} خراطيش}}",
+  "@scanStatCartouches": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "scanStep1": "جارٍ تهيئة المسح العصبي...",
+  "scanStep2": "جارٍ عزل المناطق الهيروغليفية...",
+  "scanStep3": "جارٍ تحليل تباينات الألوان...",
+  "scanStep4": "جارٍ فك تشفير الأشكال الهيروغليفية...",
+  "scanStep5": "جارٍ ترجمة المعاني القديمة...",
+
+  "detailsTitle": "التفاصيل",
+  "detailsAboutThisArtifact": "عن هذه القطعة الأثرية",
+  "detailsRevealTranslation": "إظهار الترجمة",
+  "detailsHideTranslation": "إخفاء الترجمة",
+  "detailsTranslationReveals": "اكتشف ما تكشفه الترجمة...",
+  "detailsUnknownArtifact": "قطعة أثرية",
+  "detailsDescription": "الوصف",
+  "detailsChatWithMe": "تحدث معي",
+
+  "errorNoInternet": "لا يوجد اتصال بالإنترنت",
+  "errorServerError": "حدث خطأ في الخادم",
+  "errorStorageError": "حدث خطأ في التخزين",
+  "errorUnexpected": "حدث خطأ غير متوقع",
+  "errorTimeout": "انتهت مهلة الاتصال",
+  "errorSessionExpired": "انتهت الجلسة. يرجى تسجيل الدخول مرة أخرى",
+  "errorResourceNotFound": "الموارد غير موجودة",
+  "errorRequestFailed": "فشل الطلب",
+  "errorRequestCancelled": "تم إلغاء الطلب",
+  "errorSecurityError": "حدث خطأ أمني",
+
+  "chatHintMessage": "رسالة...",
+  "chatWelcomeMessage": "اسألني عن مصر القديمة...",
+  "chatSearchHint": "بحث",
+  "chatNewChat": "محادثة جديدة",
+  "chatDeleteConfirm": "حذف المحادثة؟",
+  "chatDeleteConfirmDesc": "سيؤدي هذا إلى حذف جميع الرسائل في هذه المحادثة.",
+
+  "noRouteDefined": "لا يوجد مسار معرف لـ",
+
+  "updatingLanguage": "جاري تحديث اللغة...",
+
+  "profileTitle": "الملف الشخصي",
+  "profileGuest": "ضيف",
+  "profileUnknownArtifact": "قطعة أثرية غير معروفة",
+  "profileUnknownEra": "عصر غير معروف",
+  "profileStartScanning": "ابدأ المسح",
+
+  "timeAgoJustNow": "الآن",
+  "timeAgoMinute": "{count,plural, =1{منذ دقيقة} other{منذ {count} دقائق}}",
+  "@timeAgoMinute": {
+    "description": "الوقت المنقضي بالدقائق",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeAgoHour": "{count,plural, =1{منذ ساعة} other{منذ {count} ساعات}}",
+  "@timeAgoHour": {
+    "description": "الوقت المنقضي بالساعات",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeAgoDay": "{count,plural, =1{منذ يوم} other{منذ {count} أيام}}",
+  "@timeAgoDay": {
+    "description": "الوقت المنقضي بالأيام",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }
+

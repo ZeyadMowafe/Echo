@@ -14,6 +14,7 @@ import 'package:echo_explorer/features/scanner/data/models/scan_result_args.dart
 import 'package:echo_explorer/features/scanner/presentation/cubit/scan_cubit.dart';
 import 'package:echo_explorer/features/scanner/presentation/views/details_view.dart';
 import 'package:echo_explorer/features/chat/presentation/views/chat_view.dart';
+import 'package:echo_explorer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -105,6 +106,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final scanState = context.watch<ScanCubit>().state;
     if (scanState is ScanResultLoaded && _phase == _ScanPhase.analyzing) {
       _phase = _ScanPhase.result;
@@ -129,7 +131,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
               SizedBox(
                 width: double.infinity,
                 height: double.infinity,
-                child: Image.file(File(_capturedImagePath!), fit: BoxFit.cover),
+                child: Image.file(File(_capturedImagePath!), cacheWidth: 1080, fit: BoxFit.cover),
               )
             else if (_isInitialized &&
                 widget.initialImagePath != null &&
@@ -139,6 +141,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                 height: double.infinity,
                 child: Image.file(
                   File(widget.initialImagePath!),
+                  cacheWidth: 1080,
                   fit: BoxFit.cover,
                 ),
               )
@@ -157,7 +160,13 @@ class _CameraScannerViewState extends State<CameraScannerView> {
               width: 346.w,
               height: 463.h,
               child: (_phase == _ScanPhase.analyzing)
-                  ? const FuturisticScanAnalyzerOverlay()
+                  ? FuturisticScanAnalyzerOverlay(steps: [
+                      l10n.scanStep1,
+                      l10n.scanStep2,
+                      l10n.scanStep3,
+                      l10n.scanStep4,
+                      l10n.scanStep5,
+                    ])
                   : Container(
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.10),
@@ -180,9 +189,8 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                 !_showTranslation)
               Positioned(
                 left: 12.w,
-                top: 611.h,
-                width: 366.w,
-                height: 203.h,
+                right: 12.w,
+                bottom: 12.h,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(24.r),
                   child: BackdropFilter(
@@ -206,6 +214,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                         ),
                       ),
                       child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
                             scanState.result.artifact.name ?? 'Artifact',
@@ -242,61 +251,65 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                               );
                             },
                           ),
-                          const Spacer(),
+                          SizedBox(height: 12.h),
                           Row(
                             children: [
-                              GestureDetector(
-                                onTap: () {
-                                  final artifact = scanState.result.artifact;
-                                  Navigator.push(
-                                    context,
-                                    SmoothRoute(
-                                      type: TransitionType.fadeSlideUp,
-                                      page: ChatView(
-                                        artifactId:
-                                            artifact.artifactModelId ?? '',
-                                        artifactName:
-                                            artifact.name ??
-                                            artifact.artifactModelId ??
-                                            '',
+                              if (scanState.result.artifact.isPrimaryModel &&
+                                  scanState.result.artifact.artifactModelId != null)
+                                GestureDetector(
+                                  onTap: () {
+                                    final artifact = scanState.result.artifact;
+                                    Navigator.push(
+                                      context,
+                                      SmoothRoute(
+                                        type: TransitionType.fadeSlideUp,
+                                        page: ChatView(
+                                          artifactId:
+                                              artifact.artifactModelId ?? '',
+                                          artifactName:
+                                              artifact.name ??
+                                              artifact.artifactModelId ??
+                                              '',
+                                        ),
                                       ),
+                                    );
+                                  },
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(50.r),
+                                  child: BackdropFilter(
+                                    filter: ImageFilter.blur(
+                                      sigmaX: 15, sigmaY: 15,
                                     ),
-                                  );
-                                },
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(50.r),
-                                child: BackdropFilter(
-                                  filter: ImageFilter.blur(
-                                    sigmaX: 15, sigmaY: 15,
-                                  ),
-                                  child: Container(
-                                    width: 45.r,
-                                    height: 45.r,
-                                    padding: EdgeInsets.all(14.r),
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: Colors.black.withValues(alpha: 0.1),
+                                    child: Container(
+                                      width: 45.r,
+                                      height: 45.r,
+                                      padding: EdgeInsets.all(14.r),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: Colors.black.withValues(alpha: 0.1),
+                                        ),
+                                        gradient: const LinearGradient(
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                          colors: [
+                                            Color(0x13FFFFFF),
+                                            Color(0x00FFFFFF),
+                                          ],
+                                        ),
                                       ),
-                                      gradient: const LinearGradient(
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                        colors: [
-                                          Color(0x13FFFFFF),
-                                          Color(0x00FFFFFF),
-                                        ],
-                                      ),
-                                    ),
-                                      child: Icon(
-                                        Icons.chat_outlined,
-                                        color: Colors.white,
-                                        size: 20.r,
+                                        child: Icon(
+                                          Icons.chat_outlined,
+                                          color: Colors.white,
+                                          size: 20.r,
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              const Spacer(),
+                              if (scanState.result.artifact.isPrimaryModel &&
+                                  scanState.result.artifact.artifactModelId != null)
+                                const Spacer(),
                               GestureDetector(
                                 onTap: () {
                                   Navigator.push(
@@ -339,7 +352,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Text(
-                                            'Details',
+                                            l10n.scanDetails,
                                             style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 14.sp,
@@ -348,7 +361,9 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                                           ),
                                           Gap(4.w),
                                           Icon(
-                                            Icons.arrow_forward_rounded,
+                                            Directionality.of(context) == TextDirection.rtl
+                                                ? Icons.arrow_back_rounded
+                                                : Icons.arrow_forward_rounded,
                                             color: Colors.white,
                                             size: 18.r,
                                           ),
@@ -367,9 +382,11 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                 ),
               ),
             // Hieroglyphs translation toggle button
-            if (_phase == _ScanPhase.result && scanState is ScanResultLoaded)
-              Positioned(
-                left: 250.w,
+            if (_phase == _ScanPhase.result &&
+                scanState is ScanResultLoaded &&
+                scanState.result.hieroglyphs?.translation != null)
+              PositionedDirectional(
+                end: 17.w,
                 top: 163.h,
                 width: 123.w,
                 height: 34.h,
@@ -411,8 +428,8 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                             Gap(2.w),
                             Text(
                               _showTranslation
-                                  ? 'Hide Translation'
-                                  : 'Reveal Translation',
+                                  ? l10n.scanHideTranslation
+                                  : l10n.scanRevealTranslation,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 10.sp,
@@ -471,7 +488,9 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                                 GestureDetector(
                                   onTap: () => setState(() => _showTranslation = false),
                                   child: Icon(
-                                    Icons.arrow_back_rounded,
+                                    Directionality.of(context) == TextDirection.rtl
+                                        ? Icons.arrow_forward_rounded
+                                        : Icons.arrow_back_rounded,
                                     color: Colors.white70,
                                     size: 22.r,
                                   ),
@@ -545,7 +564,9 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                                     () => _showFullTranslation = false,
                                   ),
                                   child: Icon(
-                                    Icons.arrow_back_rounded,
+                                    Directionality.of(context) == TextDirection.rtl
+                                        ? Icons.arrow_forward_rounded
+                                        : Icons.arrow_back_rounded,
                                     color: Colors.white70,
                                     size: 22.r,
                                   ),

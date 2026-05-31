@@ -423,8 +423,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get authWelcomeBack => 'مرحباً بعودتك';
 
   @override
-  String get authSubtitleDefault =>
-      'لتسجيل الدخول أو إنشاء حساب، يرجى إدخال عنوان بريدك الإلكتروني.';
+  String get authSubtitleDefault => 'سجل الدخول إلى حسابك';
 
   @override
   String get authEmailHint => 'عنوان البريد الإلكتروني';
@@ -434,6 +433,30 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get authContinue => 'متابعة';
+
+  @override
+  String get authRegister => 'إنشاء حساب';
+
+  @override
+  String get registerTitle => 'إنشاء حساب';
+
+  @override
+  String get registerNameHint => 'الاسم الكامل';
+
+  @override
+  String get registerPhoneHint => 'رقم الهاتف';
+
+  @override
+  String get registerLanguageHint => 'اللغة المفضلة';
+
+  @override
+  String get registerConfirmPasswordHint => 'تأكيد كلمة المرور';
+
+  @override
+  String get registerCreateAccount => 'إنشاء حساب';
+
+  @override
+  String get registerPasswordMismatch => 'كلمة المرور غير متطابقة';
 
   @override
   String get authOr => 'أو';
@@ -538,5 +561,209 @@ class AppLocalizationsAr extends AppLocalizations {
   String get scanNoHieroglyphs => 'لم يتم اكتشاف هيروغليفية في هذه القطعة.';
 
   @override
+  String get scanNoArtifactFound =>
+      'لم يتم التعرف على أي قطعة أثرية في هذه الصورة.';
+
+  @override
   String get scanHieroglyphsTranslation => 'ترجمة الهيروغليفية';
+
+  @override
+  String get scanDetails => 'التفاصيل';
+
+  @override
+  String get scanRevealTranslation => 'إظهار الترجمة';
+
+  @override
+  String get scanHideTranslation => 'إخفاء الترجمة';
+
+  @override
+  String get scanLanguage => 'اللغة';
+
+  @override
+  String get scanNoArtifactRecognized =>
+      'لم يتم التعرف على قطعة أثرية في هذه الصورة.';
+
+  @override
+  String get scanRescan => 'إعادة المسح';
+
+  @override
+  String get scanTryAgain => 'حاول مرة أخرى';
+
+  @override
+  String scanStatLines(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count أسطر',
+      one: 'سطر واحد',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String scanStatGlyphs(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count رموز',
+      one: 'رمز واحد',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String scanStatCartouches(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count خراطيش',
+      one: 'خرطوشة واحدة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get scanStep1 => 'جارٍ تهيئة المسح العصبي...';
+
+  @override
+  String get scanStep2 => 'جارٍ عزل المناطق الهيروغليفية...';
+
+  @override
+  String get scanStep3 => 'جارٍ تحليل تباينات الألوان...';
+
+  @override
+  String get scanStep4 => 'جارٍ فك تشفير الأشكال الهيروغليفية...';
+
+  @override
+  String get scanStep5 => 'جارٍ ترجمة المعاني القديمة...';
+
+  @override
+  String get detailsTitle => 'التفاصيل';
+
+  @override
+  String get detailsAboutThisArtifact => 'عن هذه القطعة الأثرية';
+
+  @override
+  String get detailsRevealTranslation => 'إظهار الترجمة';
+
+  @override
+  String get detailsHideTranslation => 'إخفاء الترجمة';
+
+  @override
+  String get detailsTranslationReveals => 'اكتشف ما تكشفه الترجمة...';
+
+  @override
+  String get detailsUnknownArtifact => 'قطعة أثرية';
+
+  @override
+  String get detailsDescription => 'الوصف';
+
+  @override
+  String get detailsChatWithMe => 'تحدث معي';
+
+  @override
+  String get errorNoInternet => 'لا يوجد اتصال بالإنترنت';
+
+  @override
+  String get errorServerError => 'حدث خطأ في الخادم';
+
+  @override
+  String get errorStorageError => 'حدث خطأ في التخزين';
+
+  @override
+  String get errorUnexpected => 'حدث خطأ غير متوقع';
+
+  @override
+  String get errorTimeout => 'انتهت مهلة الاتصال';
+
+  @override
+  String get errorSessionExpired => 'انتهت الجلسة. يرجى تسجيل الدخول مرة أخرى';
+
+  @override
+  String get errorResourceNotFound => 'الموارد غير موجودة';
+
+  @override
+  String get errorRequestFailed => 'فشل الطلب';
+
+  @override
+  String get errorRequestCancelled => 'تم إلغاء الطلب';
+
+  @override
+  String get errorSecurityError => 'حدث خطأ أمني';
+
+  @override
+  String get chatHintMessage => 'رسالة...';
+
+  @override
+  String get chatWelcomeMessage => 'اسألني عن مصر القديمة...';
+
+  @override
+  String get chatSearchHint => 'بحث';
+
+  @override
+  String get chatNewChat => 'محادثة جديدة';
+
+  @override
+  String get chatDeleteConfirm => 'حذف المحادثة؟';
+
+  @override
+  String get chatDeleteConfirmDesc =>
+      'سيؤدي هذا إلى حذف جميع الرسائل في هذه المحادثة.';
+
+  @override
+  String get noRouteDefined => 'لا يوجد مسار معرف لـ';
+
+  @override
+  String get updatingLanguage => 'جاري تحديث اللغة...';
+
+  @override
+  String get profileTitle => 'الملف الشخصي';
+
+  @override
+  String get profileGuest => 'ضيف';
+
+  @override
+  String get profileUnknownArtifact => 'قطعة أثرية غير معروفة';
+
+  @override
+  String get profileUnknownEra => 'عصر غير معروف';
+
+  @override
+  String get profileStartScanning => 'ابدأ المسح';
+
+  @override
+  String get timeAgoJustNow => 'الآن';
+
+  @override
+  String timeAgoMinute(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'منذ $count دقائق',
+      one: 'منذ دقيقة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeAgoHour(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'منذ $count ساعات',
+      one: 'منذ ساعة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeAgoDay(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'منذ $count أيام',
+      one: 'منذ يوم',
+    );
+    return '$_temp0';
+  }
 }

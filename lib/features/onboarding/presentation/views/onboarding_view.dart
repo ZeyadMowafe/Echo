@@ -84,7 +84,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                 child: Opacity(opacity: opacity, child: child),
               );
             },
-            child: OnboardingContent(index: index, onTapNext: onTapNext),
+            child: RepaintBoundary(child: OnboardingContent(index: index, onTapNext: onTapNext)),
           );
         },
       ),

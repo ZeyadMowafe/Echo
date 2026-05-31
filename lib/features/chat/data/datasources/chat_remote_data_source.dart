@@ -30,40 +30,54 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     String? sessionId,
   }) async {
     try {
-      final body = <String, dynamic>{
-        'message': message,
-        'language': language,
-      };
+      final body = <String, dynamic>{'message': message, 'language': language};
       if (artifactId != null) body['artifactId'] = artifactId;
       if (sessionId != null) body['sessionId'] = sessionId;
+      print(
+        "messagesssssssssssssssssssssssssssssssssssssssssssssssssssss$language",
+      );
 
-      final response = await dio.post(ApiConstants.chat,
-          data: body,
-          options: Options(
-            sendTimeout: const Duration(seconds: 60),
-            receiveTimeout: const Duration(seconds: 60),
-          ));
+      final response = await dio.post(
+        ApiConstants.chat,
+        data: body,
+        options: Options(
+          connectTimeout: const Duration(seconds: 60),
+          sendTimeout: const Duration(seconds: 60),
+          receiveTimeout: const Duration(seconds: 120),
+        ),
+      );
       if (response.statusCode == 200) {
         return ChatReplyModel.fromJson(response.data);
       } else {
         throw ServerException(message: 'Failed to send message');
       }
     } on DioException catch (e) {
-      throw ServerException(message: e.message, statusCode: e.response?.statusCode);
+      throw ServerException(
+        message: e.message,
+        statusCode: e.response?.statusCode,
+      );
     }
   }
 
   @override
   Future<List<SessionModel>> getSessions({int limit = 20}) async {
     try {
-      final response = await dio.get(ApiConstants.sessions, queryParameters: {'limit': limit});
+      final response = await dio.get(
+        ApiConstants.sessions,
+        queryParameters: {'limit': limit},
+      );
       if (response.statusCode == 200) {
-        return (response.data as List).map((s) => SessionModel.fromJson(s)).toList();
+        return (response.data as List)
+            .map((s) => SessionModel.fromJson(s))
+            .toList();
       } else {
         throw ServerException(message: 'Failed to get sessions');
       }
     } on DioException catch (e) {
-      throw ServerException(message: e.message, statusCode: e.response?.statusCode);
+      throw ServerException(
+        message: e.message,
+        statusCode: e.response?.statusCode,
+      );
     }
   }
 
@@ -77,19 +91,28 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         throw ServerException(message: 'Failed to get session');
       }
     } on DioException catch (e) {
-      throw ServerException(message: e.message, statusCode: e.response?.statusCode);
+      throw ServerException(
+        message: e.message,
+        statusCode: e.response?.statusCode,
+      );
     }
   }
 
   @override
   Future<void> renameSession(String id, String title) async {
     try {
-      final response = await dio.patch('${ApiConstants.sessions}/$id', data: {'title': title});
+      final response = await dio.patch(
+        '${ApiConstants.sessions}/$id',
+        data: {'title': title},
+      );
       if (response.statusCode != 204) {
         throw ServerException(message: 'Failed to rename session');
       }
     } on DioException catch (e) {
-      throw ServerException(message: e.message, statusCode: e.response?.statusCode);
+      throw ServerException(
+        message: e.message,
+        statusCode: e.response?.statusCode,
+      );
     }
   }
 
@@ -101,7 +124,10 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         throw ServerException(message: 'Failed to delete session');
       }
     } on DioException catch (e) {
-      throw ServerException(message: e.message, statusCode: e.response?.statusCode);
+      throw ServerException(
+        message: e.message,
+        statusCode: e.response?.statusCode,
+      );
     }
   }
 }

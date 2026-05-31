@@ -446,7 +446,8 @@ class _ButtonLoading extends StatelessWidget {
 /// Features a moving laser sweep, animated grid background, rotating reticle target,
 /// and sequential technical scanning statuses to wow the user.
 class FuturisticScanAnalyzerOverlay extends StatefulWidget {
-  const FuturisticScanAnalyzerOverlay({super.key});
+  final List<String> steps;
+  const FuturisticScanAnalyzerOverlay({super.key, required this.steps});
 
   @override
   State<FuturisticScanAnalyzerOverlay> createState() => _FuturisticScanAnalyzerOverlayState();
@@ -459,13 +460,7 @@ class _FuturisticScanAnalyzerOverlayState extends State<FuturisticScanAnalyzerOv
   late Animation<double> _pulseOpacity;
   int _currentStepIndex = 0;
 
-  final List<String> _scanSteps = [
-    'Initializing Neural Scan...',
-    'Isolating Glyphic Regions...',
-    'Analyzing Contrast Gradients...',
-    'Decrypting Hieroglyphic Forms...',
-    'Translating Ancient Meanings...',
-  ];
+  List<String> get _scanSteps => widget.steps;
 
   @override
   void initState() {

@@ -3,6 +3,7 @@ import 'package:echo_explorer/core/constants/app_colors.dart';
 import 'package:echo_explorer/core/helpers/screen_utils.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_back_button.dart';
 import 'package:echo_explorer/features/chat/domain/entities/session_entity.dart';
+import 'package:echo_explorer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
@@ -98,7 +99,7 @@ class _ChatSideDrawerState extends State<ChatSideDrawer> {
                 children: [
                   Gap(27.h),
                   Padding(
-                    padding: EdgeInsets.only(left: 29.w),
+                    padding: EdgeInsetsDirectional.only(start: 29.w),
                     child: Align(
                       alignment: AlignmentDirectional.centerStart,
                       child: CustomGlassBackButton(
@@ -110,7 +111,7 @@ class _ChatSideDrawerState extends State<ChatSideDrawer> {
                   ),
                   Gap(85.h - 27.h - 33.h),
                   Padding(
-                    padding: EdgeInsets.only(left: 29.w),
+                    padding: EdgeInsetsDirectional.only(start: 29.w),
                     child: SizedBox(
                       width: 216.w,
                       height: 36.h,
@@ -119,13 +120,13 @@ class _ChatSideDrawerState extends State<ChatSideDrawer> {
                   ),
                   Gap(ScreenUtils.md),
                   Padding(
-                    padding: EdgeInsets.only(left: 29.w),
+                    padding: EdgeInsetsDirectional.only(start: 29.w),
                     child: _buildNewChatButton(),
                   ),
                   Gap(ScreenUtils.sm),
                   Expanded(child: _buildSessionsList()),
                   Padding(
-                    padding: EdgeInsets.only(left: 30.w),
+                    padding: EdgeInsetsDirectional.only(start: 30.w),
                     child: Align(
                       alignment: AlignmentDirectional.centerStart,
                       child: Container(
@@ -136,7 +137,7 @@ class _ChatSideDrawerState extends State<ChatSideDrawer> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(left: 30.w),
+                    padding: EdgeInsetsDirectional.only(start: 30.w),
                     child: Align(
                       alignment: AlignmentDirectional.centerStart,
                       child: _buildSettings(),
@@ -157,7 +158,7 @@ class _ChatSideDrawerState extends State<ChatSideDrawer> {
       controller: _searchController,
       style: TextStyle(color: AppColors.cf9f9f9, fontSize: 14.sp),
       decoration: InputDecoration(
-        hintText: 'Search',
+        hintText: AppLocalizations.of(context)!.chatSearchHint,
         hintStyle: TextStyle(
           color: AppColors.cf9f9f9.withValues(alpha: 0.4),
           fontSize: 14.sp,
@@ -253,7 +254,7 @@ class _ChatSideDrawerState extends State<ChatSideDrawer> {
       itemBuilder: (context, index) {
         final session = _filteredSessions[index];
         return Padding(
-          padding: EdgeInsets.only(left: 21.w),
+          padding: EdgeInsetsDirectional.only(start: 21.w),
           child: _buildSessionTile(context, session),
         );
       },
@@ -265,8 +266,8 @@ class _ChatSideDrawerState extends State<ChatSideDrawer> {
       key: Key('chat_session_${session.id}'),
       direction: DismissDirection.endToStart,
       background: Container(
-        alignment: Alignment.centerRight,
-        padding: EdgeInsets.only(right: ScreenUtils.md),
+        alignment: AlignmentDirectional.centerEnd,
+        padding: EdgeInsetsDirectional.only(end: ScreenUtils.md),
         decoration: BoxDecoration(
           color: Colors.redAccent.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(ScreenUtils.radiusSm),

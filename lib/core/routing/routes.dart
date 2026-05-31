@@ -9,4 +9,5 @@ class AppRoutes {
   static const String egyptianHistoryView = '/egyptianHistoryView';
   static const String mythologyView = '/mythologyView';
   static const String editProfileView = '/editProfileView';
+  static const String registerView = '/registerView';
 }

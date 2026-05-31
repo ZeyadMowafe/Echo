@@ -151,10 +151,18 @@
   "editProfileChangeAvatar": "Change Photo",
 
   "authWelcomeBack": "Welcome Back",
-  "authSubtitleDefault": "To log in or create an account, please enter your email address.",
+  "authSubtitleDefault": "Log in to your account",
   "authEmailHint": "Email address",
   "authPasswordHint": "Password",
   "authContinue": "Continue",
+  "authRegister": "Register",
+  "registerTitle": "Create Account",
+  "registerNameHint": "Full Name",
+  "registerPhoneHint": "Phone Number",
+  "registerLanguageHint": "Preferred Language",
+  "registerConfirmPasswordHint": "Confirm Password",
+  "registerCreateAccount": "Create Account",
+  "registerPasswordMismatch": "Passwords do not match",
   "authOr": "OR",
   "authGoogle": "Continue with Google",
   "authApple": "Continue with Apple",
@@ -188,5 +196,97 @@
   "scanFavorited": "Favorited",
   "scanSave": "Save",
   "scanNoHieroglyphs": "No hieroglyphs detected in this artifact.",
-  "scanHieroglyphsTranslation": "Hieroglyphs Translation"
+  "scanNoArtifactFound": "No artifact could be recognized in this image.",
+  "scanHieroglyphsTranslation": "Hieroglyphs Translation",
+  "scanDetails": "Details",
+  "scanRevealTranslation": "Reveal Translation",
+  "scanHideTranslation": "Hide Translation",
+  "scanLanguage": "Language",
+  "scanNoArtifactRecognized": "No artifact recognized in this image.",
+  "scanRescan": "Rescan",
+  "scanTryAgain": "Try Again",
+  "scanStatLines": "{count,plural, =1{1 line} other{{count} lines}}",
+  "@scanStatLines": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "scanStatGlyphs": "{count,plural, =1{1 glyph} other{{count} glyphs}}",
+  "@scanStatGlyphs": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "scanStatCartouches": "{count,plural, =1{1 cartouche} other{{count} cartouches}}",
+  "@scanStatCartouches": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "scanStep1": "Initializing Neural Scan...",
+  "scanStep2": "Isolating Glyphic Regions...",
+  "scanStep3": "Analyzing Contrast Gradients...",
+  "scanStep4": "Decrypting Hieroglyphic Forms...",
+  "scanStep5": "Translating Ancient Meanings...",
+
+  "detailsTitle": "Details",
+  "detailsAboutThisArtifact": "About This Artifact",
+  "detailsRevealTranslation": "Reveal Translation",
+  "detailsHideTranslation": "Hide Translation",
+  "detailsTranslationReveals": "Discover what the translation reveals…",
+  "detailsUnknownArtifact": "Artifact",
+  "detailsDescription": "Description",
+  "detailsChatWithMe": "chat with me",
+
+  "errorNoInternet": "No internet connection",
+  "errorServerError": "Server error occurred",
+  "errorStorageError": "Storage error occurred",
+  "errorUnexpected": "Something went wrong",
+  "errorTimeout": "Connection timed out",
+  "errorSessionExpired": "Session expired. Please login again",
+  "errorResourceNotFound": "Resource not found",
+  "errorRequestFailed": "Request failed",
+  "errorRequestCancelled": "Request was cancelled",
+  "errorSecurityError": "Security error occurred",
+
+  "chatHintMessage": "message...",
+  "chatWelcomeMessage": "Ask me about Ancient Egypt...",
+  "chatSearchHint": "Search",
+  "chatNewChat": "New Chat",
+  "chatDeleteConfirm": "Delete session?",
+  "chatDeleteConfirmDesc": "This will delete all messages in this session.",
+
+  "noRouteDefined": "No route defined for",
+
+  "updatingLanguage": "Updating language...",
+
+  "profileTitle": "Profile",
+  "profileGuest": "Guest",
+  "profileUnknownArtifact": "Unknown Artifact",
+  "profileUnknownEra": "Unknown Era",
+  "profileStartScanning": "Start Scanning",
+
+  "timeAgoJustNow": "just now",
+  "timeAgoMinute": "{count,plural, =1{1m ago} other{{count}m ago}}",
+  "@timeAgoMinute": {
+    "description": "Time ago in minutes",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeAgoHour": "{count,plural, =1{1h ago} other{{count}h ago}}",
+  "@timeAgoHour": {
+    "description": "Time ago in hours",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeAgoDay": "{count,plural, =1{1d ago} other{{count}d ago}}",
+  "@timeAgoDay": {
+    "description": "Time ago in days",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }
+

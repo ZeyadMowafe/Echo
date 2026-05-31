@@ -127,7 +127,7 @@
   "editProfileChangeCover": "Changer la couverture",
   "editProfileChangeAvatar": "Changer la photo",
   "authWelcomeBack": "Content de vous revoir",
-  "authSubtitleDefault": "Pour vous connecter ou créer un compte, veuillez entrer votre adresse e-mail.",
+  "authSubtitleDefault": "Connectez-vous à votre compte",
   "authEmailHint": "Adresse e-mail",
   "authPasswordHint": "Mot de passe",
   "authContinue": "Continuer",
@@ -146,23 +146,122 @@
   "networkError": "Erreur réseau. Veuillez vérifier votre connexion.",
   "socialComingSoon": "La connexion sociale arrive bientôt !",
   "profileUpdatedSuccessfully": "Profil mis à jour avec succès !",
-  "scanTitle": "Scan Artifacts & Decode Hieroglyphs",
-  "scanSubtitle": "Take a photo of any ancient Egyptian artifact to identify it and translate its hieroglyphs.",
-  "scanTakePhoto": "Take Photo",
-  "scanPickGallery": "Pick from Gallery",
-  "scanAnalyzeArtifact": "Analyze Artifact",
-  "scanDifferentPhoto": "Choose Different Photo",
-  "scanAnalyzing": "Analyzing your artifact...",
-  "scanAnalyzingWait": "This may take up to a minute",
-  "scanSaveFavorites": "Save to Favorites",
-  "scanRemoveFavorites": "Remove from Favorites",
-  "scanNewScan": "New Scan",
+  "scanTitle": "Scanner les artefacts et décoder les hiéroglyphes",
+  "scanSubtitle": "Prenez une photo d'un artefact égyptien ancien pour l'identifier et traduire ses hiéroglyphes.",
+  "scanTakePhoto": "Prendre une photo",
+  "scanPickGallery": "Choisir dans la galerie",
+  "scanAnalyzeArtifact": "Analyser l'artefact",
+  "scanDifferentPhoto": "Choisir une autre photo",
+  "scanAnalyzing": "Analyse de votre artefact...",
+  "scanAnalyzingWait": "Cela peut prendre jusqu'à une minute",
+  "scanSaveFavorites": "Ajouter aux favoris",
+  "scanRemoveFavorites": "Retirer des favoris",
+  "scanNewScan": "Nouveau scan",
   "scanChat": "Chat",
-  "scanHieroglyphs": "Hieroglyphs",
-  "scanAddedToFavorites": "Added to Favorites!",
-  "scanRemovedFromFavorites": "Removed from Favorites",
-  "scanFavorited": "Favorited",
-  "scanSave": "Save",
-  "scanNoHieroglyphs": "No hieroglyphs detected in this artifact.",
-  "scanHieroglyphsTranslation": "Hieroglyphs Translation"
+  "scanHieroglyphs": "Hiéroglyphes",
+  "scanAddedToFavorites": "Ajouté aux favoris !",
+  "scanRemovedFromFavorites": "Retiré des favoris",
+  "scanFavorited": "Favori",
+  "scanSave": "Enregistrer",
+  "scanNoHieroglyphs": "Aucun hiéroglyphe détecté dans cet artefact.",
+  "scanHieroglyphsTranslation": "Traduction des hiéroglyphes",
+  "scanNoArtifactFound": "Aucun artefact n'a pu être reconnu dans cette image.",
+  "scanDetails": "Détails",
+  "scanRevealTranslation": "Révéler la traduction",
+  "scanHideTranslation": "Masquer la traduction",
+  "scanLanguage": "Langue",
+  "scanNoArtifactRecognized": "Aucun artefact reconnu dans cette image.",
+  "scanRescan": "Rescanner",
+  "scanTryAgain": "Réessayer",
+  "scanStatLines": "{count,plural, =1{1 ligne} other{{count} lignes}}",
+  "@scanStatLines": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "scanStatGlyphs": "{count,plural, =1{1 glyphe} other{{count} glyphes}}",
+  "@scanStatGlyphs": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "scanStatCartouches": "{count,plural, =1{1 cartouche} other{{count} cartouches}}",
+  "@scanStatCartouches": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "scanStep1": "Initialisation du scan neuronal...",
+  "scanStep2": "Isolation des régions glyphiques...",
+  "scanStep3": "Analyse des gradients de contraste...",
+  "scanStep4": "Déchiffrement des formes hiéroglyphiques...",
+  "scanStep5": "Traduction des significations anciennes...",
+  "detailsTitle": "Détails",
+  "detailsAboutThisArtifact": "À propos de cet artefact",
+  "detailsRevealTranslation": "Révéler la traduction",
+  "detailsHideTranslation": "Masquer la traduction",
+  "detailsTranslationReveals": "Découvrez ce que révèle la traduction...",
+  "detailsUnknownArtifact": "Artefact",
+  "detailsDescription": "Description",
+  "detailsChatWithMe": "Discuter avec moi",
+
+  "authRegister": "S'inscrire",
+  "registerTitle": "Créer un compte",
+  "registerNameHint": "Nom complet",
+  "registerPhoneHint": "Numéro de téléphone",
+  "registerLanguageHint": "Langue préférée",
+  "registerConfirmPasswordHint": "Confirmer le mot de passe",
+  "registerCreateAccount": "Créer un compte",
+  "registerPasswordMismatch": "Les mots de passe ne correspondent pas",
+
+  "chatHintMessage": "Message...",
+  "chatWelcomeMessage": "Interrogez-moi sur l'Égypte antique...",
+  "chatSearchHint": "Rechercher",
+  "chatNewChat": "Nouvelle discussion",
+  "chatDeleteConfirm": "Supprimer la session ?",
+  "chatDeleteConfirmDesc": "Cela supprimera tous les messages de cette session.",
+
+  "noRouteDefined": "Aucune route définie pour",
+
+  "updatingLanguage": "Mise à jour de la langue...",
+
+  "profileTitle": "Profil",
+  "profileGuest": "Invité",
+  "profileUnknownArtifact": "Artefact inconnu",
+  "profileUnknownEra": "Époque inconnue",
+  "profileStartScanning": "Commencer à scanner",
+
+  "timeAgoJustNow": "à l'instant",
+  "timeAgoMinute": "{count,plural, =1{il y a 1 min} other{il y a {count} min}}",
+  "@timeAgoMinute": {
+    "description": "Time ago in minutes",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeAgoHour": "{count,plural, =1{il y a 1 h} other{il y a {count} h}}",
+  "@timeAgoHour": {
+    "description": "Time ago in hours",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeAgoDay": "{count,plural, =1{il y a 1 j} other{il y a {count} j}}",
+  "@timeAgoDay": {
+    "description": "Time ago in days",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "errorNoInternet": "Pas de connexion Internet",
+  "errorServerError": "Erreur du serveur",
+  "errorStorageError": "Erreur de stockage",
+  "errorUnexpected": "Quelque chose s'est mal passé",
+  "errorTimeout": "Temps d'attente dépassé",
+  "errorSessionExpired": "Session expirée. Veuillez vous reconnecter",
+  "errorResourceNotFound": "Ressource non trouvée",
+  "errorRequestFailed": "La requête a échoué",
+  "errorRequestCancelled": "La requête a été annulée",
+  "errorSecurityError": "Erreur de sécurité"
 }

@@ -422,8 +422,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authWelcomeBack => 'Welcome Back';
 
   @override
-  String get authSubtitleDefault =>
-      'To log in or create an account, please enter your email address.';
+  String get authSubtitleDefault => 'Log in to your account';
 
   @override
   String get authEmailHint => 'Email address';
@@ -433,6 +432,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authContinue => 'Continue';
+
+  @override
+  String get authRegister => 'Register';
+
+  @override
+  String get registerTitle => 'Create Account';
+
+  @override
+  String get registerNameHint => 'Full Name';
+
+  @override
+  String get registerPhoneHint => 'Phone Number';
+
+  @override
+  String get registerLanguageHint => 'Preferred Language';
+
+  @override
+  String get registerConfirmPasswordHint => 'Confirm Password';
+
+  @override
+  String get registerCreateAccount => 'Create Account';
+
+  @override
+  String get registerPasswordMismatch => 'Passwords do not match';
 
   @override
   String get authOr => 'OR';
@@ -535,5 +558,210 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scanNoHieroglyphs => 'No hieroglyphs detected in this artifact.';
 
   @override
+  String get scanNoArtifactFound =>
+      'No artifact could be recognized in this image.';
+
+  @override
   String get scanHieroglyphsTranslation => 'Hieroglyphs Translation';
+
+  @override
+  String get scanDetails => 'Details';
+
+  @override
+  String get scanRevealTranslation => 'Reveal Translation';
+
+  @override
+  String get scanHideTranslation => 'Hide Translation';
+
+  @override
+  String get scanLanguage => 'Language';
+
+  @override
+  String get scanNoArtifactRecognized =>
+      'No artifact recognized in this image.';
+
+  @override
+  String get scanRescan => 'Rescan';
+
+  @override
+  String get scanTryAgain => 'Try Again';
+
+  @override
+  String scanStatLines(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count lines',
+      one: '1 line',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String scanStatGlyphs(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count glyphs',
+      one: '1 glyph',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String scanStatCartouches(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cartouches',
+      one: '1 cartouche',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get scanStep1 => 'Initializing Neural Scan...';
+
+  @override
+  String get scanStep2 => 'Isolating Glyphic Regions...';
+
+  @override
+  String get scanStep3 => 'Analyzing Contrast Gradients...';
+
+  @override
+  String get scanStep4 => 'Decrypting Hieroglyphic Forms...';
+
+  @override
+  String get scanStep5 => 'Translating Ancient Meanings...';
+
+  @override
+  String get detailsTitle => 'Details';
+
+  @override
+  String get detailsAboutThisArtifact => 'About This Artifact';
+
+  @override
+  String get detailsRevealTranslation => 'Reveal Translation';
+
+  @override
+  String get detailsHideTranslation => 'Hide Translation';
+
+  @override
+  String get detailsTranslationReveals =>
+      'Discover what the translation reveals…';
+
+  @override
+  String get detailsUnknownArtifact => 'Artifact';
+
+  @override
+  String get detailsDescription => 'Description';
+
+  @override
+  String get detailsChatWithMe => 'chat with me';
+
+  @override
+  String get errorNoInternet => 'No internet connection';
+
+  @override
+  String get errorServerError => 'Server error occurred';
+
+  @override
+  String get errorStorageError => 'Storage error occurred';
+
+  @override
+  String get errorUnexpected => 'Something went wrong';
+
+  @override
+  String get errorTimeout => 'Connection timed out';
+
+  @override
+  String get errorSessionExpired => 'Session expired. Please login again';
+
+  @override
+  String get errorResourceNotFound => 'Resource not found';
+
+  @override
+  String get errorRequestFailed => 'Request failed';
+
+  @override
+  String get errorRequestCancelled => 'Request was cancelled';
+
+  @override
+  String get errorSecurityError => 'Security error occurred';
+
+  @override
+  String get chatHintMessage => 'message...';
+
+  @override
+  String get chatWelcomeMessage => 'Ask me about Ancient Egypt...';
+
+  @override
+  String get chatSearchHint => 'Search';
+
+  @override
+  String get chatNewChat => 'New Chat';
+
+  @override
+  String get chatDeleteConfirm => 'Delete session?';
+
+  @override
+  String get chatDeleteConfirmDesc =>
+      'This will delete all messages in this session.';
+
+  @override
+  String get noRouteDefined => 'No route defined for';
+
+  @override
+  String get updatingLanguage => 'Updating language...';
+
+  @override
+  String get profileTitle => 'Profile';
+
+  @override
+  String get profileGuest => 'Guest';
+
+  @override
+  String get profileUnknownArtifact => 'Unknown Artifact';
+
+  @override
+  String get profileUnknownEra => 'Unknown Era';
+
+  @override
+  String get profileStartScanning => 'Start Scanning';
+
+  @override
+  String get timeAgoJustNow => 'just now';
+
+  @override
+  String timeAgoMinute(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '${count}m ago',
+      one: '1m ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeAgoHour(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '${count}h ago',
+      one: '1h ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeAgoDay(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '${count}d ago',
+      one: '1d ago',
+    );
+    return '$_temp0';
+  }
 }

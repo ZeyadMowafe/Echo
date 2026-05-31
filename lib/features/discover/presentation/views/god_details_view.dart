@@ -48,10 +48,8 @@ class _GodDetailsViewState extends State<GodDetailsView> {
       drawer: CustomGlassDrawer(
         currentFeature: AppStrings.discoverFeature.key, 
         onTap: (featureKey){
+          Navigator.popUntil(context, (route) => route.isFirst);
           context.read<FeaturesCubit>().changeFeature(featureName: featureKey);
-          Navigator.pop(context);
-          Navigator.pop(context);
-          Navigator.pop(context);
       }),
       drawerBarrierDismissible: true,
       body: Stack(
@@ -59,6 +57,7 @@ class _GodDetailsViewState extends State<GodDetailsView> {
           Positioned.fill(
             child: Image.asset(
               godsList[widget.godIndex].bgImagePath,
+              cacheWidth: 800,
               fit: BoxFit.cover,
             ),
           ),

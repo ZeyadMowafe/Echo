@@ -1,15 +1,18 @@
 class AppImages {
   static var icons = _Icons();
+  static String get scan => icons.scan;
   static var onboarding = _Onboarding();
   static var homeSlider = _HomeSlider();
   static var egyptianHistory = _EyptianHistory();
   static var mythology = _Mythology();
   static var gods = _Gods();
+  
 }
 
 class _Icons {
   final String eyeIconDark = "assets/icons/eye_icon_dark.png";
   final String eyeIconLight = "assets/icons/eye_icon_light.png";
+  final String scan = "assets/icons/scan_icon.svg";
 }
 
 class _Onboarding {

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:flutter/services.dart';
 import 'package:echo_explorer/core/constants/app_colors.dart';
 import 'package:echo_explorer/core/constants/app_strings.dart';
 import 'package:echo_explorer/core/di/injection_container.dart';
@@ -37,6 +38,7 @@ class _ScannerBody extends StatefulWidget {
 }
 
 class _ScannerBodyState extends State<_ScannerBody> {
+  final _picker = ImagePicker();
   bool _showTranslation = false;
   @override
   Widget build(BuildContext context) {
@@ -77,16 +79,16 @@ class _ScannerBodyState extends State<_ScannerBody> {
               return _buildHome(context);
             },
           ),
-          Positioned(
-            left: 16.w,
+          PositionedDirectional(
+            start: 16.w,
             top: MediaQuery.of(context).padding.top + 6.h,
             child: CustomGlassBackButton(
-              iconColor: Colors.white,
+              iconColor: AppColors.of(context).footer,
               onPressed: () => Navigator.pop(context),
             ),
           ),
-          Positioned(
-            right: 16.w,
+          PositionedDirectional(
+            end: 16.w,
             top: MediaQuery.of(context).padding.top + 6.h,
             child: Builder(
               builder: (ctx) => GestureDetector(
@@ -94,7 +96,7 @@ class _ScannerBodyState extends State<_ScannerBody> {
                 child: Icon(
                   Icons.menu_rounded,
                   size: 28.r,
-                  color: Colors.white.withValues(alpha: 0.7),
+                  color: AppColors.of(context).footer.withValues(alpha: 0.7),
                 ),
               ),
             ),
@@ -172,14 +174,17 @@ class _ScannerBodyState extends State<_ScannerBody> {
   }
 
   Future<void> _pickImage(BuildContext context, ImageSource source) async {
-    final picker = ImagePicker();
-    final file = await picker.pickImage(source: source);
-    if (file != null && context.mounted) {
-      context.read<ScanCubit>().setImagePath(file.path);
-      await Future.delayed(const Duration(seconds: 3));
-      if (context.mounted) {
-        context.read<ScanCubit>().analyzeImage();
+    try {
+      final file = await _picker.pickImage(source: source);
+      if (file != null && context.mounted) {
+        context.read<ScanCubit>().setImagePath(file.path);
+        await Future.delayed(const Duration(seconds: 3));
+        if (context.mounted) {
+          context.read<ScanCubit>().analyzeImage();
+        }
       }
+    } on PlatformException catch (_) {
+      // Image picker was dismissed or already active — ignore
     }
   }
 
@@ -206,7 +211,7 @@ class _ScannerBodyState extends State<_ScannerBody> {
                 ),
               ],
             ),
-            backgroundColor: AppColors.c151D18,
+            backgroundColor: AppColors.of(context).surface,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12.r),
@@ -230,7 +235,7 @@ class _ScannerBodyState extends State<_ScannerBody> {
                 ),
               ],
             ),
-            backgroundColor: AppColors.c151D18,
+            backgroundColor: AppColors.of(context).surface,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12.r),
@@ -251,8 +256,8 @@ class _ScannerBodyState extends State<_ScannerBody> {
     VoidCallback? onToggleTranslation,
   }) {
     final l10n = AppLocalizations.of(context)!;
-    final backButton = Positioned(
-      left: 16.w,
+    final backButton = PositionedDirectional(
+      start: 16.w,
       top: 8.h,
       child: CustomGlassBackButton(
         iconColor: Colors.white,
@@ -264,7 +269,7 @@ class _ScannerBodyState extends State<_ScannerBody> {
         SizedBox(
           width: double.infinity,
           height: double.infinity,
-          child: Image.file(File(imagePath), fit: BoxFit.cover),
+          child: Image.file(File(imagePath), cacheWidth: 1080, fit: BoxFit.cover),
         ),
         Positioned(
           left: 22.w,
@@ -272,7 +277,13 @@ class _ScannerBodyState extends State<_ScannerBody> {
           width: 346.w,
           height: 463.h,
           child: isLoading
-              ? const FuturisticScanAnalyzerOverlay()
+              ? FuturisticScanAnalyzerOverlay(steps: [
+                  l10n.scanStep1,
+                  l10n.scanStep2,
+                  l10n.scanStep3,
+                  l10n.scanStep4,
+                  l10n.scanStep5,
+                ])
               : Container(
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.10),
@@ -284,9 +295,8 @@ class _ScannerBodyState extends State<_ScannerBody> {
         if (result != null && !showTranslation)
           Positioned(
             left: 12.w,
-            top: 611.h,
-            width: 366.w,
-            height: 203.h,
+            right: 12.w,
+            bottom: 12.h,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(24.r),
               child: BackdropFilter(
@@ -309,13 +319,12 @@ class _ScannerBodyState extends State<_ScannerBody> {
                       colors: [Color(0x03000000), Color(0x03000000)],
                     ),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(5),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (result.result.artifact.name != null) ...[
                         Text(
-                          result.result.artifact.name ?? 'Artifact',
+                          result.result.artifact.name!,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 24.sp,
@@ -347,64 +356,68 @@ class _ScannerBodyState extends State<_ScannerBody> {
                             );
                           },
                         ),
-                        const Spacer(),
+                        SizedBox(height: 12.h),
                         Row(
                           children: [
-                            GestureDetector(
-                              onTap: () {
-                                final artifact = result.result.artifact;
-                                Navigator.push(
-                                  context,
-                                  SmoothRoute(
-                                    type: TransitionType.fadeSlideUp,
-                                    page: ChatView(
-                                      artifactId:
-                                          artifact.artifactModelId ?? '',
-                                      artifactName:
-                                          artifact.name ??
-                                          artifact.artifactModelId ??
-                                          '',
+                            if (result.result.artifact.isPrimaryModel &&
+                                result.result.artifact.artifactModelId != null)
+                              GestureDetector(
+                                onTap: () {
+                                  final artifact = result.result.artifact;
+                                  Navigator.push(
+                                    context,
+                                    SmoothRoute(
+                                      type: TransitionType.fadeSlideUp,
+                                      page: ChatView(
+                                        artifactId:
+                                            artifact.artifactModelId ?? '',
+                                        artifactName:
+                                            artifact.name ??
+                                            artifact.artifactModelId ??
+                                            '',
+                                      ),
                                     ),
-                                  ),
-                                );
-                              },
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(50.r),
-                                child: BackdropFilter(
-                                  filter: ImageFilter.blur(
-                                    sigmaX: 15,
-                                    sigmaY: 15,
-                                  ),
-                                  child: Container(
-                                    width: 45.r,
-                                    height: 45.r,
-                                    padding: EdgeInsets.all(14.r),
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: Colors.black.withValues(
-                                          alpha: 0.1,
+                                  );
+                                },
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(50.r),
+                                  child: BackdropFilter(
+                                    filter: ImageFilter.blur(
+                                      sigmaX: 15,
+                                      sigmaY: 15,
+                                    ),
+                                    child: Container(
+                                      width: 45.r,
+                                      height: 45.r,
+                                      padding: EdgeInsets.all(14.r),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: Colors.black.withValues(
+                                            alpha: 0.1,
+                                          ),
+                                        ),
+                                        gradient: const LinearGradient(
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                          colors: [
+                                            Color(0x13FFFFFF),
+                                            Color(0x00FFFFFF),
+                                          ],
                                         ),
                                       ),
-                                      gradient: const LinearGradient(
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                        colors: [
-                                          Color(0x13FFFFFF),
-                                          Color(0x00FFFFFF),
-                                        ],
+                                      child: Icon(
+                                        Icons.chat_outlined,
+                                        color: Colors.white,
+                                        size: 20.r,
                                       ),
-                                    ),
-                                    child: Icon(
-                                      Icons.chat_outlined,
-                                      color: Colors.white,
-                                      size: 20.r,
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                            const Spacer(),
+                            if (result.result.artifact.isPrimaryModel &&
+                                result.result.artifact.artifactModelId != null)
+                              const Spacer(),
                             GestureDetector(
                               onTap: () {
                                 Navigator.push(
@@ -455,7 +468,7 @@ class _ScannerBodyState extends State<_ScannerBody> {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Text(
-                                          'Details',
+                                          l10n.scanDetails,
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 14.sp,
@@ -464,7 +477,9 @@ class _ScannerBodyState extends State<_ScannerBody> {
                                         ),
                                         Gap(4.w),
                                         Icon(
-                                          Icons.arrow_forward_rounded,
+                                          Directionality.of(context) == TextDirection.rtl
+                                              ? Icons.arrow_back_rounded
+                                              : Icons.arrow_forward_rounded,
                                           color: Colors.white,
                                           size: 18.r,
                                         ),
@@ -476,17 +491,34 @@ class _ScannerBodyState extends State<_ScannerBody> {
                             ),
                           ],
                         ),
+                      ] else ...[
+                        Icon(
+                          Icons.image_search_outlined,
+                          size: 48.r,
+                          color: Colors.white.withValues(alpha: 0.5),
+                        ),
+                        SizedBox(height: 12.h),
+                        Text(
+                          l10n.scanNoArtifactFound,
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.7),
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
                       ],
-                    ),
+                    ],
                   ),
                 ),
               ),
             ),
           ),
         // Translation toggle button
-        if (result != null && onToggleTranslation != null)
-          Positioned(
-            left: 250.w,
+        if (result != null && onToggleTranslation != null &&
+            result.result.hieroglyphs?.translation != null)
+          PositionedDirectional(
+            end: 17.w,
             top: 163.h,
             width: 123.w,
             height: 34.h,
@@ -525,8 +557,8 @@ class _ScannerBodyState extends State<_ScannerBody> {
                           Gap(2.w),
                           Text(
                             showTranslation
-                                ? 'Hide Translation'
-                                : 'Reveal Translation',
+                                ? l10n.scanHideTranslation
+                                : l10n.scanRevealTranslation,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 10.sp,
@@ -541,12 +573,12 @@ class _ScannerBodyState extends State<_ScannerBody> {
               ),
             ),
           ),
-        // Translation card overlay
-        if (result != null &&
-            showTranslation &&
-            result.result.hieroglyphs?.translation != null)
-          Positioned(
-            left: 8.w,
+          // Translation card overlay
+          if (result != null &&
+              showTranslation &&
+              result.result.hieroglyphs?.translation != null)
+            Positioned(
+              left: 8.w,
             top: 261.h,
             width: 375.w,
             bottom: 12.h,
@@ -579,7 +611,7 @@ class _ScannerBodyState extends State<_ScannerBody> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          'Discover what the translation reveals…',
+                          l10n.detailsTranslationReveals,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16.sp,
@@ -654,6 +686,7 @@ class _ScannerBodyState extends State<_ScannerBody> {
                   borderRadius: BorderRadius.circular(16.r),
                   child: Image.file(
                     File(state.imagePath!),
+                    cacheWidth: 400,
                     height: 350.h,
                     width: double.infinity,
                     fit: BoxFit.contain,
@@ -668,7 +701,7 @@ class _ScannerBodyState extends State<_ScannerBody> {
                       child: Container(
                         padding: EdgeInsets.all(10.r),
                         decoration: BoxDecoration(
-                          color: AppColors.c151D18.withValues(alpha: 0.8),
+                          color: AppColors.of(context).surface.withValues(alpha: 0.8),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -713,7 +746,7 @@ class _ScannerBodyState extends State<_ScannerBody> {
                       decoration: BoxDecoration(
                         color: state.isFavorited
                             ? Colors.redAccent.withValues(alpha: 0.15)
-                            : AppColors.c151D18.withValues(alpha: 0.5),
+                            : AppColors.of(context).surface.withValues(alpha: 0.5),
                         borderRadius: BorderRadius.circular(20.r),
                         border: Border.all(
                           color: state.isFavorited
@@ -804,7 +837,7 @@ class _ScannerBodyState extends State<_ScannerBody> {
               width: double.infinity,
               padding: EdgeInsets.all(16.r),
               decoration: BoxDecoration(
-                color: AppColors.c151D18.withValues(alpha: 0.4),
+                color: AppColors.of(context).surface.withValues(alpha: 0.4),
                 borderRadius: BorderRadius.circular(16.r),
                 border: Border.all(
                   color: AppColors.secondary.withValues(alpha: 0.3),
@@ -853,17 +886,17 @@ class _ScannerBodyState extends State<_ScannerBody> {
                       children: [
                         if (hieroglyphs.totalLines != null)
                           _StatChip(
-                            '${hieroglyphs.totalLines} lines',
+                            l10n.scanStatLines(hieroglyphs.totalLines!),
                             Icons.horizontal_rule,
                           ),
                         if (hieroglyphs.totalGlyphs != null)
                           _StatChip(
-                            '${hieroglyphs.totalGlyphs} glyphs',
+                            l10n.scanStatGlyphs(hieroglyphs.totalGlyphs!),
                             Icons.text_fields,
                           ),
                         if (hieroglyphs.cartoucheCount != null)
                           _StatChip(
-                            '${hieroglyphs.cartoucheCount} cartouches',
+                            l10n.scanStatCartouches(hieroglyphs.cartoucheCount!),
                             Icons.circle_outlined,
                           ),
                       ],
@@ -878,7 +911,7 @@ class _ScannerBodyState extends State<_ScannerBody> {
             Container(
               padding: EdgeInsets.all(12.r),
               decoration: BoxDecoration(
-                color: AppColors.c151D18.withValues(alpha: 0.4),
+                color: AppColors.of(context).surface.withValues(alpha: 0.4),
                 borderRadius: BorderRadius.circular(12.r),
               ),
               child: Row(
@@ -925,7 +958,7 @@ class _ScannerBodyState extends State<_ScannerBody> {
                 color: AppColors.of(context).footer.withValues(alpha: 0.6),
                 onTap: () => context.read<ScanCubit>().clearResult(),
               ),
-              if (artifact.artifactModelId != null)
+              if (artifact.artifactModelId != null && artifact.isPrimaryModel)
                 _ActionButton(
                   icon: Icons.chat_outlined,
                   label: l10n.scanChat,
@@ -961,7 +994,7 @@ class _ScannerBodyState extends State<_ScannerBody> {
       builder: (ctx) => Container(
         height: 0.7.sh,
         decoration: BoxDecoration(
-          color: AppColors.c151D18,
+          color: AppColors.of(ctx).surface,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
         ),
         child: Column(
@@ -1019,6 +1052,7 @@ class _ScannerBodyState extends State<_ScannerBody> {
   }
 
   Widget _buildError(BuildContext context, ScanError state) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: EdgeInsets.all(ScreenUtils.xl),
@@ -1039,7 +1073,7 @@ class _ScannerBodyState extends State<_ScannerBody> {
             Gap(ScreenUtils.lg),
             _ScanButton(
               icon: Icons.refresh,
-              label: 'Try Again',
+              label: l10n.scanTryAgain,
               onTap: () => context.read<ScanCubit>().clearResult(),
             ),
           ],
@@ -1207,7 +1241,7 @@ class _InfoChip extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
       decoration: BoxDecoration(
-        color: AppColors.c151D18.withValues(alpha: 0.5),
+        color: AppColors.of(context).surface.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(20.r),
         border: Border.all(
           color: AppColors.of(context).footer.withValues(alpha: 0.1),
@@ -1239,7 +1273,7 @@ class _StatChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(right: 16.w),
+      padding: EdgeInsetsDirectional.only(end: 16.w),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

@@ -41,10 +41,10 @@ class CustomSectionButton extends StatelessWidget {
           child: Stack(
             alignment: Alignment.bottomCenter,
             children: [
-              Positioned(
+              PositionedDirectional(
                 bottom: 17.h,
-                right: 6.w,
-                left: 12.w,
+                end: 6.w,
+                start: 12.w,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -76,7 +76,9 @@ class CustomSectionButton extends StatelessWidget {
                         end: Alignment.bottomCenter,
                       ),
                       child: Icon(
-                        Icons.arrow_forward_rounded,
+                        Directionality.of(context) == TextDirection.rtl
+                            ? Icons.arrow_back_rounded
+                            : Icons.arrow_forward_rounded,
                         color: AppColors.cf9f9f9,
                         size: ScreenUtils.iconSm,
                       ),

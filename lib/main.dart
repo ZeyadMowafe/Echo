@@ -45,6 +45,7 @@ void main() async {
     ),
   );
 
+
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -83,6 +84,16 @@ class EchoExplorer extends StatelessWidget {
             minTextAdapt: true,
             splitScreenMode: true,
             builder: (context, child) {
+              final isDarkMode = context.watch<ThemeCubit>().state;
+              final pageTransitions = const PageTransitionsTheme(
+                builders: {
+                  TargetPlatform.android: _NoAnimationPageTransitionsBuilder(),
+                  TargetPlatform.iOS: _NoAnimationPageTransitionsBuilder(),
+                  TargetPlatform.windows: _NoAnimationPageTransitionsBuilder(),
+                  TargetPlatform.macOS: _NoAnimationPageTransitionsBuilder(),
+                  TargetPlatform.linux: _NoAnimationPageTransitionsBuilder(),
+                },
+              );
               return MaterialApp(
                 key: ValueKey(localeState.locale),
                 scaffoldMessengerKey: ErrorHandler.scaffoldMessengerKey,
@@ -93,26 +104,38 @@ class EchoExplorer extends StatelessWidget {
                 initialRoute: '/',
                 onGenerateRoute: AppRouter().generateRoute,
                 debugShowCheckedModeBanner: false,
-                // ── أداء عالي: تعطيل الـ debug banner + scroll glow ──
                 scrollBehavior: const _SmoothScrollBehavior(),
-                // ── تأكيد إلغاء أي انيميشن افتراضي من المنصة ──
+                themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
                 theme: ThemeData(
-                  pageTransitionsTheme: const PageTransitionsTheme(
-                    builders: {
-                      TargetPlatform.android: _NoAnimationPageTransitionsBuilder(),
-                      TargetPlatform.iOS: _NoAnimationPageTransitionsBuilder(),
-                      TargetPlatform.windows: _NoAnimationPageTransitionsBuilder(),
-                      TargetPlatform.macOS: _NoAnimationPageTransitionsBuilder(),
-                      TargetPlatform.linux: _NoAnimationPageTransitionsBuilder(),
-                    },
+                  useMaterial3: true,
+                  brightness: Brightness.light,
+                  fontFamily: 'Tajawal',
+                  pageTransitionsTheme: pageTransitions,
+                  colorScheme: ColorScheme.light(
+                    primary: const Color(0xFF568D3F),
+                    secondary: const Color(0xFF568D3F),
+                    surface: const Color(0xFFE9EBE9),
                   ),
+                  scaffoldBackgroundColor: Colors.transparent,
+                ),
+                darkTheme: ThemeData(
+                  useMaterial3: true,
+                  brightness: Brightness.dark,
+                  fontFamily: 'Tajawal',
+                  pageTransitionsTheme: pageTransitions,
+                  colorScheme: ColorScheme.dark(
+                    primary: const Color(0xFF568D3F),
+                    secondary: const Color(0xFF568D3F),
+                    surface: const Color(0xFF0D1215),
+                  ),
+                  scaffoldBackgroundColor: Colors.transparent,
                 ),
                 builder: (context, materialChild) {
                   return Stack(
                     children: [
                       materialChild!,
                       if (localeState.isLoading)
-                        AppLoading.fullScreen(message: 'Updating language...'),
+                        AppLoading.fullScreen(message: AppLocalizations.of(context)!.updatingLanguage),
                     ],
                   );
                 },

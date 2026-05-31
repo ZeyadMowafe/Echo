@@ -420,7 +420,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get authWelcomeBack => 'おかえりなさい';
 
   @override
-  String get authSubtitleDefault => 'ログインまたはアカウントを作成するには、メールアドレスを入力してください。';
+  String get authSubtitleDefault => 'アカウントにログイン';
 
   @override
   String get authEmailHint => 'メールアドレス';
@@ -430,6 +430,30 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get authContinue => '続行';
+
+  @override
+  String get authRegister => '登録';
+
+  @override
+  String get registerTitle => 'アカウント作成';
+
+  @override
+  String get registerNameHint => '氏名';
+
+  @override
+  String get registerPhoneHint => '電話番号';
+
+  @override
+  String get registerLanguageHint => '希望言語';
+
+  @override
+  String get registerConfirmPasswordHint => 'パスワードを確認';
+
+  @override
+  String get registerCreateAccount => 'アカウント作成';
+
+  @override
+  String get registerPasswordMismatch => 'パスワードが一致しません';
 
   @override
   String get authOr => 'または';
@@ -477,60 +501,260 @@ class AppLocalizationsJa extends AppLocalizations {
   String get profileUpdatedSuccessfully => 'プロフィールが正常に更新されました！';
 
   @override
-  String get scanTitle => 'Scan Artifacts & Decode Hieroglyphs';
+  String get scanTitle => 'アーティファクトをスキャンして象形文字を解読';
 
   @override
-  String get scanSubtitle =>
-      'Take a photo of any ancient Egyptian artifact to identify it and translate its hieroglyphs.';
+  String get scanSubtitle => '古代エジプトのアーティファクトの写真を撮って、識別し、その象形文字を翻訳します。';
 
   @override
-  String get scanTakePhoto => 'Take Photo';
+  String get scanTakePhoto => '写真を撮る';
 
   @override
-  String get scanPickGallery => 'Pick from Gallery';
+  String get scanPickGallery => 'ギャラリーから選択';
 
   @override
-  String get scanAnalyzeArtifact => 'Analyze Artifact';
+  String get scanAnalyzeArtifact => 'アーティファクトを分析';
 
   @override
-  String get scanDifferentPhoto => 'Choose Different Photo';
+  String get scanDifferentPhoto => '別の写真を選択';
 
   @override
-  String get scanAnalyzing => 'Analyzing your artifact...';
+  String get scanAnalyzing => 'アーティファクトを分析中...';
 
   @override
-  String get scanAnalyzingWait => 'This may take up to a minute';
+  String get scanAnalyzingWait => '最大1分かかる場合があります';
 
   @override
-  String get scanSaveFavorites => 'Save to Favorites';
+  String get scanSaveFavorites => 'お気に入りに保存';
 
   @override
-  String get scanRemoveFavorites => 'Remove from Favorites';
+  String get scanRemoveFavorites => 'お気に入りから削除';
 
   @override
-  String get scanNewScan => 'New Scan';
+  String get scanNewScan => '新しいスキャン';
 
   @override
-  String get scanChat => 'Chat';
+  String get scanChat => 'チャット';
 
   @override
-  String get scanHieroglyphs => 'Hieroglyphs';
+  String get scanHieroglyphs => '象形文字';
 
   @override
-  String get scanAddedToFavorites => 'Added to Favorites!';
+  String get scanAddedToFavorites => 'お気に入りに追加しました！';
 
   @override
-  String get scanRemovedFromFavorites => 'Removed from Favorites';
+  String get scanRemovedFromFavorites => 'お気に入りから削除しました';
 
   @override
-  String get scanFavorited => 'Favorited';
+  String get scanFavorited => 'お気に入り';
 
   @override
-  String get scanSave => 'Save';
+  String get scanSave => '保存';
 
   @override
-  String get scanNoHieroglyphs => 'No hieroglyphs detected in this artifact.';
+  String get scanNoHieroglyphs => 'このアーティファクトに象形文字は検出されませんでした。';
 
   @override
-  String get scanHieroglyphsTranslation => 'Hieroglyphs Translation';
+  String get scanNoArtifactFound => 'この画像でアーティファクトを認識できませんでした。';
+
+  @override
+  String get scanHieroglyphsTranslation => '象形文字の翻訳';
+
+  @override
+  String get scanDetails => '詳細';
+
+  @override
+  String get scanRevealTranslation => '翻訳を表示';
+
+  @override
+  String get scanHideTranslation => '翻訳を隠す';
+
+  @override
+  String get scanLanguage => '言語';
+
+  @override
+  String get scanNoArtifactRecognized => 'この画像でアーティファクトは認識されませんでした。';
+
+  @override
+  String get scanRescan => '再スキャン';
+
+  @override
+  String get scanTryAgain => '再試行';
+
+  @override
+  String scanStatLines(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 行',
+      one: '1 行',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String scanStatGlyphs(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count グリフ',
+      one: '1 グリフ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String scanStatCartouches(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count カルトゥーシュ',
+      one: '1 カルトゥーシュ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get scanStep1 => 'ニューラルスキャンを初期化中...';
+
+  @override
+  String get scanStep2 => 'グリフ領域を分離中...';
+
+  @override
+  String get scanStep3 => 'コントラストグラデーションを分析中...';
+
+  @override
+  String get scanStep4 => '象形文字の形式を解読中...';
+
+  @override
+  String get scanStep5 => '古代の意味を翻訳中...';
+
+  @override
+  String get detailsTitle => '詳細';
+
+  @override
+  String get detailsAboutThisArtifact => 'このアーティファクトについて';
+
+  @override
+  String get detailsRevealTranslation => '翻訳を表示';
+
+  @override
+  String get detailsHideTranslation => '翻訳を隠す';
+
+  @override
+  String get detailsTranslationReveals => '翻訳が明らかにするものを発見...';
+
+  @override
+  String get detailsUnknownArtifact => 'アーティファクト';
+
+  @override
+  String get detailsDescription => '説明';
+
+  @override
+  String get detailsChatWithMe => 'チャットする';
+
+  @override
+  String get errorNoInternet => 'インターネット接続がありません';
+
+  @override
+  String get errorServerError => 'サーバーエラーが発生しました';
+
+  @override
+  String get errorStorageError => 'ストレージエラーが発生しました';
+
+  @override
+  String get errorUnexpected => '問題が発生しました';
+
+  @override
+  String get errorTimeout => '接続がタイムアウトしました';
+
+  @override
+  String get errorSessionExpired => 'セッションの有効期限が切れました。再度ログインしてください';
+
+  @override
+  String get errorResourceNotFound => 'リソースが見つかりません';
+
+  @override
+  String get errorRequestFailed => 'リクエストに失敗しました';
+
+  @override
+  String get errorRequestCancelled => 'リクエストがキャンセルされました';
+
+  @override
+  String get errorSecurityError => 'セキュリティエラーが発生しました';
+
+  @override
+  String get chatHintMessage => 'メッセージ...';
+
+  @override
+  String get chatWelcomeMessage => '古代エジプトについて質問してください...';
+
+  @override
+  String get chatSearchHint => '検索';
+
+  @override
+  String get chatNewChat => '新しいチャット';
+
+  @override
+  String get chatDeleteConfirm => 'セッションを削除しますか？';
+
+  @override
+  String get chatDeleteConfirmDesc => 'このセッションのすべてのメッセージが削除されます。';
+
+  @override
+  String get noRouteDefined => 'ルートが定義されていません';
+
+  @override
+  String get updatingLanguage => '言語を更新中...';
+
+  @override
+  String get profileTitle => 'プロフィール';
+
+  @override
+  String get profileGuest => 'ゲスト';
+
+  @override
+  String get profileUnknownArtifact => '不明なアーティファクト';
+
+  @override
+  String get profileUnknownEra => '不明な時代';
+
+  @override
+  String get profileStartScanning => 'スキャンを開始';
+
+  @override
+  String get timeAgoJustNow => 'たった今';
+
+  @override
+  String timeAgoMinute(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count分前',
+      one: '1分前',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeAgoHour(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count時間前',
+      one: '1時間前',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeAgoDay(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count日前',
+      one: '1日前',
+    );
+    return '$_temp0';
+  }
 }

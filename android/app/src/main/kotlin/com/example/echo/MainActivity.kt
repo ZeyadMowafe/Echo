@@ -1,4 +1,4 @@
-package com.example.ebirth
+package com.example.echo
 
 import io.flutter.embedding.android.FlutterActivity
 

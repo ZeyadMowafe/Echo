@@ -84,13 +84,15 @@ class _CustomHomeSliderState extends State<CustomHomeSlider> {
           value = _pageController.page! - index;
           value = (1 - (value.abs() * 0.15)).clamp(0.0, 1.0);
         }
-        return Center(
+        return RepaintBoundary(
+          child: Center(
           child: SizedBox(
             height: Curves.easeOut.transform(value) * 240,
             width: double.infinity,
             child: child,
           ),
-        );
+        ),
+      );
       },
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 5.w),
@@ -103,13 +105,13 @@ class _CustomHomeSliderState extends State<CustomHomeSlider> {
           ),
         ),
         child: Align(
-          alignment: Alignment.bottomLeft,
+          alignment: AlignmentDirectional.bottomStart,
           child: Padding(
             padding: EdgeInsets.all(20.r),
             child: RichText(
               text: TextSpan(
                 style: TextStyle(
-                  fontSize: 24.sp,
+                  fontSize: 16.sp,
                   fontWeight: FontWeight.normal,
                 ),
                 children: [

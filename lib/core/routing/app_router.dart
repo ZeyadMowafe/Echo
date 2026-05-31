@@ -1,6 +1,7 @@
 import 'package:echo_explorer/core/routing/app_transitions.dart';
 import 'package:echo_explorer/core/routing/routes.dart';
 import 'package:echo_explorer/features/auth/presentation/views/auth_view.dart';
+import 'package:echo_explorer/features/auth/presentation/views/register_view.dart';
 import 'package:echo_explorer/features/chat/presentation/views/chat_view.dart';
 import 'package:echo_explorer/features/discover/presentation/views/egyptian_history_view.dart';
 import 'package:echo_explorer/features/discover/presentation/views/god_details_view.dart';
@@ -10,7 +11,7 @@ import 'package:echo_explorer/features/onboarding/presentation/views/onboarding_
 import 'package:echo_explorer/features/profile/presentation/views/edit_profile_view.dart';
 import 'package:echo_explorer/features/profile/presentation/views/settings_view.dart';
 import 'package:echo_explorer/features/scanner/presentation/views/scanner_view.dart';
-import 'package:echo_explorer/features/splash/presentation/views/splash_view.dart';
+import 'package:echo_explorer/core/hive/cache_helper.dart';
 import 'package:flutter/material.dart';
 
 class AppRouter {
@@ -20,7 +21,9 @@ class AppRouter {
         return SmoothRoute(
           settings: settings,
           type: TransitionType.fade,
-          page: const SplashView(),
+          page: CacheHelper.isOnboardingCompleted
+              ? const HomeView()
+              : const OnboardingView(),
         );
 
       case AppRoutes.homeView:
@@ -103,6 +106,17 @@ class AppRouter {
           settings: settings,
           type: TransitionType.fadeSlideRight,
           page: const EditProfileView(),
+        );
+
+      case AppRoutes.registerView:
+        final args = settings.arguments as Map<String, dynamic>?;
+        return SmoothRoute(
+          settings: settings,
+          type: TransitionType.fadeSlideUp,
+          page: RegisterView(
+            initialEmail: args?['email'] as String? ?? '',
+            initialPassword: args?['password'] as String? ?? '',
+          ),
         );
 
       default:

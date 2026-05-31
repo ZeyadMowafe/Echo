@@ -9,6 +9,16 @@ abstract class BaseThemeColors {
   Color get scanButton;
   Color get discoverAppBar;
   Color get footer;
+
+  Color get textPrimary;
+  Color get textSecondary;
+  Color get textHint;
+
+  Color get surface;
+  Color get divider;
+
+  Color get glassBase;
+  Color get glassBorder;
 }
 
 class _LightColors implements BaseThemeColors {
@@ -19,11 +29,25 @@ class _LightColors implements BaseThemeColors {
   @override
   final bottomNavBar = const Color(0xFFE9E9E9);
   @override
-  final scanButton = const Color(0xFF162410);
+  final scanButton = const Color(0xFF1E2D24);
   @override
-  final discoverAppBar = const Color(0xffE9EBE9);
+  final discoverAppBar = const Color(0xFFE0E4E0);
   @override
   final footer = const Color(0xff162410);
+  @override
+  final textPrimary = const Color(0xFF162410);
+  @override
+  final textSecondary = const Color(0xFF5C6B5E);
+  @override
+  final textHint = const Color(0xFF8E9B90);
+  @override
+  final surface = const Color(0xFFFFFFFF);
+  @override
+  final divider = const Color(0xFFD0D6D1);
+  @override
+  final glassBase = const Color(0xFF162410);
+  @override
+  final glassBorder = const Color(0xFFC8CEC9);
 }
 
 class _DarkColors implements BaseThemeColors {
@@ -34,11 +58,25 @@ class _DarkColors implements BaseThemeColors {
   @override
   final bottomNavBar = const Color(0xFF162410);
   @override
-  final scanButton = const Color(0x00);
+  final scanButton = const Color.fromARGB(255, 30, 31, 30);
   @override
   final discoverAppBar = const Color(0xffFFFFFF);
   @override
   final footer = const Color(0xffffffff);
+  @override
+  final textPrimary = const Color(0xFFF5F5F5);
+  @override
+  final textSecondary = const Color(0xFFB0B8B2);
+  @override
+  final textHint = const Color(0xFF6B756D);
+  @override
+  final surface = const Color(0xFF1A2226);
+  @override
+  final divider = const Color(0xFF2A3436);
+  @override
+  final glassBase = const Color(0xFFFFFFFF);
+  @override
+  final glassBorder = const Color(0xFFFFFFFF);
 }
 
 class AppColors {

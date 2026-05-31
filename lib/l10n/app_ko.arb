@@ -127,7 +127,7 @@
   "editProfileChangeCover": "커버 변경",
   "editProfileChangeAvatar": "사진 변경",
   "authWelcomeBack": "다시 오신 것을 환영합니다",
-  "authSubtitleDefault": "로그인하거나 계정을 만들려면 이메일 주소를 입력하세요.",
+  "authSubtitleDefault": "계정에 로그인",
   "authEmailHint": "이메일 주소",
   "authPasswordHint": "비밀번호",
   "authContinue": "계속하기",
@@ -146,23 +146,122 @@
   "networkError": "네트워크 오류입니다. 연결을 확인해주세요.",
   "socialComingSoon": "소셜 로그인이 곧 지원됩니다!",
   "profileUpdatedSuccessfully": "프로필이 성공적으로 업데이트되었습니다!",
-  "scanTitle": "Scan Artifacts & Decode Hieroglyphs",
-  "scanSubtitle": "Take a photo of any ancient Egyptian artifact to identify it and translate its hieroglyphs.",
-  "scanTakePhoto": "Take Photo",
-  "scanPickGallery": "Pick from Gallery",
-  "scanAnalyzeArtifact": "Analyze Artifact",
-  "scanDifferentPhoto": "Choose Different Photo",
-  "scanAnalyzing": "Analyzing your artifact...",
-  "scanAnalyzingWait": "This may take up to a minute",
-  "scanSaveFavorites": "Save to Favorites",
-  "scanRemoveFavorites": "Remove from Favorites",
-  "scanNewScan": "New Scan",
-  "scanChat": "Chat",
-  "scanHieroglyphs": "Hieroglyphs",
-  "scanAddedToFavorites": "Added to Favorites!",
-  "scanRemovedFromFavorites": "Removed from Favorites",
-  "scanFavorited": "Favorited",
-  "scanSave": "Save",
-  "scanNoHieroglyphs": "No hieroglyphs detected in this artifact.",
-  "scanHieroglyphsTranslation": "Hieroglyphs Translation"
+  "scanTitle": "유물 스캔 및 상형문자 해독",
+  "scanSubtitle": "고대 이집트 유물의 사진을 찍어 식별하고 상형문자를 번역하세요.",
+  "scanTakePhoto": "사진 찍기",
+  "scanPickGallery": "갤러리에서 선택",
+  "scanAnalyzeArtifact": "유물 분석",
+  "scanDifferentPhoto": "다른 사진 선택",
+  "scanAnalyzing": "유물 분석 중...",
+  "scanAnalyzingWait": "최대 1분 정도 소요될 수 있습니다",
+  "scanSaveFavorites": "즐겨찾기에 저장",
+  "scanRemoveFavorites": "즐겨찾기에서 제거",
+  "scanNewScan": "새 스캔",
+  "scanChat": "채팅",
+  "scanHieroglyphs": "상형문자",
+  "scanAddedToFavorites": "즐겨찾기에 추가되었습니다!",
+  "scanRemovedFromFavorites": "즐겨찾기에서 제거되었습니다",
+  "scanFavorited": "즐겨찾기됨",
+  "scanSave": "저장",
+  "scanNoHieroglyphs": "이 유물에서 상형문자가 감지되지 않았습니다.",
+  "scanHieroglyphsTranslation": "상형문자 번역",
+  "scanNoArtifactFound": "이 이미지에서 유물을 인식할 수 없습니다.",
+  "scanDetails": "세부정보",
+  "scanRevealTranslation": "번역 표시",
+  "scanHideTranslation": "번역 숨기기",
+  "scanLanguage": "언어",
+  "scanNoArtifactRecognized": "이 이미지에서 인식된 유물이 없습니다.",
+  "scanRescan": "다시 스캔",
+  "scanTryAgain": "다시 시도",
+  "scanStatLines": "{count,plural, =1{1줄} other{{count}줄}}",
+  "@scanStatLines": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "scanStatGlyphs": "{count,plural, =1{1개 문자} other{{count}개 문자}}",
+  "@scanStatGlyphs": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "scanStatCartouches": "{count,plural, =1{1개 카르투슈} other{{count}개 카르투슈}}",
+  "@scanStatCartouches": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "scanStep1": "신경망 스캔 초기화 중...",
+  "scanStep2": "문자 영역 분리 중...",
+  "scanStep3": "대비 그라데이션 분석 중...",
+  "scanStep4": "상형문자 해독 중...",
+  "scanStep5": "고대 의미 번역 중...",
+  "detailsTitle": "세부정보",
+  "detailsAboutThisArtifact": "이 유물에 대해",
+  "detailsRevealTranslation": "번역 표시",
+  "detailsHideTranslation": "번역 숨기기",
+  "detailsTranslationReveals": "번역이 무엇을 알려주는지 확인하세요...",
+  "detailsUnknownArtifact": "유물",
+  "detailsDescription": "설명",
+  "detailsChatWithMe": "채팅하기",
+
+  "authRegister": "등록",
+  "registerTitle": "계정 만들기",
+  "registerNameHint": "전체 이름",
+  "registerPhoneHint": "전화번호",
+  "registerLanguageHint": "선호 언어",
+  "registerConfirmPasswordHint": "비밀번호 확인",
+  "registerCreateAccount": "계정 만들기",
+  "registerPasswordMismatch": "비밀번호가 일치하지 않습니다",
+
+  "chatHintMessage": "메시지...",
+  "chatWelcomeMessage": "고대 이집트에 대해 물어보세요...",
+  "chatSearchHint": "검색",
+  "chatNewChat": "새 채팅",
+  "chatDeleteConfirm": "세션을 삭제하시겠습니까?",
+  "chatDeleteConfirmDesc": "이 세션의 모든 메시지가 삭제됩니다.",
+
+  "noRouteDefined": "정의된 경로 없음",
+
+  "updatingLanguage": "언어 업데이트 중...",
+
+  "profileTitle": "프로필",
+  "profileGuest": "게스트",
+  "profileUnknownArtifact": "알 수 없는 유물",
+  "profileUnknownEra": "알 수 없는 시대",
+  "profileStartScanning": "스캔 시작",
+
+  "timeAgoJustNow": "방금",
+  "timeAgoMinute": "{count,plural, =1{1분 전} other{{count}분 전}}",
+  "@timeAgoMinute": {
+    "description": "Time ago in minutes",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeAgoHour": "{count,plural, =1{1시간 전} other{{count}시간 전}}",
+  "@timeAgoHour": {
+    "description": "Time ago in hours",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeAgoDay": "{count,plural, =1{1일 전} other{{count}일 전}}",
+  "@timeAgoDay": {
+    "description": "Time ago in days",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "errorNoInternet": "인터넷 연결이 없습니다",
+  "errorServerError": "서버 오류가 발생했습니다",
+  "errorStorageError": "저장소 오류가 발생했습니다",
+  "errorUnexpected": "문제가 발생했습니다",
+  "errorTimeout": "연결 시간이 초과되었습니다",
+  "errorSessionExpired": "세션이 만료되었습니다. 다시 로그인해 주세요",
+  "errorResourceNotFound": "리소스를 찾을 수 없습니다",
+  "errorRequestFailed": "요청에 실패했습니다",
+  "errorRequestCancelled": "요청이 취소되었습니다",
+  "errorSecurityError": "보안 오류가 발생했습니다"
 }

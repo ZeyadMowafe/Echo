@@ -34,9 +34,8 @@ class _SettingsViewState extends State<SettingsView> {
       drawer: CustomGlassDrawer(
         currentFeature: AppStrings.settingsFeature.key,
         onTap: (featureKey) {
+          Navigator.popUntil(context, (route) => route.isFirst);
           context.read<FeaturesCubit>().changeFeature(featureName: featureKey);
-          Navigator.pop(context);
-          Navigator.pop(context);
         },
       ),
       drawerBarrierDismissible: true,
@@ -104,7 +103,9 @@ class _SettingsViewState extends State<SettingsView> {
                         alignment: Alignment.center,
                         padding: EdgeInsets.zero,
                         icon: Icon(
-                          Icons.arrow_back_rounded,
+                          Directionality.of(context) == TextDirection.rtl
+                              ? Icons.arrow_forward_rounded
+                              : Icons.arrow_back_rounded,
                           color: appColors.footer,
                           size: ScreenUtils.iconMd,
                         ),

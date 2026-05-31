@@ -23,20 +23,20 @@ class EgyptianHistoryView extends StatelessWidget {
       backgroundColor: AppColors.of(context).background,
       floatingActionButton: CustomFloatingActionButton(
         onPressed: () {
+          Navigator.popUntil(context, (route) => route.isFirst);
           context.read<FeaturesCubit>().changeFeature(
             featureName: AppStrings.scanFeature.key,
           );
-          Navigator.pop(context); 
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: CustomBottomNavBar(
         currentFeature: AppStrings.discoverFeature.key, 
         onTap: (featureName) {
+          Navigator.popUntil(context, (route) => route.isFirst);
           context.read<FeaturesCubit>().changeFeature(
             featureName: featureName,
           );
-          Navigator.pop(context); 
         },
       ),
       body: Column(

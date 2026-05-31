@@ -11,6 +11,10 @@ abstract class AuthRepository {
     required String email,
     required String password,
     required String name,
+    String lang = 'en',
+  });
+  Future<Either<Failure, UserEntity>> googleLogin({
+    required String idToken,
   });
   Future<Either<Failure, UserEntity>> getProfile();
   Future<Either<Failure, UserEntity>> updateProfile({

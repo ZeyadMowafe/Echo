@@ -127,7 +127,7 @@
   "editProfileChangeCover": "カバーを変更",
   "editProfileChangeAvatar": "写真を変更",
   "authWelcomeBack": "おかえりなさい",
-  "authSubtitleDefault": "ログインまたはアカウントを作成するには、メールアドレスを入力してください。",
+  "authSubtitleDefault": "アカウントにログイン",
   "authEmailHint": "メールアドレス",
   "authPasswordHint": "パスワード",
   "authContinue": "続行",
@@ -146,23 +146,122 @@
   "networkError": "ネットワークエラー。接続を確認してください。",
   "socialComingSoon": "ソーシャルログインはまもなく登場します！",
   "profileUpdatedSuccessfully": "プロフィールが正常に更新されました！",
-  "scanTitle": "Scan Artifacts & Decode Hieroglyphs",
-  "scanSubtitle": "Take a photo of any ancient Egyptian artifact to identify it and translate its hieroglyphs.",
-  "scanTakePhoto": "Take Photo",
-  "scanPickGallery": "Pick from Gallery",
-  "scanAnalyzeArtifact": "Analyze Artifact",
-  "scanDifferentPhoto": "Choose Different Photo",
-  "scanAnalyzing": "Analyzing your artifact...",
-  "scanAnalyzingWait": "This may take up to a minute",
-  "scanSaveFavorites": "Save to Favorites",
-  "scanRemoveFavorites": "Remove from Favorites",
-  "scanNewScan": "New Scan",
-  "scanChat": "Chat",
-  "scanHieroglyphs": "Hieroglyphs",
-  "scanAddedToFavorites": "Added to Favorites!",
-  "scanRemovedFromFavorites": "Removed from Favorites",
-  "scanFavorited": "Favorited",
-  "scanSave": "Save",
-  "scanNoHieroglyphs": "No hieroglyphs detected in this artifact.",
-  "scanHieroglyphsTranslation": "Hieroglyphs Translation"
+  "scanTitle": "アーティファクトをスキャンして象形文字を解読",
+  "scanSubtitle": "古代エジプトのアーティファクトの写真を撮って、識別し、その象形文字を翻訳します。",
+  "scanTakePhoto": "写真を撮る",
+  "scanPickGallery": "ギャラリーから選択",
+  "scanAnalyzeArtifact": "アーティファクトを分析",
+  "scanDifferentPhoto": "別の写真を選択",
+  "scanAnalyzing": "アーティファクトを分析中...",
+  "scanAnalyzingWait": "最大1分かかる場合があります",
+  "scanSaveFavorites": "お気に入りに保存",
+  "scanRemoveFavorites": "お気に入りから削除",
+  "scanNewScan": "新しいスキャン",
+  "scanChat": "チャット",
+  "scanHieroglyphs": "象形文字",
+  "scanAddedToFavorites": "お気に入りに追加しました！",
+  "scanRemovedFromFavorites": "お気に入りから削除しました",
+  "scanFavorited": "お気に入り",
+  "scanSave": "保存",
+  "scanNoHieroglyphs": "このアーティファクトに象形文字は検出されませんでした。",
+  "scanHieroglyphsTranslation": "象形文字の翻訳",
+  "scanNoArtifactFound": "この画像でアーティファクトを認識できませんでした。",
+  "scanDetails": "詳細",
+  "scanRevealTranslation": "翻訳を表示",
+  "scanHideTranslation": "翻訳を隠す",
+  "scanLanguage": "言語",
+  "scanNoArtifactRecognized": "この画像でアーティファクトは認識されませんでした。",
+  "scanRescan": "再スキャン",
+  "scanTryAgain": "再試行",
+  "scanStatLines": "{count,plural, =1{1 行} other{{count} 行}}",
+  "@scanStatLines": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "scanStatGlyphs": "{count,plural, =1{1 グリフ} other{{count} グリフ}}",
+  "@scanStatGlyphs": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "scanStatCartouches": "{count,plural, =1{1 カルトゥーシュ} other{{count} カルトゥーシュ}}",
+  "@scanStatCartouches": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "scanStep1": "ニューラルスキャンを初期化中...",
+  "scanStep2": "グリフ領域を分離中...",
+  "scanStep3": "コントラストグラデーションを分析中...",
+  "scanStep4": "象形文字の形式を解読中...",
+  "scanStep5": "古代の意味を翻訳中...",
+  "detailsTitle": "詳細",
+  "detailsAboutThisArtifact": "このアーティファクトについて",
+  "detailsRevealTranslation": "翻訳を表示",
+  "detailsHideTranslation": "翻訳を隠す",
+  "detailsTranslationReveals": "翻訳が明らかにするものを発見...",
+  "detailsUnknownArtifact": "アーティファクト",
+  "detailsDescription": "説明",
+  "detailsChatWithMe": "チャットする",
+
+  "authRegister": "登録",
+  "registerTitle": "アカウント作成",
+  "registerNameHint": "氏名",
+  "registerPhoneHint": "電話番号",
+  "registerLanguageHint": "希望言語",
+  "registerConfirmPasswordHint": "パスワードを確認",
+  "registerCreateAccount": "アカウント作成",
+  "registerPasswordMismatch": "パスワードが一致しません",
+
+  "chatHintMessage": "メッセージ...",
+  "chatWelcomeMessage": "古代エジプトについて質問してください...",
+  "chatSearchHint": "検索",
+  "chatNewChat": "新しいチャット",
+  "chatDeleteConfirm": "セッションを削除しますか？",
+  "chatDeleteConfirmDesc": "このセッションのすべてのメッセージが削除されます。",
+
+  "noRouteDefined": "ルートが定義されていません",
+
+  "updatingLanguage": "言語を更新中...",
+
+  "profileTitle": "プロフィール",
+  "profileGuest": "ゲスト",
+  "profileUnknownArtifact": "不明なアーティファクト",
+  "profileUnknownEra": "不明な時代",
+  "profileStartScanning": "スキャンを開始",
+
+  "timeAgoJustNow": "たった今",
+  "timeAgoMinute": "{count,plural, =1{1分前} other{{count}分前}}",
+  "@timeAgoMinute": {
+    "description": "Time ago in minutes",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeAgoHour": "{count,plural, =1{1時間前} other{{count}時間前}}",
+  "@timeAgoHour": {
+    "description": "Time ago in hours",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeAgoDay": "{count,plural, =1{1日前} other{{count}日前}}",
+  "@timeAgoDay": {
+    "description": "Time ago in days",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "errorNoInternet": "インターネット接続がありません",
+  "errorServerError": "サーバーエラーが発生しました",
+  "errorStorageError": "ストレージエラーが発生しました",
+  "errorUnexpected": "問題が発生しました",
+  "errorTimeout": "接続がタイムアウトしました",
+  "errorSessionExpired": "セッションの有効期限が切れました。再度ログインしてください",
+  "errorResourceNotFound": "リソースが見つかりません",
+  "errorRequestFailed": "リクエストに失敗しました",
+  "errorRequestCancelled": "リクエストがキャンセルされました",
+  "errorSecurityError": "セキュリティエラーが発生しました"
 }

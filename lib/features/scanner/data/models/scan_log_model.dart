@@ -13,6 +13,7 @@ class ScanLogModel extends ScanLogEntity {
     super.imageUrl,
     super.hieroglyphsTranslation,
     required super.isFavorited,
+    super.isPrimaryModel,
     required super.createdAt,
   });
 
@@ -29,6 +30,7 @@ class ScanLogModel extends ScanLogEntity {
       imageUrl: json['imageUrl'],
       hieroglyphsTranslation: json['hieroglyphsTranslation'],
       isFavorited: json['isFavorited'] ?? false,
+      isPrimaryModel: json['isPrimaryModel'] ?? false,
       createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
     );
   }

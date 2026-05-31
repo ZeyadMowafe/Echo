@@ -424,8 +424,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get authWelcomeBack => 'С возвращением';
 
   @override
-  String get authSubtitleDefault =>
-      'Чтобы войти или создать учетную запись, введите свой адрес электронной почты.';
+  String get authSubtitleDefault => 'Войдите в свою учетную запись';
 
   @override
   String get authEmailHint => 'Адрес электронной почты';
@@ -435,6 +434,30 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get authContinue => 'Продолжить';
+
+  @override
+  String get authRegister => 'Зарегистрироваться';
+
+  @override
+  String get registerTitle => 'Создать аккаунт';
+
+  @override
+  String get registerNameHint => 'Полное имя';
+
+  @override
+  String get registerPhoneHint => 'Номер телефона';
+
+  @override
+  String get registerLanguageHint => 'Предпочитаемый язык';
+
+  @override
+  String get registerConfirmPasswordHint => 'Подтвердите пароль';
+
+  @override
+  String get registerCreateAccount => 'Создать аккаунт';
+
+  @override
+  String get registerPasswordMismatch => 'Пароли не совпадают';
 
   @override
   String get authOr => 'ИЛИ';
@@ -485,60 +508,263 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileUpdatedSuccessfully => 'Профиль успешно обновлен!';
 
   @override
-  String get scanTitle => 'Scan Artifacts & Decode Hieroglyphs';
+  String get scanTitle => 'Сканируйте артефакты и расшифровывайте иероглифы';
 
   @override
   String get scanSubtitle =>
-      'Take a photo of any ancient Egyptian artifact to identify it and translate its hieroglyphs.';
+      'Сфотографируйте любой древнеегипетский артефакт, чтобы определить его и перевести его иероглифы.';
 
   @override
-  String get scanTakePhoto => 'Take Photo';
+  String get scanTakePhoto => 'Сделать фото';
 
   @override
-  String get scanPickGallery => 'Pick from Gallery';
+  String get scanPickGallery => 'Выбрать из галереи';
 
   @override
-  String get scanAnalyzeArtifact => 'Analyze Artifact';
+  String get scanAnalyzeArtifact => 'Анализировать артефакт';
 
   @override
-  String get scanDifferentPhoto => 'Choose Different Photo';
+  String get scanDifferentPhoto => 'Выбрать другое фото';
 
   @override
-  String get scanAnalyzing => 'Analyzing your artifact...';
+  String get scanAnalyzing => 'Анализ вашего артефакта...';
 
   @override
-  String get scanAnalyzingWait => 'This may take up to a minute';
+  String get scanAnalyzingWait => 'Это может занять до минуты';
 
   @override
-  String get scanSaveFavorites => 'Save to Favorites';
+  String get scanSaveFavorites => 'Сохранить в избранное';
 
   @override
-  String get scanRemoveFavorites => 'Remove from Favorites';
+  String get scanRemoveFavorites => 'Удалить из избранного';
 
   @override
-  String get scanNewScan => 'New Scan';
+  String get scanNewScan => 'Новый скан';
 
   @override
-  String get scanChat => 'Chat';
+  String get scanChat => 'Чат';
 
   @override
-  String get scanHieroglyphs => 'Hieroglyphs';
+  String get scanHieroglyphs => 'Иероглифы';
 
   @override
-  String get scanAddedToFavorites => 'Added to Favorites!';
+  String get scanAddedToFavorites => 'Добавлено в избранное!';
 
   @override
-  String get scanRemovedFromFavorites => 'Removed from Favorites';
+  String get scanRemovedFromFavorites => 'Удалено из избранного';
 
   @override
-  String get scanFavorited => 'Favorited';
+  String get scanFavorited => 'В избранном';
 
   @override
-  String get scanSave => 'Save';
+  String get scanSave => 'Сохранить';
 
   @override
-  String get scanNoHieroglyphs => 'No hieroglyphs detected in this artifact.';
+  String get scanNoHieroglyphs => 'В этом артефакте не обнаружено иероглифов.';
 
   @override
-  String get scanHieroglyphsTranslation => 'Hieroglyphs Translation';
+  String get scanNoArtifactFound =>
+      'Не удалось распознать артефакт на этом изображении.';
+
+  @override
+  String get scanHieroglyphsTranslation => 'Перевод иероглифов';
+
+  @override
+  String get scanDetails => 'Детали';
+
+  @override
+  String get scanRevealTranslation => 'Показать перевод';
+
+  @override
+  String get scanHideTranslation => 'Скрыть перевод';
+
+  @override
+  String get scanLanguage => 'Язык';
+
+  @override
+  String get scanNoArtifactRecognized =>
+      'На изображении не распознан артефакт.';
+
+  @override
+  String get scanRescan => 'Пересканировать';
+
+  @override
+  String get scanTryAgain => 'Попробовать снова';
+
+  @override
+  String scanStatLines(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count строк',
+      one: '1 строка',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String scanStatGlyphs(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count иероглифов',
+      one: '1 иероглиф',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String scanStatCartouches(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count картушей',
+      one: '1 картуш',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get scanStep1 => 'Инициализация нейронного сканирования...';
+
+  @override
+  String get scanStep2 => 'Изоляция областей с иероглифами...';
+
+  @override
+  String get scanStep3 => 'Анализ градиентов контрастности...';
+
+  @override
+  String get scanStep4 => 'Расшифровка иероглифических форм...';
+
+  @override
+  String get scanStep5 => 'Перевод древних значений...';
+
+  @override
+  String get detailsTitle => 'Детали';
+
+  @override
+  String get detailsAboutThisArtifact => 'Об этом артефакте';
+
+  @override
+  String get detailsRevealTranslation => 'Показать перевод';
+
+  @override
+  String get detailsHideTranslation => 'Скрыть перевод';
+
+  @override
+  String get detailsTranslationReveals => 'Узнайте, что раскрывает перевод...';
+
+  @override
+  String get detailsUnknownArtifact => 'Артефакт';
+
+  @override
+  String get detailsDescription => 'Описание';
+
+  @override
+  String get detailsChatWithMe => 'Поговорить со мной';
+
+  @override
+  String get errorNoInternet => 'Нет подключения к интернету';
+
+  @override
+  String get errorServerError => 'Произошла ошибка сервера';
+
+  @override
+  String get errorStorageError => 'Произошла ошибка хранения';
+
+  @override
+  String get errorUnexpected => 'Что-то пошло не так';
+
+  @override
+  String get errorTimeout => 'Время ожидания истекло';
+
+  @override
+  String get errorSessionExpired => 'Сессия истекла. Пожалуйста, войдите снова';
+
+  @override
+  String get errorResourceNotFound => 'Ресурс не найден';
+
+  @override
+  String get errorRequestFailed => 'Запрос не удался';
+
+  @override
+  String get errorRequestCancelled => 'Запрос был отменен';
+
+  @override
+  String get errorSecurityError => 'Произошла ошибка безопасности';
+
+  @override
+  String get chatHintMessage => 'Сообщение...';
+
+  @override
+  String get chatWelcomeMessage => 'Спросите меня о Древнем Египте...';
+
+  @override
+  String get chatSearchHint => 'Поиск';
+
+  @override
+  String get chatNewChat => 'Новый чат';
+
+  @override
+  String get chatDeleteConfirm => 'Удалить сессию?';
+
+  @override
+  String get chatDeleteConfirmDesc => 'Это удалит все сообщения в этой сессии.';
+
+  @override
+  String get noRouteDefined => 'Не указан маршрут для';
+
+  @override
+  String get updatingLanguage => 'Обновление языка...';
+
+  @override
+  String get profileTitle => 'Профиль';
+
+  @override
+  String get profileGuest => 'Гость';
+
+  @override
+  String get profileUnknownArtifact => 'Неизвестный артефакт';
+
+  @override
+  String get profileUnknownEra => 'Неизвестная эпоха';
+
+  @override
+  String get profileStartScanning => 'Начать сканирование';
+
+  @override
+  String get timeAgoJustNow => 'только что';
+
+  @override
+  String timeAgoMinute(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count мин. назад',
+      one: '1 мин. назад',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeAgoHour(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ч. назад',
+      one: '1 ч. назад',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeAgoDay(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count д. назад',
+      one: '1 д. назад',
+    );
+    return '$_temp0';
+  }
 }
