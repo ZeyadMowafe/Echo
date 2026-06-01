@@ -76,19 +76,27 @@ class _AuthBottomSheetState extends State<AuthBottomSheet> {
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     final topPad = MediaQuery.of(context).padding.top;
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return ClipRRect(
       borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: Theme.of(context).brightness == Brightness.dark
-                ? const [Color(0xFF0D1215), Color(0xFF1C252A)]
-                : [Colors.white, Colors.white],
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: isDark
+                  ? [Colors.white.withOpacity(0.01), Colors.white.withOpacity(0.01)]
+                  : [Colors.white, Colors.white],
+            ),
+            border: isDark
+                ? Border.all(color: const Color(0x1AFFFFFF))
+                : null,
           ),
-        ),
-        child: SafeArea(
+          child: SafeArea(
           top: false,
           child: BlocConsumer<AuthCubit, AuthState>(
             listener: (context, state) {
@@ -210,7 +218,8 @@ class _AuthBottomSheetState extends State<AuthBottomSheet> {
           ),
         ),
       ),
-    );
+    ),
+  );
   }
 }
 

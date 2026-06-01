@@ -24,6 +24,52 @@ class PrimaryContinueButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final opacity = isEnabled ? 1.0 : 0.4;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    if (isDark) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(50.r),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+          child: Container(
+            width: 290.w,
+            height: 45.h,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50.r),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.white.withOpacity(0.075),
+                  Colors.white.withOpacity(0),
+                ],
+              ),
+            ),
+            child: Padding(
+              padding: EdgeInsets.only(
+                top: 13.h,
+                bottom: 13.h,
+                left: 113.w,
+                right: 113.w,
+              ),
+              child: Center(
+                child: isLoading
+                    ? AppLoading.button()
+                    : Text(
+                        text,
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(opacity),
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
