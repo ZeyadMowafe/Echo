@@ -38,7 +38,7 @@ class ScanPipeline {
   }
 
   /// Returns a [PipelineResult] — callers must check `.rejection`.
-  Future<PipelineResult> runFilters(String imagePath) async {
+  Future<PipelineResult> runFilters(String imagePath, {bool skipBlurCheck = false}) async {
     // ── Gate 1: Motion & Stability ──
     if (!_isStable) {
       return const PipelineResult.unstable('Device is not stable');
@@ -49,13 +49,15 @@ class ScanPipeline {
       return const PipelineResult.unstable('Image file not found');
     }
 
-    // ── Gate 2: Blur Detection ──
-    try {
-      final sharpness = await compute(BlurFilter.calculateSharpness, imagePath);
-      if (sharpness < AppConfig.blurSharpnessThreshold) {
-        return PipelineResult.blurry(sharpness);
-      }
-    } catch (_) {}
+    // ── Gate 2: Blur Detection (skipped for camera path — already stable) ──
+    if (!skipBlurCheck) {
+      try {
+        final sharpness = await compute(BlurFilter.calculateSharpness, imagePath);
+        if (sharpness < AppConfig.blurSharpnessThreshold) {
+          return PipelineResult.blurry(sharpness);
+        }
+      } catch (_) {}
+    }
 
     // ── Gate 3a: Duplicate Detection ──
     try {

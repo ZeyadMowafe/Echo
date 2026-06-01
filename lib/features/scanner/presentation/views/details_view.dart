@@ -56,10 +56,7 @@ class _DetailsViewState extends State<DetailsView> {
   @override
   void initState() {
     super.initState();
-    final state = context.read<ScanCubit>().state;
-    if (state is ScanResultLoaded) {
-      _isFavorited = state.isFavorited;
-    }
+    _isFavorited = widget.args.isFavorited;
   }
 
   void _showFavoriteToast() {
@@ -152,6 +149,7 @@ class _DetailsViewState extends State<DetailsView> {
 
     return Scaffold(
       backgroundColor: AppColors.of(context, listen: false).background,
+      drawerScrimColor: Colors.transparent,
       drawer: CustomGlassDrawer(
         currentFeature: AppStrings.scanFeature.key,
         onTap: (featureName) {
@@ -288,6 +286,7 @@ class _DetailsViewState extends State<DetailsView> {
                             borderRadius: BorderRadius.circular(24.r),
                             child: Image.file(
                               File(_imagePath!),
+                              cacheWidth: 400,
                               width: 150.w,
                               height: 220.h,
                               fit: BoxFit.contain,

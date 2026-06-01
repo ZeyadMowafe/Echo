@@ -111,6 +111,7 @@ class _HomeViewState extends State<HomeView> {
         ),
         child: Scaffold(
         backgroundColor: Colors.transparent,
+        drawerScrimColor: Colors.transparent,
         drawer: CustomGlassDrawer(
           currentFeature: state.featureName,
           onTap: (featureName) {

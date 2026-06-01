@@ -26,6 +26,7 @@ class OnboardingContent extends StatelessWidget {
       children: [
         Image.asset(
           onboardList[index].imageBG,
+          cacheWidth: 1080,
           fit: BoxFit.cover,
         ),
         Positioned.fill(

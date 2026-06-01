@@ -35,7 +35,8 @@ class _AuthBottomSheetState extends State<AuthBottomSheet> {
   }
 
   void _onFieldChanged() {
-    final valid = _formKey.currentState?.validate() ?? false;
+    final valid = _emailController.text.trim().isNotEmpty &&
+        _passwordController.text.isNotEmpty;
     if (valid != _isFormValid) {
       setState(() => _isFormValid = valid);
     }
@@ -124,7 +125,7 @@ class _AuthBottomSheetState extends State<AuthBottomSheet> {
                 padding: EdgeInsets.fromLTRB(24.w, topPad + 10.h, 24.w, bottomInset + 24.h),
                 child: Form(
                   key: _formKey,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  autovalidateMode: AutovalidateMode.disabled,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [

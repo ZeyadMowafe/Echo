@@ -31,6 +31,7 @@ class _SettingsViewState extends State<SettingsView> {
     final isLightMode = !context.watch<ThemeCubit>().state;
 
     return Scaffold(
+      drawerScrimColor: Colors.transparent,
       drawer: CustomGlassDrawer(
         currentFeature: AppStrings.settingsFeature.key,
         onTap: (featureKey) {

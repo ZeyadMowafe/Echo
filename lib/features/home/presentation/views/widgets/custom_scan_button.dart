@@ -50,7 +50,7 @@ class CustomScanButton extends StatelessWidget {
               end: Alignment.bottomCenter,
             ),
             borderRadius: BorderRadius.circular(24.r),
-            padding: EdgeInsets.symmetric(vertical: 42.h, horizontal: 21.w),
+            padding: EdgeInsets.symmetric(vertical: 32.h, horizontal: 18.w),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               spacing: 10.w,
@@ -70,7 +70,7 @@ class CustomScanButton extends StatelessWidget {
                   child: Text(
                     l10n.homeScanButton,
                     textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
+
                     style: TextStyle(
                       color: AppColors.cffffff,
                       fontSize: 16.sp,

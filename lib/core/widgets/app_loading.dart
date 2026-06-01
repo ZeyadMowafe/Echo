@@ -79,18 +79,20 @@ class PremiumEchoSpinnerState extends State<PremiumEchoSpinner> with SingleTicke
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        return CustomPaint(
-          size: Size(widget.size, widget.size),
-          painter: _EchoSpinnerPainter(
-            animationValue: _controller.value,
-            color: widget.color,
-            strokeWidth: widget.strokeWidth,
-          ),
-        );
-      },
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          return CustomPaint(
+            size: Size(widget.size, widget.size),
+            painter: _EchoSpinnerPainter(
+              animationValue: _controller.value,
+              color: widget.color,
+              strokeWidth: widget.strokeWidth,
+            ),
+          );
+        },
+      ),
     );
   }
 }
@@ -310,7 +312,8 @@ class _FullScreenLoadingState extends State<_FullScreenLoading> with SingleTicke
       children: [
         Container(color: Colors.black.withValues(alpha: 0.5)),
         Center(
-          child: AnimatedBuilder(
+          child: RepaintBoundary(
+            child: AnimatedBuilder(
             animation: _controller,
             builder: (context, child) {
               // Smooth breathing scale for the entire card (0.98 to 1.02)
@@ -377,6 +380,7 @@ class _FullScreenLoadingState extends State<_FullScreenLoading> with SingleTicke
               );
             },
           ),
+        ),
         ),
       ],
     );
@@ -517,34 +521,38 @@ class _FuturisticScanAnalyzerOverlayState extends State<FuturisticScanAnalyzerOv
         child: Stack(
           children: [
             // 1. Futuristic Grid Overlay
-            AnimatedBuilder(
-              animation: _pulseOpacity,
-              builder: (context, child) {
-                return CustomPaint(
-                  size: Size.infinite,
-                  painter: _FuturisticGridPainter(
-                    opacity: _pulseOpacity.value,
-                    color: AppColors.secondary,
-                  ),
-                );
-              },
+            RepaintBoundary(
+              child: AnimatedBuilder(
+                animation: _pulseOpacity,
+                builder: (context, child) {
+                  return CustomPaint(
+                    size: Size.infinite,
+                    painter: _FuturisticGridPainter(
+                      opacity: _pulseOpacity.value,
+                      color: AppColors.secondary,
+                    ),
+                  );
+                },
+              ),
             ),
 
             // 2. Central target/reticle indicator rotating continuously
             Center(
-              child: AnimatedBuilder(
-                animation: _controller,
-                builder: (context, child) {
-                  return Transform.rotate(
-                    angle: _controller.value * 2 * math.pi,
-                    child: CustomPaint(
-                      size: Size(160.r, 160.r),
-                      painter: _ReticlePainter(
-                        color: AppColors.secondary.withValues(alpha: 0.5),
+              child: RepaintBoundary(
+                child: AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, child) {
+                    return Transform.rotate(
+                      angle: _controller.value * 2 * math.pi,
+                      child: CustomPaint(
+                        size: Size(160.r, 160.r),
+                        painter: _ReticlePainter(
+                          color: AppColors.secondary.withValues(alpha: 0.5),
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ),
 
@@ -599,7 +607,8 @@ class _FuturisticScanAnalyzerOverlayState extends State<FuturisticScanAnalyzerOv
             ),
 
             // 4. Moving Laser Beam
-            AnimatedBuilder(
+            RepaintBoundary(
+              child: AnimatedBuilder(
               animation: _laserPosition,
               builder: (context, child) {
                 // Moving back and forth smoothly inside crop area
@@ -645,6 +654,7 @@ class _FuturisticScanAnalyzerOverlayState extends State<FuturisticScanAnalyzerOv
                 );
               },
             ),
+            ), // close RepaintBoundary
           ],
         ),
       ),

@@ -23,6 +23,7 @@ class MythologyView extends StatelessWidget {
     final godsList = GodsData.getGodsData(context);
 
     return Scaffold(
+      drawerScrimColor: Colors.transparent,
       drawer: CustomGlassDrawer(
         currentFeature: AppStrings.discoverFeature.key,
         onTap: (featureKey) {

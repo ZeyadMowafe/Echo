@@ -116,7 +116,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
     setState(() => _phase = _ScanPhase.analyzing);
     final cubit = context.read<ScanCubit>();
     cubit.setImagePath(path);
-    cubit.analyzeImage();
+    cubit.analyzeImage(skipBlurCheck: true);
   }
 
   @override
@@ -155,6 +155,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
     }
     return Scaffold(
       backgroundColor: Colors.black,
+      drawerScrimColor: Colors.transparent,
       drawer: CustomGlassDrawer(
         currentFeature: AppStrings.scanFeature.key,
         onTap: (featureName) {
@@ -196,7 +197,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
             // Viewfinder overlay
             Positioned(
               left: 22.w,
-              top: 202.h,
+              top: 170.h,
               width: 346.w,
               height: 463.h,
               child: (_phase == _ScanPhase.analyzing)
@@ -220,7 +221,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
               Positioned(
                 left: 0,
                 right: 0,
-                top: 202.h + 463.h + 20.h,
+                top: 170.h + 463.h + 20.h,
                 child: Center(child: AppLoading.scanner()),
               ),
             // Capture button (Gate 1: only visible when stable + not scanning)
@@ -228,7 +229,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
               Positioned(
                 left: 0,
                 right: 0,
-                bottom: MediaQuery.of(context).padding.bottom + 70.h,
+                bottom: MediaQuery.of(context).padding.bottom + 50.h,
                 child: Center(
                   child: GestureDetector(
                     onTap: _isStable ? _onCapturePressed : null,
@@ -363,39 +364,31 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                                       ),
                                     );
                                   },
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(50.r),
-                                  child: BackdropFilter(
-                                    filter: ImageFilter.blur(
-                                      sigmaX: 15, sigmaY: 15,
+                                child: Container(
+                                  width: 45.r,
+                                  height: 45.r,
+                                  padding: EdgeInsets.all(14.r),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.black.withValues(alpha: 0.1),
                                     ),
-                                    child: Container(
-                                      width: 45.r,
-                                      height: 45.r,
-                                      padding: EdgeInsets.all(14.r),
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: Colors.black.withValues(alpha: 0.1),
-                                        ),
-                                        gradient: const LinearGradient(
-                                          begin: Alignment.topCenter,
-                                          end: Alignment.bottomCenter,
-                                          colors: [
-                                            Color(0x13FFFFFF),
-                                            Color(0x00FFFFFF),
-                                          ],
-                                        ),
-                                      ),
-                                        child: Icon(
-                                          Icons.chat_outlined,
-                                          color: Colors.white,
-                                          size: 20.r,
-                                        ),
-                                      ),
+                                    gradient: const LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: [
+                                        Color(0x13FFFFFF),
+                                        Color(0x00FFFFFF),
+                                      ],
                                     ),
                                   ),
+                                  child: Icon(
+                                    Icons.chat_outlined,
+                                    color: Colors.white,
+                                    size: 20.r,
+                                  ),
                                 ),
+                              ),
                               if (resultData.result!.artifact.isPrimaryModel &&
                                   resultData.result!.artifact.artifactModelId != null)
                                 const Spacer(),
@@ -411,17 +404,14 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                                           args: ScanResultArgs(
                                             result: resultData.result!,
                                             imagePath: resultData.imagePath,
+                                            isFavorited: resultData.isFav,
                                           ),
                                         ),
                                       ),
                                     ),
                                   );
                                 },
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(50.r),
-                                  child: BackdropFilter(
-                                    filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-                                    child: Container(
+                                child: Container(
                                       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(50.r),
@@ -460,8 +450,6 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                                       ),
                                     ),
                                   ),
-                                ),
-                              ),
                             ],
                           ),
                         ],

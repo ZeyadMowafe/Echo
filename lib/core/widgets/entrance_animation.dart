@@ -72,17 +72,14 @@ class _EntranceAnimationState extends State<EntranceAnimation>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        return Opacity(
-          opacity: _opacityAnimation.value,
-          child: FractionalTranslation(
-            translation: _offsetAnimation.value,
-            child: widget.child,
-          ),
-        );
-      },
+    return RepaintBoundary(
+      child: FadeTransition(
+        opacity: _opacityAnimation,
+        child: SlideTransition(
+          position: _offsetAnimation,
+          child: widget.child,
+        ),
+      ),
     );
   }
 }

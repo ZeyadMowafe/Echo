@@ -47,14 +47,14 @@ class ScanCubit extends Cubit<ScanState> {
     pipeline.reset();
   }
 
-  Future<void> analyzeImage({String? language}) async {
+  Future<void> analyzeImage({String? language, bool skipBlurCheck = false}) async {
     if (_currentImagePath == null) return;
     if (!isClosed) emit(ScanLoading());
 
     final path = _currentImagePath!;
 
     // ── Run gates 1-3 through the pipeline ──
-    final result = await pipeline.runFilters(path);
+    final result = await pipeline.runFilters(path, skipBlurCheck: skipBlurCheck);
     if (result.rejection != PipelineRejection.none) {
       if (!isClosed) {
         emit(ScanFilterRejected(

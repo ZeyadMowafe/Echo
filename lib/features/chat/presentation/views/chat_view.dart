@@ -6,6 +6,7 @@ import 'package:echo_explorer/core/routing/routes.dart';
 import 'package:echo_explorer/core/themes/theme_cubit.dart';
 import 'package:echo_explorer/core/widgets/app_loading.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_back_button.dart';
+import 'package:echo_explorer/core/widgets/custom_glass_container.dart';
 import 'package:echo_explorer/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:echo_explorer/features/chat/domain/entities/message_entity.dart';
 import 'package:echo_explorer/features/chat/presentation/cubit/chat_cubit.dart';
@@ -29,6 +30,7 @@ class ChatView extends StatefulWidget {
 
 class _ChatViewState extends State<ChatView> {
   final _scrollController = ScrollController();
+  bool _pendingScroll = false;
 
   @override
   void initState() {
@@ -51,7 +53,10 @@ class _ChatViewState extends State<ChatView> {
   }
 
   void _scrollToBottom() {
+    if (_pendingScroll) return;
+    _pendingScroll = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _pendingScroll = false;
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
@@ -72,7 +77,9 @@ class _ChatViewState extends State<ChatView> {
       backgroundColor: isDark
           ? AppColors.of(context).background
           : AppColors.cffffff,
-      drawer: ChatSideDrawer(
+      drawerEdgeDragWidth: 0,
+      drawer: BlocBuilder<ChatCubit, ChatState>(
+        builder: (context, _) => ChatSideDrawer(
         sessions: cubit.cachedSessions,
         onNewChat: () => cubit.startNewSession(),
         onSessionTap: (id) => cubit.loadSession(id),
@@ -94,18 +101,29 @@ class _ChatViewState extends State<ChatView> {
                 child: Material(
                   color: Colors.transparent,
                   child: Center(
-                    child: Container(
+                    child: CustomGlassContainer(
                       width: 300.w,
                       padding: EdgeInsets.symmetric(
                         vertical: 10.h,
                         horizontal: 16.w,
                       ),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? const Color(0xFF0D1215).withValues(alpha: 0.92)
-                            : AppColors.cffffff.withValues(alpha: 0.92),
-                        borderRadius: BorderRadius.circular(24.r),
+                      borderRadius: BorderRadius.circular(24.r),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: isDark
+                            ? [
+                                const Color(0xFF0D1215).withValues(alpha: 0.92),
+                                const Color(0xFF0D1215).withValues(alpha: 0.88),
+                              ]
+                            : [
+                                AppColors.cffffff.withValues(alpha: 0.92),
+                                AppColors.cffffff.withValues(alpha: 0.85),
+                              ],
                       ),
+                      borderColor: isDark
+                          ? const Color(0x1AFFFFFF)
+                          : const Color(0x1A000000),
                       child: Center(
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -123,7 +141,7 @@ class _ChatViewState extends State<ChatView> {
                                   fontFamily: 'Inter',
                                   fontWeight: FontWeight.w500,
                                   fontSize: 15.sp,
-                                  color: Colors.white,
+                                  color: isDark ? Colors.white : const Color(0xFF0D1215),
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -132,8 +150,8 @@ class _ChatViewState extends State<ChatView> {
                           ],
                         ),
                       ),
-                    ),
                   ),
+                ),
                 ),
               ),
             );
@@ -144,6 +162,7 @@ class _ChatViewState extends State<ChatView> {
           }
         },
       ),
+      ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Stack(
@@ -152,6 +171,7 @@ class _ChatViewState extends State<ChatView> {
               Positioned.fill(
                 child: Image.asset(
                   'assets/images/chat_background_dark.jpg',
+                  cacheWidth: 1080,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -173,13 +193,17 @@ class _ChatViewState extends State<ChatView> {
                           child: BlocBuilder<ChatCubit, ChatState>(
                             builder: (context, state) {
                               if (widget.artifactId != null) {
-                                return _buildChatSection(context, state);
+                                return _buildChatSection(
+                                  context,
+                                  state,
+                                  isDark,
+                                );
                               }
                               if (state is ChatInitial)
                                 return _buildWelcome(context);
                               if (state is ChatLoading)
                                 return AppLoading.page();
-                              return _buildChatSection(context, state);
+                              return _buildChatSection(context, state, isDark);
                             },
                           ),
                         ),
@@ -253,7 +277,8 @@ class _ChatViewState extends State<ChatView> {
             spacing: 8.w,
             children: [
               CustomGlassBackButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () =>
+                    Navigator.of(context).popUntil((route) => route.isFirst),
                 rtlAware: true,
               ),
               Expanded(
@@ -391,7 +416,7 @@ class _ChatViewState extends State<ChatView> {
     );
   }
 
-  Widget _buildChatSection(BuildContext context, ChatState state) {
+  Widget _buildChatSection(BuildContext context, ChatState state, bool isDark) {
     final messages = state is ChatLoaded
         ? state.messages
         : state is ChatBotLoading
@@ -402,15 +427,19 @@ class _ChatViewState extends State<ChatView> {
     final isBotLoading = state is ChatBotLoading;
     final errorMsg = state is ChatError ? state.message : null;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 100),
-          curve: Curves.easeOut,
-        );
-      }
-    });
+    if (!_pendingScroll) {
+      _pendingScroll = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _pendingScroll = false;
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 100),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    }
 
     return Column(
       children: [
@@ -424,11 +453,10 @@ class _ChatViewState extends State<ChatView> {
                 (errorMsg != null ? 1 : 0),
             itemBuilder: (context, index) {
               if (isBotLoading && index == messages.length) {
-                return _buildTypingIndicator();
+                return _buildTypingIndicator(isDark);
               }
               if (errorMsg != null &&
                   index == messages.length + (isBotLoading ? 1 : 0)) {
-                final isDark = context.watch<ThemeCubit>().state;
                 final lastUserMsg = messages.reversed
                     .where((m) => m.role == 'user')
                     .firstOrNull
@@ -499,11 +527,13 @@ class _ChatViewState extends State<ChatView> {
                   ),
                 );
               }
+
               final msg = messages[index];
               return ChatBubble(
                 message: msg.content,
                 isUser: msg.role == 'user',
                 timestamp: msg.createdAt,
+                isDark: isDark,
               );
             },
           ),
@@ -512,8 +542,7 @@ class _ChatViewState extends State<ChatView> {
     );
   }
 
-  Widget _buildTypingIndicator() {
-    final isDark = context.watch<ThemeCubit>().state;
+  Widget _buildTypingIndicator(bool isDark) {
     return Padding(
       padding: EdgeInsetsDirectional.only(start: 11.w, bottom: 4.h),
       child: Row(
@@ -583,36 +612,40 @@ class _TypingDotsState extends State<_TypingDots>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(3, (i) {
-            final delay = i * 0.15;
-            final value = ((_controller.value - delay) % 1.0).clamp(0.0, 1.0);
-            final scale = 0.5 + (value * 0.5);
-            final opacity = 0.3 + (value * 0.7);
-            return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 3.w),
-              child: Transform.scale(
-                scale: scale,
-                child: Container(
-                  width: 8.r,
-                  height: 8.r,
-                  decoration: BoxDecoration(
-                    color:
-                        (widget.isDark ? Colors.white : const Color(0xFF162410))
-                            .withValues(alpha: opacity),
-                    borderRadius: BorderRadius.circular(50.r),
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(3, (i) {
+              final delay = i * 0.15;
+              final value = ((_controller.value - delay) % 1.0).clamp(0.0, 1.0);
+              final scale = 0.5 + (value * 0.5);
+              final opacity = 0.3 + (value * 0.7);
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: 3.w),
+                child: Transform.scale(
+                  scale: scale,
+                  child: Container(
+                    width: 8.r,
+                    height: 8.r,
+                    decoration: BoxDecoration(
+                      color:
+                          (widget.isDark
+                                  ? Colors.white
+                                  : const Color(0xFF162410))
+                              .withValues(alpha: opacity),
+                      borderRadius: BorderRadius.circular(50.r),
+                    ),
                   ),
                 ),
-              ),
-            );
-          }),
-        );
-      },
+              );
+            }),
+          );
+        },
+      ),
     );
   }
 }

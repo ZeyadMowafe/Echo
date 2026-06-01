@@ -27,7 +27,7 @@ class ScanRemoteDataSourceImpl implements ScanRemoteDataSource {
         data: formData,
         options: Options(
           contentType: 'multipart/form-data',
-          receiveTimeout: const Duration(seconds: 120),
+          receiveTimeout: const Duration(seconds: 60),
           connectTimeout: const Duration(seconds: 60),
         ),
       );

@@ -82,23 +82,26 @@ class _ScannerViewfinderState extends State<ScannerViewfinder>
       child: Stack(
         children: [
           // Viewfinder Corners
-          AnimatedBuilder(
-            animation: _pulseOpacity,
-            builder: (context, child) {
-              return CustomPaint(
-                size: Size(widget.width, widget.height),
-                painter: _ViewfinderPainter(
-                  color: AppColors.secondary.withOpacity(_pulseOpacity.value),
-                  strokeWidth: 3.r,
-                  borderRadius: 12.r,
-                  cornerLength: 20.r,
-                ),
-              );
-            },
+          RepaintBoundary(
+            child: AnimatedBuilder(
+              animation: _pulseOpacity,
+              builder: (context, child) {
+                return CustomPaint(
+                  size: Size(widget.width, widget.height),
+                  painter: _ViewfinderPainter(
+                    color: AppColors.secondary.withOpacity(_pulseOpacity.value),
+                    strokeWidth: 3.r,
+                    borderRadius: 12.r,
+                    cornerLength: 20.r,
+                  ),
+                );
+              },
+            ),
           ),
           // Laser line animation
           if (widget.animate)
-            AnimatedBuilder(
+            RepaintBoundary(
+              child: AnimatedBuilder(
               animation: _laserPosition,
               builder: (context, child) {
                 final topOffset = _laserPosition.value * (widget.height - 14.h);
@@ -141,6 +144,7 @@ class _ScannerViewfinderState extends State<ScannerViewfinder>
                   ),
                 );
               },
+            ),
             ),
         ],
       ),

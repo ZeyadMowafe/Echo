@@ -11,7 +11,7 @@ import 'package:echo_explorer/core/widgets/custom_glass_back_button.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_container.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_drawer.dart';
 import 'package:echo_explorer/features/chat/presentation/views/chat_view.dart';
-import 'package:echo_explorer/features/home/presentation/view_model/features_cubit.dart';
+import 'package:echo_explorer/features/home/presentation/cubit/features_cubit.dart';
 import 'package:echo_explorer/features/scanner/data/models/scan_result_args.dart';
 import 'package:echo_explorer/features/scanner/domain/entities/scan_artifact_entity.dart';
 import 'package:echo_explorer/features/scanner/domain/entities/scan_response_entity.dart';
@@ -47,6 +47,7 @@ class _ScannerBodyState extends State<_ScannerBody> {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.of(context).background,
+      drawerScrimColor: Colors.transparent,
       drawer: CustomGlassDrawer(
         currentFeature: AppStrings.scanFeature.key,
         onTap: (featureName) {
@@ -58,6 +59,7 @@ class _ScannerBodyState extends State<_ScannerBody> {
       body: Stack(
         children: [
           BlocBuilder<ScanCubit, ScanState>(
+            buildWhen: (previous, current) => previous.runtimeType != current.runtimeType,
             builder: (context, state) {
               if (state is ScanInitial) return _buildHome(context);
               if (state is ScanImagePicked)
@@ -95,24 +97,28 @@ class _ScannerBodyState extends State<_ScannerBody> {
               return _buildHome(context);
             },
           ),
-          PositionedDirectional(
-            start: 16.w,
-            top: MediaQuery.of(context).padding.top + 6.h,
-            child: CustomGlassBackButton(
-              iconColor: AppColors.of(context).footer,
-              onPressed: () => Navigator.pop(context),
+          RepaintBoundary(
+            child: PositionedDirectional(
+              start: 16.w,
+              top: MediaQuery.of(context).padding.top + 6.h,
+              child: CustomGlassBackButton(
+                iconColor: AppColors.of(context).footer,
+                onPressed: () => Navigator.pop(context),
+              ),
             ),
           ),
-          PositionedDirectional(
-            end: 16.w,
-            top: MediaQuery.of(context).padding.top + 6.h,
-            child: Builder(
-              builder: (ctx) => GestureDetector(
-                onTap: () => Scaffold.of(ctx).openDrawer(),
-                child: Icon(
-                  Icons.menu_rounded,
-                  size: 28.r,
-                  color: AppColors.of(context).footer.withValues(alpha: 0.7),
+          RepaintBoundary(
+            child: PositionedDirectional(
+              end: 16.w,
+              top: MediaQuery.of(context).padding.top + 6.h,
+              child: Builder(
+                builder: (ctx) => GestureDetector(
+                  onTap: () => Scaffold.of(ctx).openDrawer(),
+                  child: Icon(
+                    Icons.menu_rounded,
+                    size: 28.r,
+                    color: AppColors.of(context).footer.withValues(alpha: 0.7),
+                  ),
                 ),
               ),
             ),
@@ -395,39 +401,30 @@ class _ScannerBodyState extends State<_ScannerBody> {
                                     ),
                                   );
                                 },
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(50.r),
-                                  child: BackdropFilter(
-                                    filter: ImageFilter.blur(
-                                      sigmaX: 15,
-                                      sigmaY: 15,
-                                    ),
-                                    child: Container(
-                                      width: 45.r,
-                                      height: 45.r,
-                                      padding: EdgeInsets.all(14.r),
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: Colors.black.withValues(
-                                            alpha: 0.1,
-                                          ),
-                                        ),
-                                        gradient: const LinearGradient(
-                                          begin: Alignment.topCenter,
-                                          end: Alignment.bottomCenter,
-                                          colors: [
-                                            Color(0x13FFFFFF),
-                                            Color(0x00FFFFFF),
-                                          ],
-                                        ),
-                                      ),
-                                      child: Icon(
-                                        Icons.chat_outlined,
-                                        color: Colors.white,
-                                        size: 20.r,
+                                child: Container(
+                                  width: 45.r,
+                                  height: 45.r,
+                                  padding: EdgeInsets.all(14.r),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.black.withValues(
+                                        alpha: 0.1,
                                       ),
                                     ),
+                                    gradient: const LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: [
+                                        Color(0x13FFFFFF),
+                                        Color(0x00FFFFFF),
+                                      ],
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    Icons.chat_outlined,
+                                    color: Colors.white,
+                                    size: 20.r,
                                   ),
                                 ),
                               ),
@@ -442,24 +439,69 @@ class _ScannerBodyState extends State<_ScannerBody> {
                                     type: TransitionType.fadeSlideUp,
                                     page: BlocProvider.value(
                                       value: context.read<ScanCubit>(),
-                                      child: DetailsView(
-                                        args: ScanResultArgs(
-                                          result: result.result,
-                                          imagePath: result.imagePath,
-                                        ),
+                                        child: DetailsView(
+                                          args: ScanResultArgs(
+                                            result: result.result,
+                                            imagePath: result.imagePath,
+                                            isFavorited: result.isFavorited,
+                                          ),
                                       ),
                                     ),
                                   ),
                                 );
                               },
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(50.r),
-                                child: BackdropFilter(
-                                  filter: ImageFilter.blur(
-                                    sigmaX: 15,
-                                    sigmaY: 15,
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 16.w,
+                                  vertical: 10.h,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(50.r),
+                                  border: Border.all(
+                                    color: Colors.black.withValues(alpha: 0.1),
                                   ),
-                                  child: Container(
+                                  gradient: const LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Color(0x13FFFFFF),
+                                      Color(0x00FFFFFF),
+                                    ],
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      l10n.scanDetails,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    Gap(4.w),
+                                    Icon(
+                                      Directionality.of(context) == TextDirection.rtl
+                                          ? Icons.arrow_back_rounded
+                                          : Icons.arrow_forward_rounded,
+                                      color: Colors.white,
+                                      size: 18.r,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+            if (result != null && showTranslation)
+              Positioned(
+                left: 12.w,
+                right: 12.w,
+                bottom: 12.h,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24.r),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+                    child: Container(
                                     padding: EdgeInsets.symmetric(
                                       horizontal: 16.w,
                                       vertical: 10.h,
@@ -508,20 +550,33 @@ class _ScannerBodyState extends State<_ScannerBody> {
                           ],
                         ),
                       ] else ...[
-                        Icon(
-                          Icons.image_search_outlined,
-                          size: 48.r,
-                          color: Colors.white.withValues(alpha: 0.5),
-                        ),
-                        SizedBox(height: 12.h),
-                        Text(
-                          l10n.scanNoArtifactFound,
-                          style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.7),
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          textAlign: TextAlign.center,
+                        Builder(
+                          builder: (context) {
+                            final a = result.result.artifact;
+                            final parts = <String>[];
+                            if (a.type != null) {
+                              parts.add('It is identified as a ${a.type}.');
+                            }
+                            if (a.material != null) {
+                              parts.add('The material used is ${a.material}.');
+                            }
+                            if (a.era != null) {
+                              parts.add('Its historical era is ${a.era}.');
+                            }
+                            final analysis = parts.isNotEmpty
+                                ? 'This item was not found in our database, but our visual analysis reveals the following.\n${parts.join('\n')}'
+                                : 'This item was not found in our database.';
+                            return Text(
+                              analysis,
+                              style: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.85),
+                                fontSize: 15.sp,
+                                fontWeight: FontWeight.w400,
+                                height: 1.5,
+                              ),
+                              textAlign: TextAlign.center,
+                            );
+                          },
                         ),
                       ],
                     ],

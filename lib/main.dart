@@ -1,3 +1,4 @@
+import 'package:echo_explorer/core/constants/app_colors.dart';
 import 'package:echo_explorer/core/constants/app_strings.dart';
 import 'package:echo_explorer/core/di/injection_container.dart';
 import 'package:echo_explorer/core/error/error_handler.dart';
@@ -135,7 +136,18 @@ class EchoExplorer extends StatelessWidget {
                     children: [
                       materialChild!,
                       if (localeState.isLoading)
-                        AppLoading.fullScreen(message: AppLocalizations.of(context)!.updatingLanguage),
+                        Stack(
+                          children: [
+                            Container(color: Colors.black.withValues(alpha: 0.5)),
+                            Center(
+                              child: PremiumEchoSpinner(
+                                size: 56.r,
+                                color: AppColors.secondary,
+                                strokeWidth: 3.5,
+                              ),
+                            ),
+                          ],
+                        ),
                     ],
                   );
                 },

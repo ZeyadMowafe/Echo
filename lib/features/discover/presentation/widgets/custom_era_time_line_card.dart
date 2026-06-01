@@ -86,6 +86,7 @@ class _EraTimelineCardState extends State<EraTimelineCard> {
                 left: !widget.isImageRight ? 24.w : null,
                 child: Image.asset(
                   widget.imagePath!,
+                  cacheWidth: 220,
                   height: 110.h,
                   fit: BoxFit.contain,
                 ),

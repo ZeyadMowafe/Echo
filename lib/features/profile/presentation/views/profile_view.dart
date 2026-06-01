@@ -37,8 +37,9 @@ class ProfileView extends StatefulWidget {
 class _ProfileViewState extends State<ProfileView> {
   int _selectedTabIndex = 0;
   late final ScanCubit _scanCubit;
+  bool _didShowAuthSheet = false;
 
-  // Local state to store live counts populated by the BlocListener
+  // Local state to populate the stats panel
   int? _favoritesCount;
   int? _scansCount;
 
@@ -46,15 +47,26 @@ class _ProfileViewState extends State<ProfileView> {
   void initState() {
     super.initState();
     _scanCubit = sl<ScanCubit>();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      final authState = context.read<AuthCubit>().state;
-      if (authState is! Authenticated) {
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_didShowAuthSheet) return;
+    final authState = context.read<AuthCubit>().state;
+    if (authState is! Authenticated) {
+      _didShowAuthSheet = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
         showAuthSheet(context, AppLocalizations.of(context).profileAuthMessage);
-        return;
-      }
-      _loadInitialData();
-    });
+      });
+    } else {
+      _didShowAuthSheet = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _loadInitialData();
+      });
+    }
   }
 
   @override
@@ -95,6 +107,9 @@ class _ProfileViewState extends State<ProfileView> {
           }
         },
         child: BlocBuilder<AuthCubit, AuthState>(
+          buildWhen: (previous, current) =>
+              (previous is! Authenticated && current is Authenticated) ||
+              (previous is Authenticated && current is! Authenticated),
           builder: (context, state) {
             final loggedIn = state is Authenticated;
             final userName = loggedIn ? state.userName : '';
@@ -109,6 +124,7 @@ class _ProfileViewState extends State<ProfileView> {
 
             return Scaffold(
               backgroundColor: appColors.background,
+              drawerScrimColor: Colors.transparent,
               drawer: CustomGlassDrawer(
                 currentFeature: AppStrings.profileFeature.key,
                 onTap: (featureName) {
@@ -628,7 +644,11 @@ class _ProfileViewState extends State<ProfileView> {
                 page: BlocProvider.value(
                   value: context.read<ScanCubit>(),
                   child: DetailsView(
-                    args: ScanResultArgs(result: response, imagePath: null),
+                    args: ScanResultArgs(
+                      result: response,
+                      imagePath: null,
+                      isFavorited: log.isFavorited,
+                    ),
                   ),
                 ),
               ),
@@ -824,9 +844,10 @@ class _PulsatingAvatarState extends State<_PulsatingAvatar>
     return SizedBox(
       width: widget.size,
       height: widget.size,
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, child) {
+      child: RepaintBoundary(
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, child) {
           return Stack(
             alignment: Alignment.center,
             children: [
@@ -906,6 +927,8 @@ class _PulsatingAvatarState extends State<_PulsatingAvatar>
           );
         },
       ),
+      ),
     );
   }
 }
+

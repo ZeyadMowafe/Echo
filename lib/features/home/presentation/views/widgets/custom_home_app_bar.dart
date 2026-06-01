@@ -20,6 +20,7 @@ class CustomHomeAppBar extends StatelessWidget {
             isDark
                 ? AppImages.icons.eyeIconDark
                 : AppImages.icons.eyeIconLight,
+            cacheWidth: 114,
             width: 57.w,
             height: 45.h,
           ),

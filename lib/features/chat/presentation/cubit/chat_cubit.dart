@@ -255,14 +255,23 @@ class ChatCubit extends Cubit<ChatState> {
   }
 
   Future<void> deleteSession(String id) async {
+    if (id.isEmpty) return;
     await _deleteMessages(id);
-    _cachedSessions.removeWhere((s) => s.id == id);
-    if (_currentSessionId == id) {
-      _currentSessionId = null;
-      emit(ChatInitial());
-    } else {
-      loadSessions();
-    }
-    await deleteSessionUseCase(id);
+    final result = await deleteSessionUseCase(id);
+    result.fold(
+      (failure) {
+        loadSessions();
+      },
+      (_) {
+        _cachedSessions.removeWhere((s) => s.id == id);
+        if (_currentSessionId == id) {
+          _currentSessionId = null;
+          emit(ChatInitial());
+        } else {
+          emit(SessionsLoaded(sessions: _cachedSessions));
+          loadSessions();
+        }
+      },
+    );
   }
 }

@@ -9,17 +9,18 @@ class ChatBubble extends StatelessWidget {
   final String message;
   final bool isUser;
   final DateTime timestamp;
+  final bool isDark;
 
   const ChatBubble({
     super.key,
     required this.message,
     required this.isUser,
     required this.timestamp,
+    required this.isDark,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isDark = context.watch<ThemeCubit>().state;
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 4.h),
