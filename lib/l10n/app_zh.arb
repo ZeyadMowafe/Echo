@@ -201,7 +201,7 @@
   "detailsRevealTranslation": "显示翻译",
   "detailsHideTranslation": "隐藏翻译",
   "detailsTranslationReveals": "发现翻译揭示的内容...",
-  "detailsUnknownArtifact": "文物",
+  "detailsUnknownArtifact": "未知文物",
   "detailsDescription": "描述",
   "detailsChatWithMe": "与我聊天",
 
@@ -264,5 +264,7 @@
   "errorResourceNotFound": "未找到资源",
   "errorRequestFailed": "请求失败",
   "errorRequestCancelled": "请求已取消",
-  "errorSecurityError": "安全错误"
+  "errorSecurityError": "安全错误",
+  "rescan": "重新扫描",
+  "scanCouldNotIdentify": "无法识别图像"
 }

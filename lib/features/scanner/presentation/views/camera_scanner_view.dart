@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:camera/camera.dart';
 import 'package:echo_explorer/core/constants/app_colors.dart';
+import 'package:flutter/services.dart';
 import 'package:echo_explorer/core/constants/app_strings.dart';
 import 'package:echo_explorer/core/routing/app_transitions.dart';
 import 'package:echo_explorer/core/widgets/app_loading.dart';
@@ -20,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:image_picker/image_picker.dart';
 
 enum _ScanPhase { scanning, analyzing, result, error }
 
@@ -41,12 +43,15 @@ class _CameraScannerViewState extends State<CameraScannerView> {
   bool _showTranslation = false;
   bool _showFullTranslation = false;
   bool _isStable = false;
+  late final ScanCubit _cubit;
+  final ImagePicker _picker = ImagePicker();
   Timer? _panAwayTimer;
   StreamSubscription<bool>? _stabilitySub;
   StreamSubscription<bool>? _cooldownSub;
 
   @override
   void initState() {
+    _cubit = context.read<ScanCubit>();
     super.initState();
     if (widget.initialImagePath != null) {
       setState(() => _isInitialized = true);
@@ -119,14 +124,24 @@ class _CameraScannerViewState extends State<CameraScannerView> {
     cubit.analyzeImage(skipBlurCheck: true);
   }
 
+  Future<void> _pickFromGallery() async {
+    try {
+      final file = await _picker.pickImage(source: ImageSource.gallery);
+      if (file == null || !mounted) return;
+      _capturedImagePath = file.path;
+      setState(() => _phase = _ScanPhase.analyzing);
+      final cubit = context.read<ScanCubit>();
+      cubit.setImagePath(file.path);
+      cubit.analyzeImage(skipBlurCheck: true);
+    } on PlatformException catch (_) {}
+  }
+
   @override
   void dispose() {
     _panAwayTimer?.cancel();
     _stabilitySub?.cancel();
     _cooldownSub?.cancel();
-    if (mounted) {
-      context.read<ScanCubit>().pipeline.stopMotionDetection();
-    }
+    _cubit.pipeline.stopMotionDetection();
     if (!_isDone) {
       _controller?.dispose();
       _controller = null;
@@ -135,9 +150,22 @@ class _CameraScannerViewState extends State<CameraScannerView> {
   }
 
   /// Extract result data from either ScanResultLoaded or ScanAnchored
-  ({bool present, ScanResponseEntity? result, String? imagePath, bool isFav}) _resultFrom(ScanState s) {
-    if (s is ScanResultLoaded) return (present: true, result: s.result, imagePath: s.imagePath, isFav: s.isFavorited);
-    if (s is ScanAnchored) return (present: true, result: s.result, imagePath: s.imagePath, isFav: s.isFavorited);
+  ({bool present, ScanResponseEntity? result, String? imagePath, bool isFav})
+  _resultFrom(ScanState s) {
+    if (s is ScanResultLoaded)
+      return (
+        present: true,
+        result: s.result,
+        imagePath: s.imagePath,
+        isFav: s.isFavorited,
+      );
+    if (s is ScanAnchored)
+      return (
+        present: true,
+        result: s.result,
+        imagePath: s.imagePath,
+        isFav: s.isFavorited,
+      );
     return (present: false, result: null, imagePath: null, isFav: false);
   }
 
@@ -172,7 +200,11 @@ class _CameraScannerViewState extends State<CameraScannerView> {
               SizedBox(
                 width: double.infinity,
                 height: double.infinity,
-                child: Image.file(File(_capturedImagePath!), cacheWidth: 1080, fit: BoxFit.cover),
+                child: Image.file(
+                  File(_capturedImagePath!),
+                  cacheWidth: 1080,
+                  fit: BoxFit.cover,
+                ),
               )
             else if (_isInitialized &&
                 widget.initialImagePath != null &&
@@ -201,13 +233,15 @@ class _CameraScannerViewState extends State<CameraScannerView> {
               width: 346.w,
               height: 463.h,
               child: (_phase == _ScanPhase.analyzing)
-                  ? FuturisticScanAnalyzerOverlay(steps: [
-                      l10n.scanStep1,
-                      l10n.scanStep2,
-                      l10n.scanStep3,
-                      l10n.scanStep4,
-                      l10n.scanStep5,
-                    ])
+                  ? FuturisticScanAnalyzerOverlay(
+                      steps: [
+                        l10n.scanStep1,
+                        l10n.scanStep2,
+                        l10n.scanStep3,
+                        l10n.scanStep4,
+                        l10n.scanStep5,
+                      ],
+                    )
                   : Container(
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.10),
@@ -229,7 +263,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
               Positioned(
                 left: 0,
                 right: 0,
-                bottom: MediaQuery.of(context).padding.bottom + 50.h,
+                bottom: MediaQuery.of(context).padding.bottom + 20.h,
                 child: Center(
                   child: GestureDetector(
                     onTap: _isStable ? _onCapturePressed : null,
@@ -273,6 +307,38 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                   ),
                 ),
               ),
+            // Gallery picker button (bottom left, during scanning)
+            if (_phase == _ScanPhase.scanning && !_isScanning)
+              Positioned(
+                left: 24.w,
+                bottom: MediaQuery.of(context).padding.bottom + 20.h,
+                child: GestureDetector(
+                  onTap: _pickFromGallery,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(50.r),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      child: Container(
+                        width: 44.r,
+                        height: 44.r,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white.withValues(alpha: 0.15),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.4),
+                            width: 1.5,
+                          ),
+                        ),
+                        child: Icon(
+                          Icons.photo_library_outlined,
+                          color: Colors.white,
+                          size: 22.r,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             // Result overlay card (hidden when translation is shown)
             if (_phase == _ScanPhase.result &&
                 resultData.present &&
@@ -307,7 +373,8 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            resultData.result?.artifact.name ?? 'Artifact',
+                            resultData.result?.artifact.name ??
+                                l10n.detailsUnknownArtifact,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 20.sp,
@@ -317,106 +384,85 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          Builder(
-                            builder: (context) {
-                              final parts = <String>[];
-                              final a = resultData.result!.artifact;
-                              if (a.era != null) parts.add(a.era!);
-                              if (a.material != null) parts.add(a.material!);
-                              if (a.category != null) parts.add(a.category!);
-                              if (a.type != null) parts.add(a.type!);
-                              if (parts.isEmpty) return const SizedBox.shrink();
-                              return Padding(
-                                padding: EdgeInsets.only(top: 8.h),
-                                child: Center(
-                                  child: Text(
-                                    parts.join('  |  '),
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                          SizedBox(height: 12.h),
-                          Row(
-                            children: [
-                              if (resultData.result!.artifact.isPrimaryModel &&
-                                  resultData.result!.artifact.artifactModelId != null)
-                                GestureDetector(
-                                  onTap: () {
-                                    final artifact = resultData.result!.artifact;
-                                    Navigator.push(
-                                      context,
-                                      SmoothRoute(
-                                        type: TransitionType.fadeSlideUp,
-                                        page: ChatView(
-                                          artifactId:
-                                              artifact.artifactModelId ?? '',
-                                          artifactName:
-                                              artifact.name ??
-                                              artifact.artifactModelId ??
-                                              '',
-                                        ),
+                          if (resultData.result?.artifact.name != null)
+                            Builder(
+                              builder: (context) {
+                                final parts = <String>[];
+                                final a = resultData.result!.artifact;
+                                if (a.era != null) parts.add(a.era!);
+                                if (a.material != null) parts.add(a.material!);
+                                if (a.category != null) parts.add(a.category!);
+                                if (a.type != null) parts.add(a.type!);
+                                if (parts.isEmpty)
+                                  return const SizedBox.shrink();
+                                return Padding(
+                                  padding: EdgeInsets.only(top: 8.h),
+                                  child: Center(
+                                    child: Text(
+                                      parts.join('  |  '),
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w400,
                                       ),
-                                    );
-                                  },
-                                child: Container(
-                                  width: 45.r,
-                                  height: 45.r,
-                                  padding: EdgeInsets.all(14.r),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: Colors.black.withValues(alpha: 0.1),
-                                    ),
-                                    gradient: const LinearGradient(
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
-                                      colors: [
-                                        Color(0x13FFFFFF),
-                                        Color(0x00FFFFFF),
-                                      ],
                                     ),
                                   ),
-                                  child: Icon(
-                                    Icons.chat_outlined,
-                                    color: Colors.white,
-                                    size: 20.r,
-                                  ),
+                                );
+                              },
+                            ),
+                          if (resultData.result?.artifact.name == null &&
+                              resultData.result?.artifact.description != null)
+                            Padding(
+                              padding: EdgeInsets.only(top: 8.h),
+                              child: Text(
+                                resultData.result!.artifact.description!,
+                                style: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.85),
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w400,
+                                  height: 1.5,
                                 ),
+                                textAlign: TextAlign.center,
                               ),
-                              if (resultData.result!.artifact.isPrimaryModel &&
-                                  resultData.result!.artifact.artifactModelId != null)
-                                const Spacer(),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    SmoothRoute(
-                                      type: TransitionType.fadeSlideUp,
-                                      page: BlocProvider.value(
-                                        value: context.read<ScanCubit>(),
-                                        child: DetailsView(
-                                          args: ScanResultArgs(
-                                            result: resultData.result!,
-                                            imagePath: resultData.imagePath,
-                                            isFavorited: resultData.isFav,
+                            ),
+                          if (resultData.result!.artifact.isPrimaryModel) ...[
+                            SizedBox(height: 12.h),
+                            Row(
+                              children: [
+                                if (resultData
+                                        .result!
+                                        .artifact
+                                        .artifactModelId !=
+                                    null)
+                                  GestureDetector(
+                                    onTap: () {
+                                      final artifact =
+                                          resultData.result!.artifact;
+                                      Navigator.push(
+                                        context,
+                                        SmoothRoute(
+                                          type: TransitionType.fadeSlideUp,
+                                          page: ChatView(
+                                            artifactId:
+                                                artifact.artifactModelId ?? '',
+                                            artifactName:
+                                                artifact.name ??
+                                                artifact.artifactModelId ??
+                                                '',
                                           ),
                                         ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: Container(
-                                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                                      );
+                                    },
+                                    child: Container(
+                                      width: 45.r,
+                                      height: 45.r,
+                                      padding: EdgeInsets.all(14.r),
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(50.r),
+                                        shape: BoxShape.circle,
                                         border: Border.all(
-                                          color: Colors.black.withValues(alpha: 0.1),
+                                          color: Colors.black.withValues(
+                                            alpha: 0.1,
+                                          ),
                                         ),
                                         gradient: const LinearGradient(
                                           begin: Alignment.topCenter,
@@ -427,31 +473,86 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                                           ],
                                         ),
                                       ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(
-                                            l10n.scanDetails,
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 14.sp,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                          Gap(4.w),
-                                          Icon(
-                                            Directionality.of(context) == TextDirection.rtl
-                                                ? Icons.arrow_back_rounded
-                                                : Icons.arrow_forward_rounded,
-                                            color: Colors.white,
-                                            size: 18.r,
-                                          ),
-                                        ],
+                                      child: Icon(
+                                        Icons.chat_outlined,
+                                        color: Colors.white,
+                                        size: 20.r,
                                       ),
                                     ),
                                   ),
-                            ],
-                          ),
+                                if (resultData
+                                        .result!
+                                        .artifact
+                                        .artifactModelId !=
+                                    null)
+                                  const Spacer(),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      SmoothRoute(
+                                        type: TransitionType.fadeSlideUp,
+                                        page: BlocProvider.value(
+                                          value: context.read<ScanCubit>(),
+                                          child: DetailsView(
+                                            args: ScanResultArgs(
+                                              result: resultData.result!,
+                                              imagePath: resultData.imagePath,
+                                              isFavorited: resultData.isFav,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 16.w,
+                                      vertical: 10.h,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(50.r),
+                                      border: Border.all(
+                                        color: Colors.black.withValues(
+                                          alpha: 0.1,
+                                        ),
+                                      ),
+                                      gradient: const LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: [
+                                          Color(0x13FFFFFF),
+                                          Color(0x00FFFFFF),
+                                        ],
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          l10n.scanDetails,
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        Gap(4.w),
+                                        Icon(
+                                          Directionality.of(context) ==
+                                                  TextDirection.rtl
+                                              ? Icons.arrow_back_rounded
+                                              : Icons.arrow_forward_rounded,
+                                          color: Colors.white,
+                                          size: 18.r,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ],
                       ),
                     ),
@@ -492,29 +593,29 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                         child: FittedBox(
                           fit: BoxFit.scaleDown,
                           child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              _showTranslation
-                                  ? Icons.visibility_off_rounded
-                                  : Icons.visibility_rounded,
-                              color: Colors.white,
-                              size: 14.r,
-                            ),
-                            Gap(2.w),
-                            Text(
-                              _showTranslation
-                                  ? l10n.scanHideTranslation
-                                  : l10n.scanRevealTranslation,
-                              style: TextStyle(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                _showTranslation
+                                    ? Icons.visibility_off_rounded
+                                    : Icons.visibility_rounded,
                                 color: Colors.white,
-                                fontSize: 10.sp,
-                                fontWeight: FontWeight.w600,
+                                size: 14.r,
                               ),
-                            ),
-                          ],
-                        ),
+                              Gap(2.w),
+                              Text(
+                                _showTranslation
+                                    ? l10n.scanHideTranslation
+                                    : l10n.scanRevealTranslation,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10.sp,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -563,9 +664,11 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                             Row(
                               children: [
                                 GestureDetector(
-                                  onTap: () => setState(() => _showTranslation = false),
+                                  onTap: () =>
+                                      setState(() => _showTranslation = false),
                                   child: Icon(
-                                    Directionality.of(context) == TextDirection.rtl
+                                    Directionality.of(context) ==
+                                            TextDirection.rtl
                                         ? Icons.arrow_forward_rounded
                                         : Icons.arrow_back_rounded,
                                     color: Colors.white70,
@@ -641,7 +744,8 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                                     () => _showFullTranslation = false,
                                   ),
                                   child: Icon(
-                                    Directionality.of(context) == TextDirection.rtl
+                                    Directionality.of(context) ==
+                                            TextDirection.rtl
                                         ? Icons.arrow_forward_rounded
                                         : Icons.arrow_back_rounded,
                                     color: Colors.white70,

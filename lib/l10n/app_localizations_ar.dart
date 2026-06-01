@@ -656,7 +656,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get detailsTranslationReveals => 'اكتشف ما تكشفه الترجمة...';
 
   @override
-  String get detailsUnknownArtifact => 'قطعة أثرية';
+  String get detailsUnknownArtifact => 'قطعة غير معروفة';
 
   @override
   String get detailsDescription => 'الوصف';
@@ -769,4 +769,10 @@ class AppLocalizationsAr extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get rescan => 'إعادة مسح';
+
+  @override
+  String get scanCouldNotIdentify => 'لم يتم التعرف على الصورة';
 }

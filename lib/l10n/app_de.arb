@@ -201,7 +201,7 @@
   "detailsRevealTranslation": "Übersetzung anzeigen",
   "detailsHideTranslation": "Übersetzung verbergen",
   "detailsTranslationReveals": "Entdecken Sie, was die Übersetzung verrät...",
-  "detailsUnknownArtifact": "Artefakt",
+  "detailsUnknownArtifact": "Unbekanntes Artefakt",
   "detailsDescription": "Beschreibung",
   "detailsChatWithMe": "Chat mit mir",
 
@@ -264,5 +264,7 @@
   "errorResourceNotFound": "Ressource nicht gefunden",
   "errorRequestFailed": "Anfrage fehlgeschlagen",
   "errorRequestCancelled": "Anfrage wurde abgebrochen",
-  "errorSecurityError": "Sicherheitsfehler aufgetreten"
+  "errorSecurityError": "Sicherheitsfehler aufgetreten",
+  "rescan": "Erneut scannen",
+  "scanCouldNotIdentify": "Bild konnte nicht identifiziert werden"
 }

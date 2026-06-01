@@ -648,7 +648,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get detailsTranslationReveals => '翻訳が明らかにするものを発見...';
 
   @override
-  String get detailsUnknownArtifact => 'アーティファクト';
+  String get detailsUnknownArtifact => '未知のアーティファクト';
 
   @override
   String get detailsDescription => '説明';
@@ -760,4 +760,10 @@ class AppLocalizationsJa extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get rescan => '再スキャン';
+
+  @override
+  String get scanCouldNotIdentify => '画像を識別できませんでした';
 }

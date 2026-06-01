@@ -648,7 +648,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get detailsTranslationReveals => '번역이 무엇을 알려주는지 확인하세요...';
 
   @override
-  String get detailsUnknownArtifact => '유물';
+  String get detailsUnknownArtifact => '알 수 없는 유물';
 
   @override
   String get detailsDescription => '설명';
@@ -760,4 +760,10 @@ class AppLocalizationsKo extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get rescan => '다시 스캔';
+
+  @override
+  String get scanCouldNotIdentify => '이미지를 식별할 수 없습니다';
 }

@@ -8,6 +8,7 @@ import 'package:echo_explorer/core/helpers/screen_utils.dart';
 import 'package:echo_explorer/core/hive/cache_helper.dart';
 import 'package:echo_explorer/core/routing/app_transitions.dart';
 import 'package:echo_explorer/core/widgets/app_loading.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_drawer.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_container.dart';
 import 'package:echo_explorer/features/auth/presentation/cubit/auth_cubit.dart';
@@ -657,8 +658,8 @@ class _ProfileViewState extends State<ProfileView> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8.r),
             child: imageUrl != null
-                ? Image.network(
-                    imageUrl,
+                ? CachedNetworkImage(
+                    imageUrl: imageUrl,
                     width: 78.w,
                     height: 95.h,
                     fit: BoxFit.cover,

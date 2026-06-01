@@ -201,7 +201,7 @@
   "detailsRevealTranslation": "Revelar traducción",
   "detailsHideTranslation": "Ocultar traducción",
   "detailsTranslationReveals": "Descubre lo que revela la traducción...",
-  "detailsUnknownArtifact": "Artefacto",
+  "detailsUnknownArtifact": "Artefacto desconocido",
   "detailsDescription": "Descripción",
   "detailsChatWithMe": "Chatear conmigo",
 
@@ -264,5 +264,7 @@
   "errorResourceNotFound": "Recurso no encontrado",
   "errorRequestFailed": "Solicitud fallida",
   "errorRequestCancelled": "Solicitud cancelada",
-  "errorSecurityError": "Error de seguridad"
+  "errorSecurityError": "Error de seguridad",
+  "rescan": "Reescanear",
+  "scanCouldNotIdentify": "No se pudo identificar la imagen"
 }

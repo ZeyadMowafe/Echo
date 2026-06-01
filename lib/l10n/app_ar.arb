@@ -236,7 +236,7 @@
   "detailsRevealTranslation": "إظهار الترجمة",
   "detailsHideTranslation": "إخفاء الترجمة",
   "detailsTranslationReveals": "اكتشف ما تكشفه الترجمة...",
-  "detailsUnknownArtifact": "قطعة أثرية",
+  "detailsUnknownArtifact": "قطعة غير معروفة",
   "detailsDescription": "الوصف",
   "detailsChatWithMe": "تحدث معي",
 
@@ -289,6 +289,8 @@
     "placeholders": {
       "count": { "type": "int" }
     }
-  }
+  },
+  "rescan": "إعادة مسح",
+  "scanCouldNotIdentify": "لم يتم التعرف على الصورة"
 }
 

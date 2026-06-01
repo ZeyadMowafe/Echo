@@ -1289,7 +1289,7 @@ abstract class AppLocalizations {
   /// No description provided for @detailsUnknownArtifact.
   ///
   /// In en, this message translates to:
-  /// **'Artifact'**
+  /// **'Unknown Artifact'**
   String get detailsUnknownArtifact;
 
   /// No description provided for @detailsDescription.
@@ -1465,6 +1465,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count,plural, =1{1d ago} other{{count}d ago}}'**
   String timeAgoDay(int count);
+
+  /// No description provided for @rescan.
+  ///
+  /// In en, this message translates to:
+  /// **'Rescan'**
+  String get rescan;
+
+  /// No description provided for @scanCouldNotIdentify.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t identify the image'**
+  String get scanCouldNotIdentify;
 }
 
 class _AppLocalizationsDelegate

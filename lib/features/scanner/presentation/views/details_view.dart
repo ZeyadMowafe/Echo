@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
+
 import 'package:echo_explorer/core/constants/app_colors.dart';
 
 import 'package:echo_explorer/core/constants/app_strings.dart';
@@ -297,12 +299,12 @@ class _DetailsViewState extends State<DetailsView> {
                         Center(
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(24.r),
-                            child: Image.network(
-                              _result.artifact.imageUrl!,
+                            child: CachedNetworkImage(
+                              imageUrl: _result.artifact.imageUrl!,
                               width: 150.w,
                               height: 220.h,
                               fit: BoxFit.contain,
-                              errorBuilder: (_, __, ___) =>
+                              errorWidget: (_, __, ___) =>
                                   const SizedBox.shrink(),
                             ),
                           ),

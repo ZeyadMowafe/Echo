@@ -607,54 +607,55 @@ class _FuturisticScanAnalyzerOverlayState extends State<FuturisticScanAnalyzerOv
             ),
 
             // 4. Moving Laser Beam
-            RepaintBoundary(
-              child: AnimatedBuilder(
+            AnimatedBuilder(
               animation: _laserPosition,
               builder: (context, child) {
-                // Moving back and forth smoothly inside crop area
                 final double pingPongValue = 0.5 + 0.5 * math.sin(_controller.value * 2 * math.pi - math.pi / 2);
-                final topOffset = pingPongValue * 440.h; // slightly inset to avoid clipping borders
-                return Positioned(
-                  top: topOffset,
-                  left: 0,
-                  right: 0,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Laser Line Glow
-                      Container(
-                        height: 2.h,
-                        decoration: BoxDecoration(
-                          color: AppColors.secondary,
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.secondary.withValues(alpha: 0.8),
-                              blurRadius: 10.r,
-                              spreadRadius: 2.r,
+                final topOffset = pingPongValue * 440.h;
+                return Stack(
+                  children: [
+                    Positioned(
+                      top: topOffset,
+                      left: 0,
+                      right: 0,
+                      child: RepaintBoundary(
+                        child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            height: 2.h,
+                            decoration: BoxDecoration(
+                              color: AppColors.secondary,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.secondary.withValues(alpha: 0.8),
+                                  blurRadius: 10.r,
+                                  spreadRadius: 2.r,
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
-                      // Soft trail
-                      Container(
-                        height: 12.h,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              AppColors.secondary.withValues(alpha: 0.18),
-                              Colors.transparent,
-                            ],
                           ),
-                        ),
+                          Container(
+                            height: 12.h,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  AppColors.secondary.withValues(alpha: 0.18),
+                                  Colors.transparent,
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
+                  ],
                 );
               },
             ),
-            ), // close RepaintBoundary
           ],
         ),
       ),

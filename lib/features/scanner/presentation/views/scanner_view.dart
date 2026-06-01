@@ -344,45 +344,59 @@ class _ScannerBodyState extends State<_ScannerBody> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      if (result.result.artifact.name != null) ...[
-                        Text(
-                          result.result.artifact.name!,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24.sp,
-                            fontWeight: FontWeight.w900,
-                          ),
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                      Text(
+                        result.result.artifact.name ?? l10n.detailsUnknownArtifact,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24.sp,
+                          fontWeight: FontWeight.w900,
                         ),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if (result.result.artifact.name != null)
                         Builder(
                           builder: (context) {
                             final parts = <String>[];
                             final a = result.result.artifact;
-                            if (a.era != null) parts.add(a.era!);
-                            if (a.material != null) parts.add(a.material!);
-                            if (a.category != null) parts.add(a.category!);
-                            if (a.type != null) parts.add(a.type!);
-                            if (parts.isEmpty) return const SizedBox.shrink();
-                            return Padding(
-                              padding: EdgeInsets.only(top: 8.h),
-                              child: Text(
-                                parts.join(' | '),
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.w400,
+                              if (a.era != null) parts.add(a.era!);
+                              if (a.material != null) parts.add(a.material!);
+                              if (a.category != null) parts.add(a.category!);
+                              if (a.type != null) parts.add(a.type!);
+                              if (parts.isEmpty) return const SizedBox.shrink();
+                              return Padding(
+                                padding: EdgeInsets.only(top: 8.h),
+                                child: Text(
+                                  parts.join(' | '),
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.w400,
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
+                              );
+                            },
+                          ),
+                      if (result.result.artifact.name == null)
+                        Padding(
+                          padding: EdgeInsets.only(top: 8.h),
+                          child: Text(
+                            result.result.artifact.description ?? '',
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.85),
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.w400,
+                              height: 1.5,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
+                      if (result.result.artifact.isPrimaryModel) ...[
                         SizedBox(height: 12.h),
                         Row(
                           children: [
-                            if (result.result.artifact.isPrimaryModel &&
-                                result.result.artifact.artifactModelId != null)
+                            if (result.result.artifact.artifactModelId != null)
                               GestureDetector(
                                 onTap: () {
                                   final artifact = result.result.artifact;
@@ -428,156 +442,71 @@ class _ScannerBodyState extends State<_ScannerBody> {
                                   ),
                                 ),
                               ),
-                            if (result.result.artifact.isPrimaryModel &&
-                                result.result.artifact.artifactModelId != null)
+                            if (result.result.artifact.artifactModelId != null)
                               const Spacer(),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  SmoothRoute(
-                                    type: TransitionType.fadeSlideUp,
-                                    page: BlocProvider.value(
-                                      value: context.read<ScanCubit>(),
-                                        child: DetailsView(
-                                          args: ScanResultArgs(
-                                            result: result.result,
-                                            imagePath: result.imagePath,
-                                            isFavorited: result.isFavorited,
-                                          ),
-                                      ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                SmoothRoute(
+                                  type: TransitionType.fadeSlideUp,
+                                  page: BlocProvider.value(
+                                    value: context.read<ScanCubit>(),
+                                      child: DetailsView(
+                                        args: ScanResultArgs(
+                                          result: result.result,
+                                          imagePath: result.imagePath,
+                                          isFavorited: result.isFavorited,
+                                        ),
                                     ),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 16.w,
-                                  vertical: 10.h,
-                                ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50.r),
-                                  border: Border.all(
-                                    color: Colors.black.withValues(alpha: 0.1),
-                                  ),
-                                  gradient: const LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      Color(0x13FFFFFF),
-                                      Color(0x00FFFFFF),
-                                    ],
                                   ),
                                 ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      l10n.scanDetails,
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 14.sp,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    Gap(4.w),
-                                    Icon(
-                                      Directionality.of(context) == TextDirection.rtl
-                                          ? Icons.arrow_back_rounded
-                                          : Icons.arrow_forward_rounded,
-                                      color: Colors.white,
-                                      size: 18.r,
-                                    ),
+                              );
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 16.w,
+                                vertical: 10.h,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50.r),
+                                border: Border.all(
+                                  color: Colors.black.withValues(alpha: 0.1),
+                                ),
+                                gradient: const LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Color(0x13FFFFFF),
+                                    Color(0x00FFFFFF),
                                   ],
                                 ),
                               ),
-                            ),
-            if (result != null && showTranslation)
-              Positioned(
-                left: 12.w,
-                right: 12.w,
-                bottom: 12.h,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(24.r),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-                    child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 16.w,
-                                      vertical: 10.h,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(50.r),
-                                      border: Border.all(
-                                        color: Colors.black.withValues(
-                                          alpha: 0.1,
-                                        ),
-                                      ),
-                                      gradient: const LinearGradient(
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                        colors: [
-                                          Color(0x13FFFFFF),
-                                          Color(0x00FFFFFF),
-                                        ],
-                                      ),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          l10n.scanDetails,
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                        Gap(4.w),
-                                        Icon(
-                                          Directionality.of(context) == TextDirection.rtl
-                                              ? Icons.arrow_back_rounded
-                                              : Icons.arrow_forward_rounded,
-                                          color: Colors.white,
-                                          size: 18.r,
-                                        ),
-                                      ],
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    l10n.scanDetails,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
-                                ),
+                                  Gap(4.w),
+                                  Icon(
+                                    Directionality.of(context) == TextDirection.rtl
+                                        ? Icons.arrow_back_rounded
+                                        : Icons.arrow_forward_rounded,
+                                    color: Colors.white,
+                                    size: 18.r,
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
-                      ] else ...[
-                        Builder(
-                          builder: (context) {
-                            final a = result.result.artifact;
-                            final parts = <String>[];
-                            if (a.type != null) {
-                              parts.add('It is identified as a ${a.type}.');
-                            }
-                            if (a.material != null) {
-                              parts.add('The material used is ${a.material}.');
-                            }
-                            if (a.era != null) {
-                              parts.add('Its historical era is ${a.era}.');
-                            }
-                            final analysis = parts.isNotEmpty
-                                ? 'This item was not found in our database, but our visual analysis reveals the following.\n${parts.join('\n')}'
-                                : 'This item was not found in our database.';
-                            return Text(
-                              analysis,
-                              style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.85),
-                                fontSize: 15.sp,
-                                fontWeight: FontWeight.w400,
-                                height: 1.5,
-                              ),
-                              textAlign: TextAlign.center,
-                            );
-                          },
-                        ),
+                          ),
+                        ],
+                      ),
                       ],
                     ],
                   ),
@@ -791,20 +720,19 @@ class _ScannerBodyState extends State<_ScannerBody> {
             ),
           Gap(20.h),
 
-          if (artifact.name != null)
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Text(
-                    artifact.name!,
-                    style: TextStyle(
-                      color: AppColors.of(context).footer,
-                      fontSize: 22.sp,
-                      fontWeight: FontWeight.w700,
-                    ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  artifact.name ?? l10n.detailsUnknownArtifact,
+                  style: TextStyle(
+                    color: AppColors.of(context).footer,
+                    fontSize: 22.sp,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
+              ),
                 if (result.scanLogId != null) ...[
                   Gap(12.w),
                   GestureDetector(
@@ -864,7 +792,7 @@ class _ScannerBodyState extends State<_ScannerBody> {
               ],
             ),
 
-          if (artifact.era != null || artifact.material != null) ...[
+          if (artifact.isPrimaryModel && (artifact.era != null || artifact.material != null)) ...[
             Gap(12.h),
             Wrap(
               spacing: 8.w,

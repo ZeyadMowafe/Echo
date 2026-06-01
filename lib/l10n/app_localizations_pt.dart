@@ -655,7 +655,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get detailsTranslationReveals => 'Descubra o que a tradução revela...';
 
   @override
-  String get detailsUnknownArtifact => 'Artefato';
+  String get detailsUnknownArtifact => 'Artefato desconhecido';
 
   @override
   String get detailsDescription => 'Descrição';
@@ -768,4 +768,10 @@ class AppLocalizationsPt extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get rescan => 'Reescanear';
+
+  @override
+  String get scanCouldNotIdentify => 'Não foi possível identificar a imagem';
 }

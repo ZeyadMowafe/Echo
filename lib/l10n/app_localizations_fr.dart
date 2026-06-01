@@ -662,7 +662,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Découvrez ce que révèle la traduction...';
 
   @override
-  String get detailsUnknownArtifact => 'Artefact';
+  String get detailsUnknownArtifact => 'Artefact inconnu';
 
   @override
   String get detailsDescription => 'Description';
@@ -776,4 +776,10 @@ class AppLocalizationsFr extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get rescan => 'Nouvelle analyse';
+
+  @override
+  String get scanCouldNotIdentify => 'Impossible d\'identifier l\'image';
 }

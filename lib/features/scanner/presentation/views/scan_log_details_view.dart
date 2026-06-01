@@ -7,6 +7,7 @@ import 'package:echo_explorer/features/discover/presentation/widgets/custom_disc
 import 'package:echo_explorer/features/scanner/domain/entities/scan_log_entity.dart';
 import 'package:echo_explorer/features/scanner/presentation/cubit/scan_cubit.dart';
 import 'package:echo_explorer/l10n/app_localizations.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -108,10 +109,9 @@ class _ScanLogDetailsViewState extends State<ScanLogDetailsView> {
           if (log.imageUrl != null)
             ClipRRect(
               borderRadius: BorderRadius.circular(ScreenUtils.radiusMd),
-              child: Image.network(
-                'https://echo-api-441520148279.me-central1.run.app${log.imageUrl}',
+              child: CachedNetworkImage(
+                imageUrl: 'https://echo-api-441520148279.me-central1.run.app${log.imageUrl}',
                 height: 350.h, width: double.infinity,
-                cacheWidth: 400,
                 fit: BoxFit.contain,
               ),
             ),

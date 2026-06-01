@@ -73,7 +73,7 @@ class CustomScanButton extends StatelessWidget {
 
                     style: TextStyle(
                       color: AppColors.cffffff,
-                      fontSize: 16.sp,
+                      fontSize: 14.sp,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

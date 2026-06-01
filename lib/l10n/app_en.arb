@@ -235,7 +235,7 @@
   "detailsRevealTranslation": "Reveal Translation",
   "detailsHideTranslation": "Hide Translation",
   "detailsTranslationReveals": "Discover what the translation reveals…",
-  "detailsUnknownArtifact": "Artifact",
+  "detailsUnknownArtifact": "Unknown Artifact",
   "detailsDescription": "Description",
   "detailsChatWithMe": "chat with me",
 
@@ -288,6 +288,8 @@
     "placeholders": {
       "count": { "type": "int" }
     }
-  }
+  },
+  "rescan": "Rescan",
+  "scanCouldNotIdentify": "Couldn't identify the image"
 }
 

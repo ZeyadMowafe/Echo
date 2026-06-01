@@ -201,7 +201,7 @@
   "detailsRevealTranslation": "Показать перевод",
   "detailsHideTranslation": "Скрыть перевод",
   "detailsTranslationReveals": "Узнайте, что раскрывает перевод...",
-  "detailsUnknownArtifact": "Артефакт",
+  "detailsUnknownArtifact": "Неизвестный артефакт",
   "detailsDescription": "Описание",
   "detailsChatWithMe": "Поговорить со мной",
 
@@ -264,5 +264,7 @@
   "errorResourceNotFound": "Ресурс не найден",
   "errorRequestFailed": "Запрос не удался",
   "errorRequestCancelled": "Запрос был отменен",
-  "errorSecurityError": "Произошла ошибка безопасности"
+  "errorSecurityError": "Произошла ошибка безопасности",
+  "rescan": "Повторное сканирование",
+  "scanCouldNotIdentify": "Не удалось идентифицировать изображение"
 }

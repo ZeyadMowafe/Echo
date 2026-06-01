@@ -46,12 +46,7 @@ class PrimaryContinueButton extends StatelessWidget {
               ),
             ),
             child: Padding(
-              padding: EdgeInsets.only(
-                top: 13.h,
-                bottom: 13.h,
-                left: 113.w,
-                right: 113.w,
-              ),
+              padding: EdgeInsets.symmetric(vertical: 13.h),
               child: Center(
                 child: isLoading
                     ? AppLoading.button()

@@ -201,7 +201,7 @@
   "detailsRevealTranslation": "翻訳を表示",
   "detailsHideTranslation": "翻訳を隠す",
   "detailsTranslationReveals": "翻訳が明らかにするものを発見...",
-  "detailsUnknownArtifact": "アーティファクト",
+  "detailsUnknownArtifact": "未知のアーティファクト",
   "detailsDescription": "説明",
   "detailsChatWithMe": "チャットする",
 
@@ -264,5 +264,7 @@
   "errorResourceNotFound": "リソースが見つかりません",
   "errorRequestFailed": "リクエストに失敗しました",
   "errorRequestCancelled": "リクエストがキャンセルされました",
-  "errorSecurityError": "セキュリティエラーが発生しました"
+  "errorSecurityError": "セキュリティエラーが発生しました",
+  "rescan": "再スキャン",
+  "scanCouldNotIdentify": "画像を識別できませんでした"
 }

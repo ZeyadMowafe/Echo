@@ -641,7 +641,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get detailsTranslationReveals => '发现翻译揭示的内容...';
 
   @override
-  String get detailsUnknownArtifact => '文物';
+  String get detailsUnknownArtifact => '未知文物';
 
   @override
   String get detailsDescription => '描述';
@@ -753,4 +753,10 @@ class AppLocalizationsZh extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get rescan => '重新扫描';
+
+  @override
+  String get scanCouldNotIdentify => '无法识别图像';
 }
