@@ -1477,6 +1477,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t identify the image'**
   String get scanCouldNotIdentify;
+
+  /// No description provided for @scanAdjustImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please adjust the image and try again.'**
+  String get scanAdjustImage;
 }
 
 class _AppLocalizationsDelegate

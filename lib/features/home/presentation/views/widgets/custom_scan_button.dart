@@ -53,24 +53,30 @@ class CustomScanButton extends StatelessWidget {
             padding: EdgeInsets.symmetric(vertical: 32.h, horizontal: 18.w),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               spacing: 10.w,
               children: [
-                SvgPicture.asset(
-                  AppImages.scan,
+                SizedBox(
                   width: ScreenUtils.icon2Xl,
                   height: ScreenUtils.icon2Xl,
-                  colorFilter: ColorFilter.mode(
-                    AppColors.cffffff,
-                    BlendMode.srcIn,
+                  child: Center(
+                    child: SvgPicture.asset(
+                      AppImages.scan,
+                      width: ScreenUtils.icon2Xl,
+                      height: ScreenUtils.icon2Xl,
+                      fit: BoxFit.contain,
+                      colorFilter: ColorFilter.mode(
+                        AppColors.cffffff,
+                        BlendMode.srcIn,
+                      ),
+                    ),
                   ),
                 ),
-
                 Gap(4.w),
                 Flexible(
                   child: Text(
                     l10n.homeScanButton,
                     textAlign: TextAlign.center,
-
                     style: TextStyle(
                       color: AppColors.cffffff,
                       fontSize: 14.sp,
@@ -79,10 +85,16 @@ class CustomScanButton extends StatelessWidget {
                   ),
                 ),
                 Gap(4.w),
-                Icon(
-                  Icons.arrow_forward_rounded,
-                  color: AppColors.cf9f9f9,
-                  size: ScreenUtils.iconXl,
+                SizedBox(
+                  width: ScreenUtils.iconXl,
+                  height: ScreenUtils.iconXl,
+                  child: Center(
+                    child: Icon(
+                      Icons.arrow_forward_rounded,
+                      color: AppColors.cf9f9f9,
+                      size: ScreenUtils.iconXl,
+                    ),
+                  ),
                 ),
               ],
             ),

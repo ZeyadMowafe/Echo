@@ -185,7 +185,6 @@ class _AuthViewState extends State<AuthView> {
                           Gap(ScreenUtils.md),
                           PrimaryContinueButton(
                             text: l10n.authRegister,
-                            isLoading: isLoading,
                             color: AppColors.c162410,
                             onTap: () => Navigator.pushNamed(
                               context,

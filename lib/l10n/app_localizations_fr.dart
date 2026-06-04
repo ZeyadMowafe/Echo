@@ -782,4 +782,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get scanCouldNotIdentify => 'Impossible d\'identifier l\'image';
+
+  @override
+  String get scanAdjustImage => 'Veuillez ajuster l\'image et réessayer.';
 }

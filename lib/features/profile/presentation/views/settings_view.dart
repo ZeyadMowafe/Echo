@@ -5,6 +5,7 @@ import 'package:echo_explorer/core/localization/locale_cubit.dart';
 import 'package:echo_explorer/core/routing/routes.dart';
 import 'package:echo_explorer/core/themes/theme_cubit.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_container.dart';
+import 'package:echo_explorer/core/widgets/custom_glass_app_bar.dart';
 import 'package:echo_explorer/l10n/app_localizations.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_drawer.dart';
 import 'package:echo_explorer/features/auth/presentation/cubit/auth_cubit.dart';
@@ -44,99 +45,22 @@ class _SettingsViewState extends State<SettingsView> {
 
       body: Column(
         children: [
-          CustomGlassContainer(
-            color: appColors.discoverAppBar.withOpacity(0.25),
-            gradient: LinearGradient(
-              colors: [
-                appColors.discoverAppBar.withOpacity(0.30),
-                appColors.discoverAppBar.withOpacity(0.0),
-              ],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-            borderColor: appColors.discoverAppBar.withOpacity(0.05),
-            padding: EdgeInsets.only(
-              top: 6.h,
-              bottom: 6.h,
-              left: 20.w,
-              right: 20.w,
-            ),
-            child: SafeArea(
-              bottom: false,
-              child: Row(
-                spacing: 8.w,
-                children: [
-                  CustomGlassContainer(
-                    width: ScreenUtils.glassButtonSize,
-                    height: ScreenUtils.glassButtonSize,
-                    borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
-                    borderColor: appColors.footer.withOpacity(0.12),
-                    margin: EdgeInsets.symmetric(
-                      horizontal: 8.w,
-                      vertical: 4.h,
-                    ),
-                    color: appColors.footer.withOpacity(0.08),
-                    gradient: LinearGradient(
-                      colors: [
-                        appColors.footer.withOpacity(0.14),
-                        appColors.footer.withOpacity(0.02),
-                      ],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    ),
-                    child: CustomGlassContainer(
-                      width: ScreenUtils.glassButtonSize,
-                      height: ScreenUtils.glassButtonSize,
-                      color: appColors.footer.withOpacity(0.10),
-                      borderColor: appColors.footer.withOpacity(0.04),
-                      borderRadius: BorderRadius.circular(
-                        ScreenUtils.radiusFull,
-                      ),
-                      gradient: LinearGradient(
-                        colors: [
-                          appColors.footer.withOpacity(0.18),
-                          appColors.footer.withOpacity(0.02),
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                      child: IconButton(
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.zero,
-                        icon: Icon(
-                          Directionality.of(context) == TextDirection.rtl
-                              ? Icons.arrow_forward_rounded
-                              : Icons.arrow_back_rounded,
-                          color: appColors.footer,
-                          size: ScreenUtils.iconMd,
-                        ),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ),
+          CustomGlassAppBar(
+            previousState: '',
+            title: AppLocalizations.of(context)!.settings,
+            onPressed: () => Navigator.pop(context),
+            rtlAware: true,
+            trailing: Builder(
+              builder: (innerContext) {
+                return IconButton(
+                  icon: Icon(
+                    Icons.menu,
+                    color: appColors.footer,
+                    size: 30.r,
                   ),
-                  Text(
-                    AppLocalizations.of(context)!.settings,
-                    style: TextStyle(
-                      color: appColors.footer,
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Spacer(),
-                  Builder(
-                    builder: (innerContext) {
-                      return IconButton(
-                        icon: Icon(
-                          Icons.menu,
-                          color: appColors.footer,
-                          size: 30.r,
-                        ),
-                        onPressed: () => Scaffold.of(innerContext).openDrawer(),
-                      );
-                    },
-                  ),
-                ],
-              ),
+                  onPressed: () => Scaffold.of(innerContext).openDrawer(),
+                );
+              },
             ),
           ),
           Expanded(
@@ -186,18 +110,35 @@ class _SettingsViewState extends State<SettingsView> {
                   title: AppLocalizations.of(context)!.settingsPrivacyPolicy,
                   onTap: () {},
                 ),
-                CustomSettingItem(
-                  leadingIcon: Icons.logout_rounded,
-                  title: AppLocalizations.of(context)!.settingsLogOut,
-                  onTap: () async {
-                    await context.read<AuthCubit>().logout();
-                    if (context.mounted) {
-                      Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        AppRoutes.authView,
-                        (route) => false,
-                      );
-                    }
+                BlocBuilder<AuthCubit, AuthState>(
+                  builder: (context, authState) {
+                    final isGuest = authState is UnAuthenticated;
+                    return CustomSettingItem(
+                      leadingIcon: isGuest
+                          ? Icons.login_rounded
+                          : Icons.logout_rounded,
+                      title: isGuest
+                          ? AppLocalizations.of(context)!.authLogin
+                          : AppLocalizations.of(context)!.settingsLogOut,
+                      onTap: () async {
+                        if (isGuest) {
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            AppRoutes.authView,
+                            (route) => false,
+                          );
+                        } else {
+                          await context.read<AuthCubit>().logout();
+                          if (context.mounted) {
+                            Navigator.pushNamedAndRemoveUntil(
+                              context,
+                              AppRoutes.authView,
+                              (route) => false,
+                            );
+                          }
+                        }
+                      },
+                    );
                   },
                 ),
               ],

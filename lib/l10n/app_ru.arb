@@ -176,19 +176,25 @@
   "scanStatLines": "{count,plural, =1{1 строка} other{{count} строк}}",
   "@scanStatLines": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "scanStatGlyphs": "{count,plural, =1{1 иероглиф} other{{count} иероглифов}}",
   "@scanStatGlyphs": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "scanStatCartouches": "{count,plural, =1{1 картуш} other{{count} картушей}}",
   "@scanStatCartouches": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "scanStep1": "Инициализация нейронного сканирования...",
@@ -204,7 +210,6 @@
   "detailsUnknownArtifact": "Неизвестный артефакт",
   "detailsDescription": "Описание",
   "detailsChatWithMe": "Поговорить со мной",
-
   "authRegister": "Зарегистрироваться",
   "authLogin": "Войти",
   "registerTitle": "Создать аккаунт",
@@ -214,47 +219,47 @@
   "registerConfirmPasswordHint": "Подтвердите пароль",
   "registerCreateAccount": "Создать аккаунт",
   "registerPasswordMismatch": "Пароли не совпадают",
-
   "chatHintMessage": "Сообщение...",
   "chatWelcomeMessage": "Спросите меня о Древнем Египте...",
   "chatSearchHint": "Поиск",
   "chatNewChat": "Новый чат",
   "chatDeleteConfirm": "Удалить сессию?",
   "chatDeleteConfirmDesc": "Это удалит все сообщения в этой сессии.",
-
   "noRouteDefined": "Не указан маршрут для",
-
   "updatingLanguage": "Обновление языка...",
-
   "profileTitle": "Профиль",
   "profileGuest": "Гость",
   "profileUnknownArtifact": "Неизвестный артефакт",
   "profileUnknownEra": "Неизвестная эпоха",
   "profileStartScanning": "Начать сканирование",
-
   "timeAgoJustNow": "только что",
   "timeAgoMinute": "{count,plural, =1{1 мин. назад} other{{count} мин. назад}}",
   "@timeAgoMinute": {
     "description": "Time ago in minutes",
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "timeAgoHour": "{count,plural, =1{1 ч. назад} other{{count} ч. назад}}",
   "@timeAgoHour": {
     "description": "Time ago in hours",
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "timeAgoDay": "{count,plural, =1{1 д. назад} other{{count} д. назад}}",
   "@timeAgoDay": {
     "description": "Time ago in days",
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "errorNoInternet": "Нет подключения к интернету",
   "errorServerError": "Произошла ошибка сервера",
   "errorStorageError": "Произошла ошибка хранения",
@@ -266,5 +271,6 @@
   "errorRequestCancelled": "Запрос был отменен",
   "errorSecurityError": "Произошла ошибка безопасности",
   "rescan": "Повторное сканирование",
-  "scanCouldNotIdentify": "Не удалось идентифицировать изображение"
+  "scanCouldNotIdentify": "Не удалось идентифицировать изображение",
+  "scanAdjustImage": "Пожалуйста, настройте изображение и попробуйте еще раз."
 }

@@ -348,11 +348,18 @@ class _ChatSideDrawerState extends State<ChatSideDrawer> {
         },
         child: Row(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(
-              Icons.settings_outlined,
-              color: AppColors.cf9f9f9,
-              size: ScreenUtils.iconMd,
+            SizedBox(
+              width: ScreenUtils.iconMd,
+              height: ScreenUtils.iconMd,
+              child: Center(
+                child: Icon(
+                  Icons.settings_outlined,
+                  color: AppColors.cf9f9f9,
+                  size: ScreenUtils.iconMd,
+                ),
+              ),
             ),
             Gap(8.w),
             Text(

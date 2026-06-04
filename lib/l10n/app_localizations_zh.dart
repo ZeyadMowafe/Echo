@@ -759,4 +759,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get scanCouldNotIdentify => '无法识别图像';
+
+  @override
+  String get scanAdjustImage => '请调整图像并重试。';
 }

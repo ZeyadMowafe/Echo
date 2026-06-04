@@ -775,4 +775,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get scanCouldNotIdentify => 'لم يتم التعرف على الصورة';
+
+  @override
+  String get scanAdjustImage => 'يرجى ضبط الصورة وإعادة المحاولة.';
 }

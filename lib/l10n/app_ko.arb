@@ -176,19 +176,25 @@
   "scanStatLines": "{count,plural, =1{1줄} other{{count}줄}}",
   "@scanStatLines": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "scanStatGlyphs": "{count,plural, =1{1개 문자} other{{count}개 문자}}",
   "@scanStatGlyphs": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "scanStatCartouches": "{count,plural, =1{1개 카르투슈} other{{count}개 카르투슈}}",
   "@scanStatCartouches": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "scanStep1": "신경망 스캔 초기화 중...",
@@ -204,7 +210,6 @@
   "detailsUnknownArtifact": "알 수 없는 유물",
   "detailsDescription": "설명",
   "detailsChatWithMe": "채팅하기",
-
   "authRegister": "등록",
   "authLogin": "로그인",
   "registerTitle": "계정 만들기",
@@ -214,47 +219,47 @@
   "registerConfirmPasswordHint": "비밀번호 확인",
   "registerCreateAccount": "계정 만들기",
   "registerPasswordMismatch": "비밀번호가 일치하지 않습니다",
-
   "chatHintMessage": "메시지...",
   "chatWelcomeMessage": "고대 이집트에 대해 물어보세요...",
   "chatSearchHint": "검색",
   "chatNewChat": "새 채팅",
   "chatDeleteConfirm": "세션을 삭제하시겠습니까?",
   "chatDeleteConfirmDesc": "이 세션의 모든 메시지가 삭제됩니다.",
-
   "noRouteDefined": "정의된 경로 없음",
-
   "updatingLanguage": "언어 업데이트 중...",
-
   "profileTitle": "프로필",
   "profileGuest": "게스트",
   "profileUnknownArtifact": "알 수 없는 유물",
   "profileUnknownEra": "알 수 없는 시대",
   "profileStartScanning": "스캔 시작",
-
   "timeAgoJustNow": "방금",
   "timeAgoMinute": "{count,plural, =1{1분 전} other{{count}분 전}}",
   "@timeAgoMinute": {
     "description": "Time ago in minutes",
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "timeAgoHour": "{count,plural, =1{1시간 전} other{{count}시간 전}}",
   "@timeAgoHour": {
     "description": "Time ago in hours",
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "timeAgoDay": "{count,plural, =1{1일 전} other{{count}일 전}}",
   "@timeAgoDay": {
     "description": "Time ago in days",
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "errorNoInternet": "인터넷 연결이 없습니다",
   "errorServerError": "서버 오류가 발생했습니다",
   "errorStorageError": "저장소 오류가 발생했습니다",
@@ -266,5 +271,6 @@
   "errorRequestCancelled": "요청이 취소되었습니다",
   "errorSecurityError": "보안 오류가 발생했습니다",
   "rescan": "다시 스캔",
-  "scanCouldNotIdentify": "이미지를 식별할 수 없습니다"
+  "scanCouldNotIdentify": "이미지를 식별할 수 없습니다",
+  "scanAdjustImage": "이미지를 조정하고 다시 시도하십시오."
 }

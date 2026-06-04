@@ -2,9 +2,11 @@ import 'package:echo_explorer/core/constants/app_colors.dart';
 import 'package:echo_explorer/core/constants/app_strings.dart';
 import 'package:echo_explorer/core/helpers/screen_utils.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_container.dart';
+import 'package:echo_explorer/core/widgets/custom_glass_app_bar.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_drawer.dart';
 import 'package:echo_explorer/features/discover/data/gods_data.dart';
 import 'package:echo_explorer/features/home/presentation/cubit/features_cubit.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -62,7 +64,6 @@ class _GodDetailsViewState extends State<GodDetailsView> {
               fit: BoxFit.cover,
             ),
           ),
-
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
@@ -74,121 +75,33 @@ class _GodDetailsViewState extends State<GodDetailsView> {
               ),
             ),
           ),
-
           Column(
             children: [
-              CustomGlassContainer(
-                color: AppColors.cffffff.withOpacity(0.25),
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors.cffffff.withOpacity(0.30),
-                    AppColors.cffffff.withOpacity(0.0),
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-                borderColor: AppColors.cffffff.withOpacity(0.05),
-                padding: EdgeInsets.only(
-                  top: 6.h,
-                  bottom: 12.h,
-                  left: 20.w,
-                  right: 20.w,
-                ),
-                child: SafeArea(
-                  bottom: false,
-                  child: Row(
-                    spacing: 8.w,
-                    children: [
-                      CustomGlassContainer(
-                        width: ScreenUtils.glassButtonSize,
-                        height: ScreenUtils.glassButtonSize,
-                        borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
-                        borderColor: AppColors.cffffff.withOpacity(0.10),
-                        margin: EdgeInsets.symmetric(
-                          horizontal: 8.w,
-                          vertical: 4.h,
-                        ),
-                        color: AppColors.cffffff.withOpacity(0.10),
-                        gradient: LinearGradient(
-                          colors: [
-                            AppColors.cffffff.withOpacity(0.20),
-                            AppColors.cffffff.withOpacity(0.0),
-                          ],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                        ),
-          
-                        child: CustomGlassContainer(
-                          width: ScreenUtils.glassButtonSize,
-                          height: ScreenUtils.glassButtonSize,
-                          color: AppColors.cffffff.withOpacity(0.25),
-                          borderColor: AppColors.cffffff.withOpacity(0.04),
-                          borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
-                          gradient: LinearGradient(
-                            colors: [
-                              AppColors.cffffff.withOpacity(0.30),
-                              AppColors.cffffff.withOpacity(0.0),
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          ),
-                          child: IconButton(
-                            alignment: Alignment.center,
-                            padding: EdgeInsets.zero,
-                            icon: Icon(
-                              Directionality.of(context) == TextDirection.rtl 
-                                  ? Icons.arrow_forward_rounded 
-                                  : Icons.arrow_back_rounded,
-                              color: AppColors.cf9f9f9,
-                              size: ScreenUtils.iconMd,
-                            ),
-                            onPressed: ()=> Navigator.pop(context),
-                          ),
-                        ),
+              CustomGlassAppBar(
+                previousState: AppStrings.discoverFeature.key,
+                title: godsList[widget.godIndex].title,
+                subtitle: godsList[widget.godIndex].subtitle,
+                onPressed: () => Navigator.pop(context),
+                textColor: AppColors.cffffff,
+                iconColor: AppColors.cf9f9f9,
+                barColor: AppColors.cffffff,
+                barBorderColor: AppColors.cffffff.withOpacity(0.05),
+                trailing: Builder(
+                  builder: (innerContext) {
+                    return IconButton(
+                      icon: Icon(
+                        Icons.menu,
+                        color: AppColors.cf9f9f9,
+                        size: 30.r,
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            godsList[widget.godIndex].title,
-                          style: TextStyle(
-                            color: AppColors.cffffff,
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        if (godsList[widget.godIndex].subtitle != null)
-                        Text(
-                          godsList[widget.godIndex].subtitle!,
-                          style: TextStyle(
-                            color: AppColors.cffffff.withOpacity(0.8),
-                            fontSize: 14.sp,
-                          ),
-                        ),
-                      ],
-                      ),
-                      const Spacer(),
-                      Builder(
-                        builder: (innerContext) {
-                          return IconButton(
-                            icon: Icon(
-                              Icons.menu,
-                              color: AppColors.cf9f9f9,
-                              size: 30.r,
-                            ),
-                            onPressed: () {
-                              Scaffold.of(innerContext).openDrawer();
-                            },
-                          );
-                        }
-                      ),
-                    ],
-                  ),
+                      onPressed: () {
+                        Scaffold.of(innerContext).openDrawer();
+                      },
+                    );
+                  },
                 ),
               ),
-          
               const Spacer(),
-
               Padding(
                 padding: EdgeInsets.all(ScreenUtils.md),
                 child: ConstrainedBox(
@@ -200,7 +113,6 @@ class _GodDetailsViewState extends State<GodDetailsView> {
                     borderRadius: BorderRadius.circular(ScreenUtils.xl),
                     color: AppColors.cffffff.withOpacity(0.1),
                     borderColor: AppColors.cffffff.withOpacity(0.2),
-
                     child: SingleChildScrollView(
                       physics: const BouncingScrollPhysics(),
                       child: Text(
@@ -216,8 +128,7 @@ class _GodDetailsViewState extends State<GodDetailsView> {
                   ),
                 ),
               ),
-
-              Gap(40.h), 
+              Gap(40.h),
             ],
           ),
         ],

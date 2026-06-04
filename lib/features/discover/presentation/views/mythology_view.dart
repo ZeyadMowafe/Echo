@@ -34,7 +34,24 @@ class MythologyView extends StatelessWidget {
       drawerEnableOpenDragGesture: false,
       drawerBarrierDismissible: true,
       backgroundColor: AppColors.of(context).background,
-
+      floatingActionButton: CustomFloatingActionButton(
+        onPressed: () {
+          Navigator.popUntil(context, (route) => route.isFirst);
+          context.read<FeaturesCubit>().changeFeature(
+            featureName: AppStrings.scanFeature.key,
+          );
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: CustomBottomNavBar(
+        currentFeature: AppStrings.discoverFeature.key,
+        onTap: (featureName) {
+          Navigator.popUntil(context, (route) => route.isFirst);
+          context.read<FeaturesCubit>().changeFeature(
+            featureName: featureName,
+          );
+        },
+      ),
       body: Stack(
         children: [
           Positioned.fill(
@@ -65,7 +82,6 @@ class MythologyView extends StatelessWidget {
                             title: godsList[0].title,
                           ),
                         ),
-
                         GridView.builder(
                           padding: EdgeInsets.symmetric(vertical: 16.h),
                           shrinkWrap: true,
@@ -117,40 +133,7 @@ class MythologyView extends StatelessWidget {
                   color: AppColors.of(context).footer,
                   size: 30.r,
                 ),
-                onPressed: () {
-                  Scaffold.of(ctx).openDrawer();
-                },
-              ),
-            ),
-          ),
-
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: CustomBottomNavBar(
-              currentFeature: AppStrings.discoverFeature.key,
-              onTap: (featureName) {
-                context.read<FeaturesCubit>().changeFeature(
-                  featureName: featureName,
-                );
-                Navigator.pop(context);
-              },
-            ),
-          ),
-
-          Positioned(
-            bottom: 35.h,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: CustomFloatingActionButton(
-                onPressed: () {
-                  context.read<FeaturesCubit>().changeFeature(
-                    featureName: AppStrings.scanFeature.key,
-                  );
-                  Navigator.pop(context);
-                },
+                onPressed: () => Scaffold.of(ctx).openDrawer(),
               ),
             ),
           ),

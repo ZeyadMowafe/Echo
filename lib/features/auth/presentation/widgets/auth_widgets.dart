@@ -9,6 +9,7 @@ import 'package:gap/gap.dart';
 
 class PrimaryContinueButton extends StatelessWidget {
   const PrimaryContinueButton({
+    super.key,
     required this.onTap,
     required this.text,
     this.isLoading = false,
@@ -25,71 +26,80 @@ class PrimaryContinueButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final opacity = isEnabled ? 1.0 : 0.4;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final appColors = AppColors.of(context);
 
-    if (isDark) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(50.r),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-          child: Container(
-            width: 290.w,
-            height: 45.h,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(50.r),
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.white.withOpacity(0.075),
-                  Colors.white.withOpacity(0),
-                ],
-              ),
-            ),
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 13.h),
-              child: Center(
-                child: isLoading
-                    ? AppLoading.button()
-                    : Text(
-                        text,
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(opacity),
-                          fontSize: 15.sp,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: isEnabled && !isLoading ? onTap : null,
-        borderRadius: BorderRadius.circular(50.r),
-        child: Container(
-          width: 290.w,
-          height: 45.h,
-          decoration: BoxDecoration(
+    final decoration = isDark
+        ? BoxDecoration(
             borderRadius: BorderRadius.circular(50.r),
-            color: (color ?? AppColors.c162410).withOpacity(opacity),
-          ),
-          child: Center(
-            child: isLoading
-                ? AppLoading.button()
-                : Text(
-                    text,
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(opacity),
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.w400,
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.white.withOpacity(0.075),
+                Colors.white.withOpacity(0),
+              ],
+            ),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.1),
+              width: 1,
+            ),
+          )
+        : BoxDecoration(
+            borderRadius: BorderRadius.circular(50.r),
+            color: (color ?? appColors.scanButton).withOpacity(opacity),
+            boxShadow: [
+              BoxShadow(
+                color: (color ?? appColors.scanButton).withOpacity(0.15 * opacity),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          );
+
+    final textStyle = TextStyle(
+      color: isDark ? Colors.white.withOpacity(opacity) : Colors.white,
+      fontSize: 15.sp,
+      fontWeight: FontWeight.w400,
+    );
+
+    return Container(
+      width: 290.w,
+      height: 45.h,
+      margin: EdgeInsets.symmetric(vertical: 4.h),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(50.r),
+        child: isDark
+            ? BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: isEnabled && !isLoading ? onTap : null,
+                    child: Container(
+                      decoration: decoration,
+                      child: Center(
+                        child: isLoading
+                            ? AppLoading.button()
+                            : Text(text, style: textStyle),
+                      ),
                     ),
                   ),
-          ),
-        ),
+                ),
+              )
+            : Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: isEnabled && !isLoading ? onTap : null,
+                  child: Container(
+                    decoration: decoration,
+                    child: Center(
+                      child: isLoading
+                          ? AppLoading.button()
+                          : Text(text, style: textStyle),
+                    ),
+                  ),
+                ),
+              ),
       ),
     );
   }
@@ -110,49 +120,63 @@ class SocialAuthButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final baseColor = isDark ? Colors.white : AppColors.of(context).footer;
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(50.r),
 
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(50.r),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-            child: Container(
-              width: double.infinity,
-              height: 45.h,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50.r),
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    baseColor.withOpacity(0.02),
-                    baseColor.withOpacity(0),
+    return Container(
+      width: double.infinity,
+      height: 45.h,
+      margin: EdgeInsets.symmetric(vertical: 4.h),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(50.r),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: onTap,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50.r),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      baseColor.withOpacity(0.02),
+                      baseColor.withOpacity(0),
+                    ],
+                  ),
+                  border: Border.all(
+                    color: baseColor.withOpacity(0.10),
+                    strokeAlign: BorderSide.strokeAlignInside,
+                  ),
+                ),
+                padding: EdgeInsets.symmetric(vertical: 11.h, horizontal: 20.w),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 20.r,
+                      height: 20.r,
+                      child: Center(
+                        child: SvgPicture.asset(
+                          iconPath,
+                          width: 20.r,
+                          height: 20.r,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                    Gap(10.w),
+                    Text(
+                      label,
+                      style: TextStyle(
+                        color: baseColor,
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
                   ],
                 ),
-                border: Border.all(
-                  color: baseColor.withOpacity(0.10),
-                  strokeAlign: BorderSide.strokeAlignInside,
-                ),
-              ),
-              padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 50.w),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SvgPicture.asset(iconPath, width: 20.r, height: 20.r),
-                  Gap(10.w),
-                  Text(
-                    label,
-                    style: TextStyle(
-                      color: baseColor,
-                      fontSize: 13.sp,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
               ),
             ),
           ),
@@ -205,12 +229,13 @@ class _AuthTextFieldState extends State<AuthTextField> {
   Widget build(BuildContext context) {
     final hasError = _errorText != null;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final baseColor = isDark ? Colors.white : AppColors.c162410;
+    final appColors = AppColors.of(context);
+    final baseColor = appColors.footer;
     final borderColor = hasError
         ? Colors.redAccent
         : _isFocused
-        ? baseColor
-        : baseColor.withOpacity(0.25);
+            ? baseColor
+            : baseColor.withOpacity(0.25);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

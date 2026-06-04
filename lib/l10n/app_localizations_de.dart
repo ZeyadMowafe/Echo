@@ -780,4 +780,8 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get scanCouldNotIdentify => 'Bild konnte nicht identifiziert werden';
+
+  @override
+  String get scanAdjustImage =>
+      'Bitte passen Sie das Bild an und versuchen Sie es erneut.';
 }

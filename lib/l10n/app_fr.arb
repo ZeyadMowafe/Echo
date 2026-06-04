@@ -176,19 +176,25 @@
   "scanStatLines": "{count,plural, =1{1 ligne} other{{count} lignes}}",
   "@scanStatLines": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "scanStatGlyphs": "{count,plural, =1{1 glyphe} other{{count} glyphes}}",
   "@scanStatGlyphs": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "scanStatCartouches": "{count,plural, =1{1 cartouche} other{{count} cartouches}}",
   "@scanStatCartouches": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "scanStep1": "Initialisation du scan neuronal...",
@@ -204,7 +210,6 @@
   "detailsUnknownArtifact": "Artefact inconnu",
   "detailsDescription": "Description",
   "detailsChatWithMe": "Discuter avec moi",
-
   "authRegister": "S'inscrire",
   "authLogin": "Connexion",
   "registerTitle": "Créer un compte",
@@ -214,47 +219,47 @@
   "registerConfirmPasswordHint": "Confirmer le mot de passe",
   "registerCreateAccount": "Créer un compte",
   "registerPasswordMismatch": "Les mots de passe ne correspondent pas",
-
   "chatHintMessage": "Message...",
   "chatWelcomeMessage": "Interrogez-moi sur l'Égypte antique...",
   "chatSearchHint": "Rechercher",
   "chatNewChat": "Nouvelle discussion",
   "chatDeleteConfirm": "Supprimer la session ?",
   "chatDeleteConfirmDesc": "Cela supprimera tous les messages de cette session.",
-
   "noRouteDefined": "Aucune route définie pour",
-
   "updatingLanguage": "Mise à jour de la langue...",
-
   "profileTitle": "Profil",
   "profileGuest": "Invité",
   "profileUnknownArtifact": "Artefact inconnu",
   "profileUnknownEra": "Époque inconnue",
   "profileStartScanning": "Commencer à scanner",
-
   "timeAgoJustNow": "à l'instant",
   "timeAgoMinute": "{count,plural, =1{il y a 1 min} other{il y a {count} min}}",
   "@timeAgoMinute": {
     "description": "Time ago in minutes",
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "timeAgoHour": "{count,plural, =1{il y a 1 h} other{il y a {count} h}}",
   "@timeAgoHour": {
     "description": "Time ago in hours",
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "timeAgoDay": "{count,plural, =1{il y a 1 j} other{il y a {count} j}}",
   "@timeAgoDay": {
     "description": "Time ago in days",
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "errorNoInternet": "Pas de connexion Internet",
   "errorServerError": "Erreur du serveur",
   "errorStorageError": "Erreur de stockage",
@@ -266,5 +271,6 @@
   "errorRequestCancelled": "La requête a été annulée",
   "errorSecurityError": "Erreur de sécurité",
   "rescan": "Nouvelle analyse",
-  "scanCouldNotIdentify": "Impossible d'identifier l'image"
+  "scanCouldNotIdentify": "Impossible d'identifier l'image",
+  "scanAdjustImage": "Veuillez ajuster l'image et réessayer."
 }

@@ -1,6 +1,7 @@
-﻿import 'package:echo_explorer/core/constants/app_colors.dart';
+import 'package:echo_explorer/core/constants/app_colors.dart';
 import 'package:echo_explorer/core/helpers/screen_utils.dart';
 import 'package:echo_explorer/core/routing/routes.dart';
+import 'package:echo_explorer/core/widgets/custom_glass_app_bar.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_container.dart';
 import 'package:echo_explorer/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:echo_explorer/features/auth/presentation/widgets/auth_widgets.dart';
@@ -59,9 +60,9 @@ class _RegisterViewState extends State<RegisterView> {
       case 'en':
         return 'English';
       case 'ar':
-        return 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©';
+        return 'العربية';
       case 'fr':
-        return 'FranÃ§ais';
+        return 'Français';
       case 'de':
         return 'Deutsch';
       case 'es':
@@ -117,27 +118,6 @@ class _RegisterViewState extends State<RegisterView> {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_rounded,
-            color: AppColors.of(context).footer,
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          l10n.registerTitle,
-          style: TextStyle(
-            color: AppColors.of(context).footer,
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: true,
-      ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -150,10 +130,19 @@ class _RegisterViewState extends State<RegisterView> {
         ),
         child: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
-          child: SafeArea(
-          child: Center(
-            child: BlocConsumer<AuthCubit, AuthState>(
-              listener: (context, state) {
+          child: Column(
+            children: [
+              CustomGlassAppBar(
+                previousState: AppRoutes.authView,
+                title: l10n.registerTitle,
+                onPressed: () => Navigator.pop(context),
+              ),
+              Expanded(
+                child: SafeArea(
+                  top: false,
+                  child: Center(
+                    child: BlocConsumer<AuthCubit, AuthState>(
+                      listener: (context, state) {
                 if (state is Authenticated) {
                   Navigator.pushNamedAndRemoveUntil(
                     context,
@@ -336,6 +325,10 @@ class _RegisterViewState extends State<RegisterView> {
           ),
         ),
       ),
-    )); 
+            ],
+          ),
+        ),
+      ),
+    ); 
   }
 }

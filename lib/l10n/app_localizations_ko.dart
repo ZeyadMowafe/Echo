@@ -766,4 +766,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get scanCouldNotIdentify => '이미지를 식별할 수 없습니다';
+
+  @override
+  String get scanAdjustImage => '이미지를 조정하고 다시 시도하십시오.';
 }

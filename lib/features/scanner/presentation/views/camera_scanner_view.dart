@@ -181,7 +181,53 @@ class _CameraScannerViewState extends State<CameraScannerView> {
         _phase = _ScanPhase.error;
       }
     }
-    return Scaffold(
+    return BlocListener<ScanCubit, ScanState>(
+      listener: (context, state) {
+        if (state is ScanFilterRejected || state is ScanError) {
+          // Show message to adjust image
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  Icon(
+                    Icons.warning_amber_rounded,
+                    color: Colors.orangeAccent,
+                    size: 20.r,
+                  ),
+                  Gap(12.w),
+                  Expanded(
+                    child: Text(
+                      l10n.scanAdjustImage,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+              backgroundColor: AppColors.of(context).surface,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+
+          // Reset the scanner view state and clear cubit result
+          context.read<ScanCubit>().clearResult();
+          setState(() {
+            _phase = _ScanPhase.scanning;
+            _isScanning = false;
+            _capturedImagePath = null;
+            _showTranslation = false;
+            _showFullTranslation = false;
+            _controller = null;
+            _isInitialized = false;
+          });
+          _initCamera();
+        }
+      },
+      child: Scaffold(
       backgroundColor: Colors.black,
       drawerScrimColor: Colors.transparent,
       drawer: CustomGlassDrawer(
@@ -876,7 +922,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
           ],
         ),
       ),
-    );
+    ));
   }
 }
 

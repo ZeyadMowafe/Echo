@@ -176,19 +176,25 @@
   "scanStatLines": "{count,plural, =1{1 行} other{{count} 行}}",
   "@scanStatLines": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "scanStatGlyphs": "{count,plural, =1{1 个符号} other{{count} 个符号}}",
   "@scanStatGlyphs": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "scanStatCartouches": "{count,plural, =1{1 个王名圈} other{{count} 个王名圈}}",
   "@scanStatCartouches": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "scanStep1": "正在初始化神经扫描...",
@@ -204,7 +210,6 @@
   "detailsUnknownArtifact": "未知文物",
   "detailsDescription": "描述",
   "detailsChatWithMe": "与我聊天",
-
   "authRegister": "注册",
   "authLogin": "登录",
   "registerTitle": "创建账户",
@@ -214,47 +219,47 @@
   "registerConfirmPasswordHint": "确认密码",
   "registerCreateAccount": "创建账户",
   "registerPasswordMismatch": "密码不匹配",
-
   "chatHintMessage": "消息...",
   "chatWelcomeMessage": "问我关于古埃及的问题...",
   "chatSearchHint": "搜索",
   "chatNewChat": "新聊天",
   "chatDeleteConfirm": "删除会话？",
   "chatDeleteConfirmDesc": "这将删除此会话中的所有消息。",
-
   "noRouteDefined": "未定义路由",
-
   "updatingLanguage": "正在更新语言...",
-
   "profileTitle": "个人资料",
   "profileGuest": "访客",
   "profileUnknownArtifact": "未知文物",
   "profileUnknownEra": "未知时代",
   "profileStartScanning": "开始扫描",
-
   "timeAgoJustNow": "刚刚",
   "timeAgoMinute": "{count,plural, =1{1分钟前} other{{count}分钟前}}",
   "@timeAgoMinute": {
     "description": "Time ago in minutes",
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "timeAgoHour": "{count,plural, =1{1小时前} other{{count}小时前}}",
   "@timeAgoHour": {
     "description": "Time ago in hours",
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "timeAgoDay": "{count,plural, =1{1天前} other{{count}天前}}",
   "@timeAgoDay": {
     "description": "Time ago in days",
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "errorNoInternet": "没有网络连接",
   "errorServerError": "服务器错误",
   "errorStorageError": "存储错误",
@@ -266,5 +271,6 @@
   "errorRequestCancelled": "请求已取消",
   "errorSecurityError": "安全错误",
   "rescan": "重新扫描",
-  "scanCouldNotIdentify": "无法识别图像"
+  "scanCouldNotIdentify": "无法识别图像",
+  "scanAdjustImage": "请调整图像并重试。"
 }

@@ -11,6 +11,7 @@ import 'package:echo_explorer/core/widgets/app_loading.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_drawer.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_container.dart';
+import 'package:echo_explorer/core/widgets/custom_glass_app_bar.dart';
 import 'package:echo_explorer/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:echo_explorer/features/auth/presentation/widgets/auth_sheet_helper.dart';
 import 'package:echo_explorer/core/routing/routes.dart';
@@ -142,7 +143,48 @@ class _ProfileViewState extends State<ProfileView> {
                   // 2. Main Content Canvas
                   Column(
                     children: [
-                      _buildAppBar(context, l10n, appColors),
+                      CustomGlassAppBar(
+                        title: l10n.profileTitle,
+                        leading: Builder(
+                          builder: (innerContext) {
+                            return CustomGlassContainer(
+                              width: ScreenUtils.glassButtonSize,
+                              height: ScreenUtils.glassButtonSize,
+                              color: appColors.glassBase.withValues(alpha: 0.10),
+                              borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
+                              borderColor: appColors.glassBase.withValues(alpha: 0.15),
+                              padding: EdgeInsets.zero,
+                              child: IconButton(
+                                padding: EdgeInsets.zero,
+                                icon: Icon(
+                                  Icons.menu,
+                                  color: appColors.footer,
+                                  size: ScreenUtils.iconMd,
+                                ),
+                                onPressed: () => Scaffold.of(innerContext).openDrawer(),
+                              ),
+                            );
+                          },
+                        ),
+                        trailing: CustomGlassContainer(
+                          width: ScreenUtils.glassButtonSize,
+                          height: ScreenUtils.glassButtonSize,
+                          color: appColors.glassBase.withValues(alpha: 0.10),
+                          borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
+                          borderColor: appColors.glassBase.withValues(alpha: 0.15),
+                          padding: EdgeInsets.zero,
+                          child: IconButton(
+                            padding: EdgeInsets.zero,
+                            icon: Icon(
+                              Icons.settings_outlined,
+                              color: appColors.footer,
+                              size: ScreenUtils.iconMd,
+                            ),
+                            onPressed: () =>
+                                Navigator.of(context).pushNamed(AppRoutes.settingsView),
+                          ),
+                        ),
+                      ),
                       Expanded(
                         child: SingleChildScrollView(
                           physics: const BouncingScrollPhysics(),
@@ -195,81 +237,7 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
-  Widget _buildAppBar(
-    BuildContext context,
-    AppLocalizations l10n,
-    BaseThemeColors appColors,
-  ) {
-    return CustomGlassContainer(
-      color: appColors.discoverAppBar.withValues(alpha: 0.25),
-      gradient: LinearGradient(
-        colors: [
-          appColors.discoverAppBar.withValues(alpha: 0.30),
-          appColors.discoverAppBar.withValues(alpha: 0.0),
-        ],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-      ),
-      borderColor: appColors.discoverAppBar.withValues(alpha: 0.05),
-      padding: EdgeInsets.only(top: 6.h, bottom: 6.h, left: 20.w, right: 20.w),
-      child: SafeArea(
-        bottom: false,
-        child: Row(
-          children: [
-            Builder(
-              builder: (innerContext) {
-                return CustomGlassContainer(
-                  width: ScreenUtils.glassButtonSize,
-                  height: ScreenUtils.glassButtonSize,
-                  color: appColors.glassBase.withValues(alpha: 0.10),
-                  borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
-                  borderColor: appColors.glassBase.withValues(alpha: 0.15),
-                  padding: EdgeInsets.zero,
-                  child: IconButton(
-                    padding: EdgeInsets.zero,
-                    icon: Icon(
-                      Icons.menu,
-                      color: appColors.footer,
-                      size: ScreenUtils.iconMd,
-                    ),
-                    onPressed: () => Scaffold.of(innerContext).openDrawer(),
-                  ),
-                );
-              },
-            ),
-            Gap(12.w),
-            Text(
-              l10n.profileTitle,
-              style: TextStyle(
-                color: appColors.footer,
-                fontSize: 18.sp,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const Spacer(),
-            CustomGlassContainer(
-              width: ScreenUtils.glassButtonSize,
-              height: ScreenUtils.glassButtonSize,
-              color: appColors.glassBase.withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
-              borderColor: appColors.glassBase.withValues(alpha: 0.15),
-              padding: EdgeInsets.zero,
-              child: IconButton(
-                padding: EdgeInsets.zero,
-                icon: Icon(
-                  Icons.settings_outlined,
-                  color: appColors.footer,
-                  size: ScreenUtils.iconMd,
-                ),
-                onPressed: () =>
-                    Navigator.of(context).pushNamed(AppRoutes.settingsView),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+
 
   Widget _buildProfileCard({
     required BuildContext context,

@@ -7,31 +7,39 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class CustomGlassAppBar extends StatelessWidget {
   const CustomGlassAppBar({
     super.key,
-    required this.previousState,
     required this.title,
-    required this.onPressed,
+    this.previousState = '',
+    this.onPressed,
+    this.leading,
     this.trailing,
     this.subtitle,
     this.rtlAware = false,
     this.trailingBuilder,
     this.barColor,
     this.barBorderColor,
+    this.textColor,
+    this.iconColor,
   });
 
   final String title;
   final String? subtitle;
   final String previousState;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
+  final Widget? leading;
   final Widget? trailing;
   final bool rtlAware;
   final Widget Function(BuildContext)? trailingBuilder;
   final Color? barColor;
   final Color? barBorderColor;
+  final Color? textColor;
+  final Color? iconColor;
 
   @override
   Widget build(BuildContext context) {
     final glassColor = barColor ?? AppColors.of(context).discoverAppBar;
     final glassBorder = barBorderColor ?? glassColor.withValues(alpha: 0.05);
+    final headingColor = textColor ?? AppColors.of(context).footer;
+
     return CustomGlassContainer(
       color: glassColor.withValues(alpha: 0.25),
       gradient: LinearGradient(
@@ -49,16 +57,20 @@ class CustomGlassAppBar extends StatelessWidget {
         child: Row(
           spacing: 8.w,
           children: [
-            CustomGlassBackButton(
-              onPressed: onPressed,
-              rtlAware: rtlAware,
-            ),
+            if (leading != null)
+              leading!
+            else if (onPressed != null)
+              CustomGlassBackButton(
+                onPressed: onPressed,
+                rtlAware: rtlAware,
+                iconColor: iconColor,
+              ),
             if (subtitle == null)
               Expanded(
                 child: Text(
                   title,
                   style: TextStyle(
-                    color: AppColors.of(context).footer,
+                    color: headingColor,
                     fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
                   ),
@@ -73,7 +85,7 @@ class CustomGlassAppBar extends StatelessWidget {
                     Text(
                       title,
                       style: TextStyle(
-                        color: AppColors.of(context).footer,
+                        color: headingColor,
                         fontSize: 16.sp,
                         fontWeight: FontWeight.bold,
                       ),
@@ -81,7 +93,7 @@ class CustomGlassAppBar extends StatelessWidget {
                     Text(
                       subtitle!,
                       style: TextStyle(
-                        color: AppColors.of(context).footer.withValues(alpha: 0.8),
+                        color: headingColor.withValues(alpha: 0.8),
                         fontSize: 14.sp,
                       ),
                     ),

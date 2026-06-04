@@ -176,19 +176,25 @@
   "scanStatLines": "{count,plural, =1{1 行} other{{count} 行}}",
   "@scanStatLines": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "scanStatGlyphs": "{count,plural, =1{1 グリフ} other{{count} グリフ}}",
   "@scanStatGlyphs": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "scanStatCartouches": "{count,plural, =1{1 カルトゥーシュ} other{{count} カルトゥーシュ}}",
   "@scanStatCartouches": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "scanStep1": "ニューラルスキャンを初期化中...",
@@ -204,7 +210,6 @@
   "detailsUnknownArtifact": "未知のアーティファクト",
   "detailsDescription": "説明",
   "detailsChatWithMe": "チャットする",
-
   "authRegister": "登録",
   "authLogin": "ログイン",
   "registerTitle": "アカウント作成",
@@ -214,47 +219,47 @@
   "registerConfirmPasswordHint": "パスワードを確認",
   "registerCreateAccount": "アカウント作成",
   "registerPasswordMismatch": "パスワードが一致しません",
-
   "chatHintMessage": "メッセージ...",
   "chatWelcomeMessage": "古代エジプトについて質問してください...",
   "chatSearchHint": "検索",
   "chatNewChat": "新しいチャット",
   "chatDeleteConfirm": "セッションを削除しますか？",
   "chatDeleteConfirmDesc": "このセッションのすべてのメッセージが削除されます。",
-
   "noRouteDefined": "ルートが定義されていません",
-
   "updatingLanguage": "言語を更新中...",
-
   "profileTitle": "プロフィール",
   "profileGuest": "ゲスト",
   "profileUnknownArtifact": "不明なアーティファクト",
   "profileUnknownEra": "不明な時代",
   "profileStartScanning": "スキャンを開始",
-
   "timeAgoJustNow": "たった今",
   "timeAgoMinute": "{count,plural, =1{1分前} other{{count}分前}}",
   "@timeAgoMinute": {
     "description": "Time ago in minutes",
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "timeAgoHour": "{count,plural, =1{1時間前} other{{count}時間前}}",
   "@timeAgoHour": {
     "description": "Time ago in hours",
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "timeAgoDay": "{count,plural, =1{1日前} other{{count}日前}}",
   "@timeAgoDay": {
     "description": "Time ago in days",
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "errorNoInternet": "インターネット接続がありません",
   "errorServerError": "サーバーエラーが発生しました",
   "errorStorageError": "ストレージエラーが発生しました",
@@ -266,5 +271,6 @@
   "errorRequestCancelled": "リクエストがキャンセルされました",
   "errorSecurityError": "セキュリティエラーが発生しました",
   "rescan": "再スキャン",
-  "scanCouldNotIdentify": "画像を識別できませんでした"
+  "scanCouldNotIdentify": "画像を識別できませんでした",
+  "scanAdjustImage": "画像を調整して、もう一度お試しください。"
 }

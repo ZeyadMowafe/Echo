@@ -65,6 +65,7 @@ class CustomSectionCard extends StatelessWidget {
               onPressed: onPressed,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
                     sectionCardModel.buttonText,
@@ -75,12 +76,18 @@ class CustomSectionCard extends StatelessWidget {
                     ),
                   ),
                   Gap(4.w),
-                  Icon(
-                    Directionality.of(context) == TextDirection.rtl
-                        ? Icons.arrow_back
-                        : Icons.arrow_forward,
-                    size: 20.r,
-                    color: AppColors.cf9f9f9,
+                  SizedBox(
+                    width: 20.r,
+                    height: 20.r,
+                    child: Center(
+                      child: Icon(
+                        Directionality.of(context) == TextDirection.rtl
+                            ? Icons.arrow_back
+                            : Icons.arrow_forward,
+                        size: 20.r,
+                        color: AppColors.cf9f9f9,
+                      ),
+                    ),
                   ),
                 ],
               ),
