@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:echo_explorer/core/error/exceptions.dart';
 import 'package:echo_explorer/core/network/api_constants.dart';
@@ -32,7 +34,12 @@ class ScanRemoteDataSourceImpl implements ScanRemoteDataSource {
         ),
       );
       if (response.statusCode == 200) {
-        print('=== AnalyzeImage full response: ${response.data} ===');
+        print('╔═══════════════════════════════════════════');
+        print('║  📸 AnalyzeImage - Full API Response');
+        print('╠═══════════════════════════════════════════');
+        final encoder = JsonEncoder.withIndent('  ');
+        print(encoder.convert(response.data));
+        print('╚═══════════════════════════════════════════');
         return ScanResponseModel.fromJson(response.data);
       }
       throw ServerException(message: 'Failed to analyze image');

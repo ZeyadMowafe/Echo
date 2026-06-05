@@ -177,7 +177,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
     if (_phase == _ScanPhase.analyzing) {
       if (scanState is ScanResultLoaded || scanState is ScanAnchored) {
         _phase = _ScanPhase.result;
-      } else if (scanState is ScanError) {
+      } else if (scanState is ScanError || scanState is ScanNoArtifactDetected) {
         _phase = _ScanPhase.error;
       }
     }
@@ -430,34 +430,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          if (resultData.result?.artifact.name != null)
-                            Builder(
-                              builder: (context) {
-                                final parts = <String>[];
-                                final a = resultData.result!.artifact;
-                                if (a.era != null) parts.add(a.era!);
-                                if (a.material != null) parts.add(a.material!);
-                                if (a.category != null) parts.add(a.category!);
-                                if (a.type != null) parts.add(a.type!);
-                                if (parts.isEmpty)
-                                  return const SizedBox.shrink();
-                                return Padding(
-                                  padding: EdgeInsets.only(top: 8.h),
-                                  child: Center(
-                                    child: Text(
-                                      parts.join('  |  '),
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 14.sp,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          if (resultData.result?.artifact.name == null &&
-                              resultData.result?.artifact.description != null)
+                          if (resultData.result?.artifact.description != null)
                             Padding(
                               padding: EdgeInsets.only(top: 8.h),
                               child: Text(
@@ -831,6 +804,72 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                   ),
                 ),
               ),
+            // No artifact detected overlay
+            if (_phase == _ScanPhase.error && scanState is ScanNoArtifactDetected)
+              Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12.w),
+                  child: Container(
+                  padding: EdgeInsets.all(16.w),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24.r),
+                    color: Colors.black.withValues(alpha: 0.7),
+                    border: Border.all(
+                      color: Colors.orangeAccent.withValues(alpha: 0.4),
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.image_search,
+                        color: Colors.orangeAccent.withValues(alpha: 0.8),
+                        size: 28.r,
+                      ),
+                      Gap(8.h),
+                      Text(
+                        l10n.scanTryAgain,
+                        style: TextStyle(
+                          color: Colors.orangeAccent,
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      Gap(4.h),
+                      Text(
+                        l10n.scanAdjustImage,
+                        style: TextStyle(
+                          color: Colors.orangeAccent.withValues(alpha: 0.7),
+                          fontSize: 13.sp,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      Gap(12.h),
+                      TextButton(
+                        onPressed: () {
+                          context.read<ScanCubit>().clearResult();
+                          setState(() {
+                            _phase = _ScanPhase.scanning;
+                            _isScanning = false;
+                            _capturedImagePath = null;
+                            _showTranslation = false;
+                            _showFullTranslation = false;
+                            _controller = null;
+                            _isInitialized = false;
+                          });
+                          _initCamera();
+                        },
+                        child: Text(
+                          l10n.scanTryAgain,
+                          style: const TextStyle(color: Colors.white70),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
             // Error overlay
             if (_phase == _ScanPhase.error && scanState is ScanError)
               Positioned(

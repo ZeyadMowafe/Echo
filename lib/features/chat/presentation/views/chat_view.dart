@@ -80,88 +80,94 @@ class _ChatViewState extends State<ChatView> {
       drawerEdgeDragWidth: 0,
       drawer: BlocBuilder<ChatCubit, ChatState>(
         builder: (context, _) => ChatSideDrawer(
-        sessions: cubit.cachedSessions,
-        onNewChat: () => cubit.startNewSession(),
-        onSessionTap: (id) => cubit.loadSession(id),
-        onDeleteSession: (id) {
-          final name = cubit.cachedSessions
-              .where((s) => s.id == id)
-              .firstOrNull
-              ?.title;
-          cubit.deleteSession(id);
-          if (name != null && context.mounted) {
-            final overlay = Overlay.of(context);
-            final isDark = context.read<ThemeCubit>().state;
-            late OverlayEntry entry;
-            entry = OverlayEntry(
-              builder: (ctx) => Positioned(
-                top: MediaQuery.of(ctx).padding.top + 12.h,
-                left: 0,
-                right: 0,
-                child: Material(
-                  color: Colors.transparent,
-                  child: Center(
-                    child: CustomGlassContainer(
-                      width: 300.w,
-                      padding: EdgeInsets.symmetric(
-                        vertical: 10.h,
-                        horizontal: 16.w,
-                      ),
-                      borderRadius: BorderRadius.circular(24.r),
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: isDark
-                            ? [
-                                const Color(0xFF0D1215).withValues(alpha: 0.92),
-                                const Color(0xFF0D1215).withValues(alpha: 0.88),
-                              ]
-                            : [
-                                AppColors.cffffff.withValues(alpha: 0.92),
-                                AppColors.cffffff.withValues(alpha: 0.85),
-                              ],
-                      ),
-                      borderColor: isDark
-                          ? const Color(0x1AFFFFFF)
-                          : const Color(0x1A000000),
-                      child: Center(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.delete_rounded,
-                              size: 18.r,
-                              color: Colors.redAccent,
-                            ),
-                            Gap(10.w),
-                            Flexible(
-                              child: Text(
-                                'Session "$name" deleted',
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 15.sp,
-                                  color: isDark ? Colors.white : const Color(0xFF0D1215),
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+          sessions: cubit.cachedSessions,
+          onNewChat: () => cubit.startNewSession(),
+          onSessionTap: (id) => cubit.loadSession(id),
+          onDeleteSession: (id) {
+            final name = cubit.cachedSessions
+                .where((s) => s.id == id)
+                .firstOrNull
+                ?.title;
+            cubit.deleteSession(id);
+            if (name != null && context.mounted) {
+              final overlay = Overlay.of(context);
+              final isDark = context.read<ThemeCubit>().state;
+              late OverlayEntry entry;
+              entry = OverlayEntry(
+                builder: (ctx) => Positioned(
+                  top: MediaQuery.of(ctx).padding.top + 12.h,
+                  left: 0,
+                  right: 0,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: Center(
+                      child: CustomGlassContainer(
+                        width: 300.w,
+                        padding: EdgeInsets.symmetric(
+                          vertical: 10.h,
+                          horizontal: 16.w,
+                        ),
+                        borderRadius: BorderRadius.circular(24.r),
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: isDark
+                              ? [
+                                  const Color(
+                                    0xFF0D1215,
+                                  ).withValues(alpha: 0.92),
+                                  const Color(
+                                    0xFF0D1215,
+                                  ).withValues(alpha: 0.88),
+                                ]
+                              : [
+                                  AppColors.cffffff.withValues(alpha: 0.92),
+                                  AppColors.cffffff.withValues(alpha: 0.85),
+                                ],
+                        ),
+                        borderColor: isDark
+                            ? const Color(0x1AFFFFFF)
+                            : const Color(0x1A000000),
+                        child: Center(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.delete_rounded,
+                                size: 18.r,
+                                color: Colors.redAccent,
                               ),
-                            ),
-                          ],
+                              Gap(10.w),
+                              Flexible(
+                                child: Text(
+                                  'Session "$name" deleted',
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 15.sp,
+                                    color: isDark
+                                        ? Colors.white
+                                        : const Color(0xFF0D1215),
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
+                    ),
                   ),
                 ),
-                ),
-              ),
-            );
-            overlay.insert(entry);
-            Future.delayed(const Duration(seconds: 2), () {
-              if (entry.mounted) entry.remove();
-            });
-          }
-        },
-      ),
+              );
+              overlay.insert(entry);
+              Future.delayed(const Duration(seconds: 2), () {
+                if (entry.mounted) entry.remove();
+              });
+            }
+          },
+        ),
       ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
@@ -305,7 +311,7 @@ class _ChatViewState extends State<ChatView> {
                             width: 63.w,
                             height: 29.h,
                             padding: EdgeInsets.symmetric(
-                              horizontal: 14.w,
+                              horizontal: 10.w,
                               vertical: 7.h,
                             ),
                             decoration: BoxDecoration(

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'dart:ui';
@@ -29,6 +30,7 @@ import 'package:echo_explorer/features/scanner/domain/entities/scan_response_ent
 
 import 'package:echo_explorer/features/scanner/presentation/cubit/scan_cubit.dart';
 
+import 'package:echo_explorer/core/network/api_constants.dart';
 import 'package:echo_explorer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
@@ -59,6 +61,37 @@ class _DetailsViewState extends State<DetailsView> {
   void initState() {
     super.initState();
     _isFavorited = widget.args.isFavorited;
+    _logResponse();
+  }
+
+  void _logResponse() {
+    print('╔═══════════════════════════════════════════');
+    print('║  📄 DetailsView - Full Response Data');
+    print('╠═══════════════════════════════════════════');
+    print('║ scanLogId: ${_result.scanLogId}');
+    print('║ imagePath: $_imagePath');
+    print('║ isFavorited: $_isFavorited');
+    print('║');
+    print('║ ── Artifact ──');
+    print('║ name: ${_result.artifact.name}');
+    print('║ description: ${_result.artifact.description}');
+    print('║ era: ${_result.artifact.era}');
+    print('║ material: ${_result.artifact.material}');
+    print('║ category: ${_result.artifact.category}');
+    print('║ type: ${_result.artifact.type}');
+    print('║ imageUrl: ${_result.artifact.imageUrl}');
+    print('║ isPrimaryModel: ${_result.artifact.isPrimaryModel}');
+    print('║ artifactModelId: ${_result.artifact.artifactModelId}');
+    print('║');
+    print('║ ── Hieroglyphs ──');
+    print('║ detected: ${_result.hieroglyphs?.detected}');
+    print('║ translation: ${_result.hieroglyphs?.translation}');
+    print('║ translationMethod: ${_result.hieroglyphs?.translationMethod}');
+    print('║ totalLines: ${_result.hieroglyphs?.totalLines}');
+    print('║ totalGlyphs: ${_result.hieroglyphs?.totalGlyphs}');
+    print('║ cartoucheCount: ${_result.hieroglyphs?.cartoucheCount}');
+    print('║ royalNames: ${_result.hieroglyphs?.royalNames}');
+    print('╚═══════════════════════════════════════════');
   }
 
   void _showFavoriteToast() {
@@ -188,14 +221,14 @@ class _DetailsViewState extends State<DetailsView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Gap(32.h),
-                      // Action bar: Reveal Translation + Heart + Share
-                      if (_result.hieroglyphs?.detected == true &&
-                          _result.hieroglyphs?.translation != null)
-                        SizedBox(
-                          width: double.infinity,
-                          height: 32.h,
-                          child: Row(
-                            children: [
+                      // Action bar: Reveal Translation + Heart
+                      SizedBox(
+                        width: double.infinity,
+                        height: 32.h,
+                        child: Row(
+                          children: [
+                            if (_result.hieroglyphs?.detected == true &&
+                                _result.hieroglyphs?.translation != null)
                               GestureDetector(
                                 onTap: () => setState(
                                   () => _showTranslation = !_showTranslation,
@@ -261,28 +294,46 @@ class _DetailsViewState extends State<DetailsView> {
                                   ),
                                 ),
                               ),
-                              const Spacer(),
-                              GestureDetector(
-                                onTap: _toggleFavorite,
-                                child: Icon(
-                                  hasScanLogId && _isFavorited
-                                      ? Icons.favorite
-                                      : Icons.favorite_border_rounded,
-                                  size: 24.r,
-                                  color: hasScanLogId && _isFavorited
-                                      ? Colors.redAccent
-                                      : AppColors.of(
-                                          context,
-                                        ).footer.withValues(alpha: 0.6),
-                                ),
+                            const Spacer(),
+                            GestureDetector(
+                              onTap: _toggleFavorite,
+                              child: Icon(
+                                hasScanLogId && _isFavorited
+                                    ? Icons.favorite
+                                    : Icons.favorite_border_rounded,
+                                size: 24.r,
+                                color: hasScanLogId && _isFavorited
+                                    ? Colors.redAccent
+                                    : AppColors.of(
+                                        context,
+                                      ).footer.withValues(alpha: 0.6),
                               ),
-                              Gap(10.w),
-                            ],
-                          ),
+                            ),
+                            Gap(10.w),
+                          ],
                         ),
+                      ),
                       Gap(32.h),
                       // Product image
-                      if (_imagePath != null)
+                      if (_result.artifact.imageUrl != null)
+                        Center(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(24.r),
+                            child: CachedNetworkImage(
+                              imageUrl: _result.artifact.imageUrl!.startsWith(
+                                    'http',
+                                  )
+                                  ? _result.artifact.imageUrl!
+                                  : '${ApiConstants.baseUrl}${_result.artifact.imageUrl!}',
+                              width: 150.w,
+                              height: 220.h,
+                              fit: BoxFit.contain,
+                              errorWidget: (_, __, ___) =>
+                                  const SizedBox.shrink(),
+                            ),
+                          ),
+                        )
+                      else if (_imagePath != null)
                         Center(
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(24.r),
@@ -292,20 +343,6 @@ class _DetailsViewState extends State<DetailsView> {
                               width: 150.w,
                               height: 220.h,
                               fit: BoxFit.contain,
-                            ),
-                          ),
-                        )
-                      else if (_result.artifact.imageUrl != null)
-                        Center(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(24.r),
-                            child: CachedNetworkImage(
-                              imageUrl: _result.artifact.imageUrl!,
-                              width: 150.w,
-                              height: 220.h,
-                              fit: BoxFit.contain,
-                              errorWidget: (_, __, ___) =>
-                                  const SizedBox.shrink(),
                             ),
                           ),
                         ),

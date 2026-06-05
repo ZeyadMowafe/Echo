@@ -41,6 +41,11 @@ class ScanDetailLoaded extends ScanState {
   ScanDetailLoaded({required this.scanLog});
 }
 
+class ScanNoArtifactDetected extends ScanState {
+  final String? imagePath;
+  ScanNoArtifactDetected({this.imagePath});
+}
+
 class ScanFilterRejected extends ScanState {
   final String reason;
   final double? sharpness;

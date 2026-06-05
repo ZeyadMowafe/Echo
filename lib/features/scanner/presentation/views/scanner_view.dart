@@ -93,6 +93,7 @@ class _ScannerBodyState extends State<_ScannerBody> {
                       setState(() => _showTranslation = !_showTranslation),
                 );
               if (state is ScanFilterRejected) return _buildFilterRejected(context, state);
+              if (state is ScanNoArtifactDetected) return _buildNoArtifactDetected(context);
               if (state is ScanError) return _buildError(context, state);
               return _buildHome(context);
             },
@@ -355,30 +356,7 @@ class _ScannerBodyState extends State<_ScannerBody> {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      if (result.result.artifact.name != null)
-                        Builder(
-                          builder: (context) {
-                            final parts = <String>[];
-                            final a = result.result.artifact;
-                              if (a.era != null) parts.add(a.era!);
-                              if (a.material != null) parts.add(a.material!);
-                              if (a.category != null) parts.add(a.category!);
-                              if (a.type != null) parts.add(a.type!);
-                              if (parts.isEmpty) return const SizedBox.shrink();
-                              return Padding(
-                                padding: EdgeInsets.only(top: 8.h),
-                                child: Text(
-                                  parts.join(' | '),
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                      if (result.result.artifact.name == null)
+                      if (result.result.artifact.description != null)
                         Padding(
                           padding: EdgeInsets.only(top: 8.h),
                           child: Text(
@@ -1068,6 +1046,49 @@ class _ScannerBodyState extends State<_ScannerBody> {
             Text(
               state.reason,
               style: TextStyle(color: Colors.orange, fontSize: 15.sp),
+              textAlign: TextAlign.center,
+            ),
+            Gap(ScreenUtils.lg),
+            _ScanButton(
+              icon: Icons.refresh,
+              label: l10n.scanTryAgain,
+              onTap: () => context.read<ScanCubit>().clearResult(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNoArtifactDetected(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(ScreenUtils.xl),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.image_search,
+              size: ScreenUtils.iconXl * 1.5,
+              color: Colors.orangeAccent.withValues(alpha: 0.6),
+            ),
+            Gap(ScreenUtils.md),
+            Text(
+              l10n.scanTryAgain,
+              style: TextStyle(
+                color: Colors.orangeAccent,
+                fontSize: 18.sp,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Gap(ScreenUtils.sm),
+            Text(
+              l10n.scanAdjustImage,
+              style: TextStyle(
+                color: Colors.orangeAccent.withValues(alpha: 0.7),
+                fontSize: 14.sp,
+              ),
               textAlign: TextAlign.center,
             ),
             Gap(ScreenUtils.lg),

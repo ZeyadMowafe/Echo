@@ -99,10 +99,15 @@ class ScanCubit extends Cubit<ScanState> {
           // Gate 4: annotate success → pause scanning, emit anchored
           pipeline.onSuccess();
           if (!isClosed) {
-            emit(ScanAnchored(
-              result: response,
-              imagePath: _currentImagePath,
-            ));
+            if (response.artifact.name == null &&
+                response.artifact.imageUrl == null) {
+              emit(ScanNoArtifactDetected(imagePath: _currentImagePath));
+            } else {
+              emit(ScanAnchored(
+                result: response,
+                imagePath: _currentImagePath,
+              ));
+            }
           }
         },
       );
