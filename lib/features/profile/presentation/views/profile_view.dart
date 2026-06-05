@@ -83,14 +83,6 @@ class _ProfileViewState extends State<ProfileView> {
     _scanCubit.loadScanLogs();
   }
 
-  void _loadTabData() {
-    if (_selectedTabIndex == 0) {
-      _scanCubit.loadFavorites();
-    } else {
-      _scanCubit.loadScanLogs();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -461,10 +453,7 @@ class _ProfileViewState extends State<ProfileView> {
         children: [
           Expanded(
             child: GestureDetector(
-              onTap: () {
-                setState(() => _selectedTabIndex = 0);
-                _loadTabData();
-              },
+              onTap: () => setState(() => _selectedTabIndex = 0),
               child: CustomGlassContainer(
                 padding: EdgeInsets.symmetric(vertical: 12.h),
                 borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
@@ -493,10 +482,7 @@ class _ProfileViewState extends State<ProfileView> {
           ),
           Expanded(
             child: GestureDetector(
-              onTap: () {
-                setState(() => _selectedTabIndex = 1);
-                _loadTabData();
-              },
+              onTap: () => setState(() => _selectedTabIndex = 1),
               child: CustomGlassContainer(
                 padding: EdgeInsets.symmetric(vertical: 12.h),
                 borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
@@ -529,18 +515,50 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   Widget _buildTabContent() {
+    return IndexedStack(
+      index: _selectedTabIndex,
+      children: [
+        _buildFavoritesTab(),
+        _buildScanLogsTab(),
+      ],
+    );
+  }
+
+  Widget _buildFavoritesTab() {
     return BlocBuilder<ScanCubit, ScanState>(
+      buildWhen: (_, curr) => curr is ScanFavoritesLoaded || curr is ScanError,
       builder: (context, state) {
+        if (state is ScanFavoritesLoaded) {
+          if (state.favorites.isEmpty) return _buildEmptyState();
+          return _buildLogList(state.favorites);
+        }
+        if (state is ScanError) {
+          return Padding(
+            padding: EdgeInsets.all(ScreenUtils.xl),
+            child: Center(
+              child: Text(
+                state.message,
+                style: TextStyle(color: Colors.redAccent, fontSize: 14.sp),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          );
+        }
         if (state is ScanLoading) {
           return Padding(
             padding: EdgeInsets.symmetric(vertical: 60.h),
             child: AppLoading.page(),
           );
         }
-        if (state is ScanFavoritesLoaded) {
-          if (state.favorites.isEmpty) return _buildEmptyState();
-          return _buildLogList(state.favorites);
-        }
+        return _buildEmptyState();
+      },
+    );
+  }
+
+  Widget _buildScanLogsTab() {
+    return BlocBuilder<ScanCubit, ScanState>(
+      buildWhen: (_, curr) => curr is ScanLogsLoaded || curr is ScanError,
+      builder: (context, state) {
         if (state is ScanLogsLoaded) {
           if (state.scanLogs.isEmpty) return _buildEmptyState();
           return _buildLogList(state.scanLogs);
@@ -555,6 +573,12 @@ class _ProfileViewState extends State<ProfileView> {
                 textAlign: TextAlign.center,
               ),
             ),
+          );
+        }
+        if (state is ScanLoading) {
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: 60.h),
+            child: AppLoading.page(),
           );
         }
         return _buildEmptyState();
