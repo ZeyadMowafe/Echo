@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
@@ -42,56 +41,16 @@ class _CameraScannerViewState extends State<CameraScannerView> {
   String? _capturedImagePath;
   bool _showTranslation = false;
   bool _showFullTranslation = false;
-  bool _isStable = false;
-  late final ScanCubit _cubit;
   final ImagePicker _picker = ImagePicker();
-  Timer? _panAwayTimer;
-  StreamSubscription<bool>? _stabilitySub;
-  StreamSubscription<bool>? _cooldownSub;
 
   @override
   void initState() {
-    _cubit = context.read<ScanCubit>();
     super.initState();
     if (widget.initialImagePath != null) {
       setState(() => _isInitialized = true);
     } else {
       _initCamera();
     }
-    // Use the unified pipeline from ScanCubit
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      final cubit = context.read<ScanCubit>();
-      cubit.pipeline.startMotionDetection();
-      _stabilitySub = cubit.pipeline.stabilityStream.listen((stable) {
-        if (!mounted) return;
-        setState(() => _isStable = stable);
-        // Gate 4 reset: only reset if user keeps moving for ~1.5s
-        if (_phase == _ScanPhase.result && cubit.state is ScanAnchored) {
-          if (!stable) {
-            _panAwayTimer ??= Timer(const Duration(seconds: 3), () {
-              if (!mounted) return;
-              final cubit = context.read<ScanCubit>();
-              if (cubit.state is! ScanAnchored) return;
-              cubit.onPanAway();
-              setState(() {
-                _phase = _ScanPhase.scanning;
-                _isScanning = false;
-                _capturedImagePath = null;
-                _showTranslation = false;
-                _showFullTranslation = false;
-                _controller = null;
-                _isInitialized = false;
-              });
-              _initCamera();
-            });
-          } else {
-            _panAwayTimer?.cancel();
-            _panAwayTimer = null;
-          }
-        }
-      });
-    });
   }
 
   Future<void> _initCamera() async {
@@ -121,7 +80,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
     setState(() => _phase = _ScanPhase.analyzing);
     final cubit = context.read<ScanCubit>();
     cubit.setImagePath(path);
-    cubit.analyzeImage(skipBlurCheck: true);
+    cubit.analyzeImage();
   }
 
   Future<void> _pickFromGallery() async {
@@ -132,16 +91,12 @@ class _CameraScannerViewState extends State<CameraScannerView> {
       setState(() => _phase = _ScanPhase.analyzing);
       final cubit = context.read<ScanCubit>();
       cubit.setImagePath(file.path);
-      cubit.analyzeImage(skipBlurCheck: true);
+      cubit.analyzeImage();
     } on PlatformException catch (_) {}
   }
 
   @override
   void dispose() {
-    _panAwayTimer?.cancel();
-    _stabilitySub?.cancel();
-    _cooldownSub?.cancel();
-    _cubit.pipeline.stopMotionDetection();
     if (!_isDone) {
       _controller?.dispose();
       _controller = null;
@@ -312,30 +267,24 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                 bottom: MediaQuery.of(context).padding.bottom + 20.h,
                 child: Center(
                   child: GestureDetector(
-                    onTap: _isStable ? _onCapturePressed : null,
+                    onTap: _onCapturePressed,
                     child: Container(
                       width: 72.r,
                       height: 72.r,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: _isStable
-                            ? Colors.white
-                            : Colors.white.withValues(alpha: 0.3),
+                        color: Colors.white,
                         border: Border.all(
-                          color: _isStable
-                              ? Colors.white
-                              : Colors.white.withValues(alpha: 0.3),
+                          color: Colors.white,
                           width: 4,
                         ),
-                        boxShadow: _isStable
-                            ? [
-                                BoxShadow(
-                                  color: Colors.white.withValues(alpha: 0.4),
-                                  blurRadius: 16,
-                                  spreadRadius: 2,
-                                ),
-                              ]
-                            : null,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.white.withValues(alpha: 0.4),
+                            blurRadius: 16,
+                            spreadRadius: 2,
+                          ),
+                        ],
                       ),
                       child: Center(
                         child: Container(
@@ -343,9 +292,7 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                           height: 60.r,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: _isStable
-                                ? Colors.white
-                                : Colors.transparent,
+                            color: Colors.white,
                           ),
                         ),
                       ),

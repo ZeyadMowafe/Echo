@@ -1,9 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:echo_explorer/core/hive/cache_helper.dart';
-import 'package:echo_explorer/features/scanner/data/services/image_filter_pipeline/motion_filter.dart';
-import 'package:echo_explorer/features/scanner/data/services/image_filter_pipeline/network_manager.dart';
-import 'package:echo_explorer/features/scanner/data/services/image_filter_pipeline/pipeline.dart';
-import 'package:echo_explorer/features/scanner/data/services/image_filter_pipeline/scan_pipeline.dart';
+import 'package:echo_explorer/features/scanner/data/services/image_filter_pipeline/photo_pipeline.dart';
 import 'package:echo_explorer/features/scanner/domain/entities/scan_log_entity.dart';
 import 'package:echo_explorer/features/scanner/domain/entities/scan_response_entity.dart';
 import 'package:echo_explorer/features/scanner/domain/usecases/analyze_image_usecase.dart';
@@ -20,7 +18,7 @@ class ScanCubit extends Cubit<ScanState> {
   final GetFavoriteScansUseCase getFavoriteScansUseCase;
   final ToggleFavoriteUseCase toggleFavoriteUseCase;
 
-  final ScanPipeline pipeline;
+  final PhotoPipeline photoPipeline;
 
   String? _currentImagePath;
   String? get currentImagePath => _currentImagePath;
@@ -30,12 +28,8 @@ class ScanCubit extends Cubit<ScanState> {
     required this.getScanLogsUseCase,
     required this.getFavoriteScansUseCase,
     required this.toggleFavoriteUseCase,
-    ScanPipeline? pipeline,
-  }) : pipeline = pipeline ??
-            ScanPipeline(
-              motionFilter: MotionFilter(),
-              networkManager: NetworkManager(),
-            ),
+    PhotoPipeline? photoPipeline,
+  }) : photoPipeline = photoPipeline ?? PhotoPipeline(),
        super(ScanInitial());
 
   void setImagePath(String path) {
@@ -44,95 +38,68 @@ class ScanCubit extends Cubit<ScanState> {
   }
 
   void clearSession() {
-    pipeline.reset();
+    photoPipeline.reset();
   }
 
-  Future<void> analyzeImage({String? language, bool skipBlurCheck = false}) async {
+  Future<void> analyzeImage({String? language}) async {
     if (_currentImagePath == null) return;
     if (!isClosed) emit(ScanLoading());
 
-    final path = _currentImagePath!;
+    final file = File(_currentImagePath!);
+    final result = await photoPipeline.processPhoto(file);
 
-    // ── Run gates 1-3 through the pipeline ──
-    final result = await pipeline.runFilters(path, skipBlurCheck: skipBlurCheck);
-    if (result.rejection != PipelineRejection.none) {
+    if (result.rejection != null) {
       if (!isClosed) {
         emit(ScanFilterRejected(
-          reason: result.message ?? _rejectionMessage(result),
+          reason: result.message ?? 'Image rejected',
           sharpness: result.sharpness,
         ));
       }
       return;
     }
 
-    // ── Gate 4: send & handle success ──
-    pipeline.networkManager.enqueue(() async {
-      final lang =
-          language ?? CacheHelper.getData(key: 'localeLanguageCode') ?? 'en';
-      final apiResult = await analyzeImageUseCase(AnalyzeImageParams(
-        imagePath: path,
-        language: lang,
-      ));
-      if (isClosed) return;
-      apiResult.fold(
-        (failure) {
-          pipeline.onFailure();
-          if (!isClosed) emit(ScanError(message: failure.message));
-        },
-        (response) {
-          // Cache scan data
-          final scanLogId = response.scanLogId;
-          if (scanLogId != null) {
-            CacheHelper.putData(
-              key: 'scanData_$scanLogId',
-              value: jsonEncode({
-                'artifactName': response.artifact.name,
-                'description': response.artifact.description,
-                'era': response.artifact.era,
-                'material': response.artifact.material,
-                'category': response.artifact.category,
-                'type': response.artifact.type,
-                'hieroglyphsTranslation': response.hieroglyphs?.translation,
-              }),
-            );
+    final lang =
+        language ?? CacheHelper.getData(key: 'localeLanguageCode') ?? 'en';
+    final apiResult = await analyzeImageUseCase(AnalyzeImageParams(
+      imagePath: result.file!.path,
+      language: lang,
+    ));
+    if (isClosed) return;
+    apiResult.fold(
+      (failure) {
+        if (!isClosed) emit(ScanError(message: failure.message));
+      },
+      (response) {
+        final scanLogId = response.scanLogId;
+        if (scanLogId != null) {
+          CacheHelper.putData(
+            key: 'scanData_$scanLogId',
+            value: jsonEncode({
+              'artifactName': response.artifact.name,
+              'description': response.artifact.description,
+              'era': response.artifact.era,
+              'material': response.artifact.material,
+              'category': response.artifact.category,
+              'type': response.artifact.type,
+              'hieroglyphsTranslation': response.hieroglyphs?.translation,
+            }),
+          );
+        }
+        if (!isClosed) {
+          if (response.artifact.name == null &&
+              response.artifact.description == null &&
+              response.artifact.era == null &&
+              response.artifact.imageUrl == null) {
+            emit(ScanNoArtifactDetected(imagePath: _currentImagePath));
+          } else {
+            emit(ScanAnchored(
+              result: response,
+              imagePath: _currentImagePath,
+            ));
           }
-          // Gate 4: annotate success → pause scanning, emit anchored
-          pipeline.onSuccess();
-          if (!isClosed) {
-            if (response.artifact.name == null &&
-                response.artifact.description == null &&
-                response.artifact.era == null &&
-                response.artifact.imageUrl == null) {
-              emit(ScanNoArtifactDetected(imagePath: _currentImagePath));
-            } else {
-              emit(ScanAnchored(
-                result: response,
-                imagePath: _currentImagePath,
-              ));
-            }
-          }
-        },
-      );
-    });
-  }
-
-  String _rejectionMessage(PipelineResult result) {
-    switch (result.rejection) {
-      case PipelineRejection.unstable:
-        return 'Device is moving — hold still...';
-      case PipelineRejection.blurry:
-        return 'Image too blurry (sharpness: ${result.sharpness?.toStringAsFixed(0) ?? "?"})';
-      case PipelineRejection.throttled:
-        return 'Please wait for the current scan to complete';
-      case PipelineRejection.none:
-        return '';
-    }
-  }
-
-  /// Called by the UI when the camera pans away from the artifact.
-  void onPanAway() {
-    pipeline.onPanAway();
-    clearResult();
+        }
+      },
+    );
   }
 
   Future<void> loadScanLogs() async {
@@ -262,11 +229,9 @@ class ScanCubit extends Cubit<ScanState> {
     return ok;
   }
 
-  NetworkManager get networkManager => pipeline.networkManager;
-
   void clearResult() {
     _currentImagePath = null;
-    pipeline.reset();
+    photoPipeline.reset();
     if (!isClosed) emit(ScanInitial());
   }
 }

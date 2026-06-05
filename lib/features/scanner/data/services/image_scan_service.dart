@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class ImageScanService {
   CameraController? _cameraController;
@@ -46,15 +45,6 @@ class ImageScanService {
       await _cameraController!.setFlashMode(FlashMode.off);
     }
     return File(photo.path);
-  }
-
-  Future<Uint8List> compressImage(File file, {int quality = 90}) async {
-    final compressed = await FlutterImageCompress.compressWithFile(
-      file.absolute.path,
-      quality: quality,
-      format: CompressFormat.jpeg,
-    );
-    return compressed ?? await file.readAsBytes();
   }
 
   Future<Response> sendToBackend({
