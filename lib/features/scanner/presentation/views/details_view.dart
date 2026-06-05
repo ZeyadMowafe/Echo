@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'dart:ui';
@@ -17,6 +16,8 @@ import 'package:echo_explorer/core/widgets/custom_floating_action_button.dart';
 
 import 'package:echo_explorer/core/widgets/custom_glass_drawer.dart';
 
+import 'package:echo_explorer/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:echo_explorer/features/auth/presentation/widgets/auth_sheet_helper.dart';
 import 'package:echo_explorer/features/chat/presentation/views/chat_view.dart';
 
 import 'package:echo_explorer/core/constants/app_dimensions.dart';
@@ -61,37 +62,6 @@ class _DetailsViewState extends State<DetailsView> {
   void initState() {
     super.initState();
     _isFavorited = widget.args.isFavorited;
-    _logResponse();
-  }
-
-  void _logResponse() {
-    print('╔═══════════════════════════════════════════');
-    print('║  📄 DetailsView - Full Response Data');
-    print('╠═══════════════════════════════════════════');
-    print('║ scanLogId: ${_result.scanLogId}');
-    print('║ imagePath: $_imagePath');
-    print('║ isFavorited: $_isFavorited');
-    print('║');
-    print('║ ── Artifact ──');
-    print('║ name: ${_result.artifact.name}');
-    print('║ description: ${_result.artifact.description}');
-    print('║ era: ${_result.artifact.era}');
-    print('║ material: ${_result.artifact.material}');
-    print('║ category: ${_result.artifact.category}');
-    print('║ type: ${_result.artifact.type}');
-    print('║ imageUrl: ${_result.artifact.imageUrl}');
-    print('║ isPrimaryModel: ${_result.artifact.isPrimaryModel}');
-    print('║ artifactModelId: ${_result.artifact.artifactModelId}');
-    print('║');
-    print('║ ── Hieroglyphs ──');
-    print('║ detected: ${_result.hieroglyphs?.detected}');
-    print('║ translation: ${_result.hieroglyphs?.translation}');
-    print('║ translationMethod: ${_result.hieroglyphs?.translationMethod}');
-    print('║ totalLines: ${_result.hieroglyphs?.totalLines}');
-    print('║ totalGlyphs: ${_result.hieroglyphs?.totalGlyphs}');
-    print('║ cartoucheCount: ${_result.hieroglyphs?.cartoucheCount}');
-    print('║ royalNames: ${_result.hieroglyphs?.royalNames}');
-    print('╚═══════════════════════════════════════════');
   }
 
   void _showFavoriteToast() {
@@ -103,6 +73,11 @@ class _DetailsViewState extends State<DetailsView> {
   }
 
   void _toggleFavorite() {
+    final authState = context.read<AuthCubit>().state;
+    if (authState is! Authenticated) {
+      showAuthSheet(context, '');
+      return;
+    }
     final scanLogId = _result.scanLogId;
     if (scanLogId == null) return;
     setState(() => _isFavorited = !_isFavorited);

@@ -79,7 +79,7 @@ class ChatCubit extends Cubit<ChatState> {
     final currentMessages = _currentMessages();
     emit(ChatBotLoading(messages: [...currentMessages, userMessage]));
 
-    print('=== ChatCubit.sendMessage: artifactId=$_artifactId, sessionId=$_currentSessionId, text="${text.trim()}" ===');
+
     final result = await sendMessageUseCase(SendMessageParams(
       message: text.trim(),
       language: CacheHelper.getData(
@@ -111,7 +111,6 @@ class ChatCubit extends Cubit<ChatState> {
           userMessage,
           assistantMessage,
         ];
-        print('=== ChatCubit.sendMessage success: sessionId=${reply.sessionId}, renaming with title=$_artifactTitle ===');
         await _saveMessages(reply.sessionId, allMessages);
         final sessionTitle = _artifactTitle ?? text.trim();
         if (_artifactTitle != null) {
@@ -230,7 +229,6 @@ class ChatCubit extends Cubit<ChatState> {
   }
 
   void startArtifactSession({required String artifactId, String? title}) {
-    print('=== ChatCubit.startArtifactSession: artifactId=$artifactId, title=$title ===');
     _currentSessionId = null;
     _artifactId = artifactId;
     _artifactTitle = title;

@@ -10,6 +10,8 @@ import 'package:echo_explorer/core/widgets/app_loading.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_back_button.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_container.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_drawer.dart';
+import 'package:echo_explorer/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:echo_explorer/features/auth/presentation/widgets/auth_sheet_helper.dart';
 import 'package:echo_explorer/features/chat/presentation/views/chat_view.dart';
 import 'package:echo_explorer/features/home/presentation/cubit/features_cubit.dart';
 import 'package:echo_explorer/features/scanner/data/models/scan_result_args.dart';
@@ -212,6 +214,11 @@ class _ScannerBodyState extends State<_ScannerBody> {
   }
 
   Future<void> _saveToFavorites(BuildContext context, String scanLogId) async {
+    final authState = context.read<AuthCubit>().state;
+    if (authState is! Authenticated) {
+      showAuthSheet(context, '');
+      return;
+    }
     final cubit = context.read<ScanCubit>();
     final wasFavorited =
         cubit.state is ScanResultLoaded &&

@@ -1,10 +1,10 @@
 import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:echo_explorer/core/error/exceptions.dart';
 import 'package:echo_explorer/core/network/api_constants.dart';
 import 'package:echo_explorer/features/scanner/data/models/scan_log_model.dart';
 import 'package:echo_explorer/features/scanner/data/models/scan_response_model.dart';
+import 'package:flutter/material.dart';
 
 abstract class ScanRemoteDataSource {
   Future<ScanResponseModel> analyzeImage({required String imagePath, required String language});
@@ -34,12 +34,12 @@ class ScanRemoteDataSourceImpl implements ScanRemoteDataSource {
         ),
       );
       if (response.statusCode == 200) {
-        print('╔═══════════════════════════════════════════');
-        print('║  📸 AnalyzeImage - Full API Response');
-        print('╠═══════════════════════════════════════════');
+        debugPrint('╔═══════════════════════════════════════════');
+        debugPrint('║  📸 AnalyzeImage - Full API Response');
+        debugPrint('╠═══════════════════════════════════════════');
         final encoder = JsonEncoder.withIndent('  ');
-        print(encoder.convert(response.data));
-        print('╚═══════════════════════════════════════════');
+        debugPrint(encoder.convert(response.data));
+        debugPrint('╚═══════════════════════════════════════════');
         return ScanResponseModel.fromJson(response.data);
       }
       throw ServerException(message: 'Failed to analyze image');
@@ -85,18 +85,13 @@ class ScanRemoteDataSourceImpl implements ScanRemoteDataSource {
   @override
   Future<void> toggleFavorite(String scanLogId) async {
     try {
-      print('=== ToggleFavorite: Calling PATCH /api/scanlogs/$scanLogId/favorite ===');
       final response = await dio.patch(
         '${ApiConstants.scanLogs}/$scanLogId/favorite',
         data: {'isFavorited': true},
       );
-      print('=== ToggleFavorite: Response status: ${response.statusCode} ===');
-      print('=== ToggleFavorite: Response body: ${response.data} ===');
       if (response.statusCode == 200 || response.statusCode == 204) return;
       throw ServerException(message: 'Failed to toggle favorite (status ${response.statusCode})');
     } on DioException catch (e) {
-      print('=== ToggleFavorite: DioException ${e.response?.statusCode} - ${e.message} ===');
-      print('=== ToggleFavorite: Response data: ${e.response?.data} ===');
       throw ServerException(message: e.message, statusCode: e.response?.statusCode);
     }
   }

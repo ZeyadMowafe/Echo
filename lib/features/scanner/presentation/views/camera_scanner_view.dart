@@ -923,7 +923,8 @@ class _CameraScannerViewState extends State<CameraScannerView> {
                     CustomGlassBackButton(
                       iconColor: Colors.white,
                       onPressed: () {
-                        if (_phase == _ScanPhase.result) {
+                        if (_phase == _ScanPhase.result ||
+                            _phase == _ScanPhase.analyzing) {
                           context.read<ScanCubit>().clearResult();
                           setState(() {
                             _phase = _ScanPhase.scanning;

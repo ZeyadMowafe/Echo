@@ -9,7 +9,6 @@ import 'package:echo_explorer/core/hive/cache_helper.dart';
 import 'package:echo_explorer/core/routing/app_transitions.dart';
 import 'package:echo_explorer/core/widgets/app_loading.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:echo_explorer/core/widgets/custom_glass_drawer.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_container.dart';
 import 'package:echo_explorer/core/widgets/custom_glass_app_bar.dart';
 import 'package:echo_explorer/features/auth/presentation/cubit/auth_cubit.dart';
@@ -118,15 +117,6 @@ class _ProfileViewState extends State<ProfileView> {
 
             return Scaffold(
               backgroundColor: appColors.background,
-              drawerScrimColor: Colors.transparent,
-              drawer: CustomGlassDrawer(
-                currentFeature: AppStrings.profileFeature.key,
-                onTap: (featureName) {
-                  final cubit = context.read<FeaturesCubit>();
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                  cubit.changeFeature(featureName: featureName);
-                },
-              ),
               body: Stack(
                 children: [
                   // 1. Cinematic Ambient Glowing Orbs Background
@@ -153,7 +143,7 @@ class _ProfileViewState extends State<ProfileView> {
                                   color: appColors.footer,
                                   size: ScreenUtils.iconMd,
                                 ),
-                                onPressed: () => Scaffold.of(innerContext).openDrawer(),
+                                onPressed: () => Scaffold.of(context).openDrawer(),
                               ),
                             );
                           },

@@ -100,6 +100,8 @@ class ScanCubit extends Cubit<ScanState> {
           pipeline.onSuccess();
           if (!isClosed) {
             if (response.artifact.name == null &&
+                response.artifact.description == null &&
+                response.artifact.era == null &&
                 response.artifact.imageUrl == null) {
               emit(ScanNoArtifactDetected(imagePath: _currentImagePath));
             } else {

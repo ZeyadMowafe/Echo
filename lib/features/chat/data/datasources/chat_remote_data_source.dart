@@ -33,9 +33,6 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
       final body = <String, dynamic>{'message': message, 'language': language};
       if (artifactId != null) body['artifactId'] = artifactId;
       if (sessionId != null) body['sessionId'] = sessionId;
-      print(
-        "messagesssssssssssssssssssssssssssssssssssssssssssssssssssss$language",
-      );
 
       final response = await dio.post(
         ApiConstants.chat,
