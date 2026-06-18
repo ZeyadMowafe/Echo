@@ -37,49 +37,71 @@ class ProfileView extends StatefulWidget {
 
 class _ProfileViewState extends State<ProfileView> {
   int _selectedTabIndex = 0;
+  late final PageController _pageController;
   late final ScanCubit _scanCubit;
   bool _didShowAuthSheet = false;
+
+  bool _didTryLoadData = false;
 
   // Local state to populate the stats panel
   int? _favoritesCount;
   int? _scansCount;
+  bool _favoritesLoaded = false;
+  bool _scanLogsLoaded = false;
+
+  // Local data lists so each tab always shows its own data
+  List<ScanLogEntity>? _favorites;
+  List<ScanLogEntity>? _scanLogs;
 
   @override
   void initState() {
     super.initState();
+    _pageController = PageController();
     _scanCubit = sl<ScanCubit>();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_didShowAuthSheet) return;
     final authState = context.read<AuthCubit>().state;
     if (authState is! Authenticated) {
+      _didTryLoadData = false;
+      if (_didShowAuthSheet) return;
       _didShowAuthSheet = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         showAuthSheet(context, AppLocalizations.of(context).profileAuthMessage);
       });
-    } else {
-      _didShowAuthSheet = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        _loadInitialData();
-      });
+      return;
     }
+    if (_didTryLoadData) return;
+    _didTryLoadData = true;
+    _didShowAuthSheet = true;
+    // Silent reload from shared cache first (instant, no API call)
+    _scanCubit.silentReloadFavorites();
+    _scanCubit.silentReloadScanLogs();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _loadInitialData();
+    });
   }
 
   @override
   void dispose() {
-    _scanCubit.close();
+    _pageController.dispose();
     super.dispose();
   }
 
-  void _loadInitialData() {
-    // Eagerly trigger both loads once to populate the stats panel smoothly
-    _scanCubit.loadFavorites();
-    _scanCubit.loadScanLogs();
+  Future<void> _loadInitialData() async {
+    if (_selectedTabIndex == 0) {
+      await _scanCubit.loadFavorites();
+      if (!mounted) return;
+      await _scanCubit.loadScanLogs();
+    } else {
+      await _scanCubit.loadScanLogs();
+      if (!mounted) return;
+      await _scanCubit.loadFavorites();
+    }
   }
 
   @override
@@ -89,16 +111,40 @@ class _ProfileViewState extends State<ProfileView> {
 
     return BlocProvider.value(
       value: _scanCubit,
-      child: BlocListener<ScanCubit, ScanState>(
-        listener: (context, state) {
-          if (state is ScanFavoritesLoaded) {
-            setState(() => _favoritesCount = state.favorites.length);
-          } else if (state is ScanLogsLoaded) {
-            setState(() => _scansCount = state.scanLogs.length);
-          } else if (state is ScanError) {
-            ErrorHandler.showError(context, ServerFailure(state.message));
-          }
-        },
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<ScanCubit, ScanState>(
+            listener: (context, state) {
+              if (state is ScanFavoritesLoaded) {
+                _favoritesLoaded = true;
+                setState(() {
+                  _favoritesCount = state.favorites.length;
+                  _favorites = state.favorites;
+                });
+              } else if (state is ScanLogsLoaded) {
+                _scanLogsLoaded = true;
+                setState(() {
+                  _scansCount = state.scanLogs.length;
+                  _scanLogs = state.scanLogs;
+                });
+              } else if (state is ScanError) {
+                ErrorHandler.showError(context, ServerFailure(state.message));
+              }
+            },
+          ),
+          BlocListener<AuthCubit, AuthState>(
+            listenWhen: (previous, current) =>
+                previous is! Authenticated && current is Authenticated,
+            listener: (context, state) {
+              if (!_didTryLoadData) {
+                _didTryLoadData = true;
+                _scanCubit.silentReloadFavorites();
+                _scanCubit.silentReloadScanLogs();
+                _loadInitialData();
+              }
+            },
+          ),
+        ],
         child: BlocBuilder<AuthCubit, AuthState>(
           buildWhen: (previous, current) =>
               (previous is! Authenticated && current is Authenticated) ||
@@ -132,9 +178,15 @@ class _ProfileViewState extends State<ProfileView> {
                             return CustomGlassContainer(
                               width: ScreenUtils.glassButtonSize,
                               height: ScreenUtils.glassButtonSize,
-                              color: appColors.glassBase.withValues(alpha: 0.10),
-                              borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
-                              borderColor: appColors.glassBase.withValues(alpha: 0.15),
+                              color: appColors.glassBase.withValues(
+                                alpha: 0.10,
+                              ),
+                              borderRadius: BorderRadius.circular(
+                                ScreenUtils.radiusFull,
+                              ),
+                              borderColor: appColors.glassBase.withValues(
+                                alpha: 0.15,
+                              ),
                               padding: EdgeInsets.zero,
                               child: IconButton(
                                 padding: EdgeInsets.zero,
@@ -143,7 +195,8 @@ class _ProfileViewState extends State<ProfileView> {
                                   color: appColors.footer,
                                   size: ScreenUtils.iconMd,
                                 ),
-                                onPressed: () => Scaffold.of(context).openDrawer(),
+                                onPressed: () =>
+                                    Scaffold.of(context).openDrawer(),
                               ),
                             );
                           },
@@ -152,8 +205,12 @@ class _ProfileViewState extends State<ProfileView> {
                           width: ScreenUtils.glassButtonSize,
                           height: ScreenUtils.glassButtonSize,
                           color: appColors.glassBase.withValues(alpha: 0.10),
-                          borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
-                          borderColor: appColors.glassBase.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(
+                            ScreenUtils.radiusFull,
+                          ),
+                          borderColor: appColors.glassBase.withValues(
+                            alpha: 0.15,
+                          ),
                           padding: EdgeInsets.zero,
                           child: IconButton(
                             padding: EdgeInsets.zero,
@@ -162,51 +219,93 @@ class _ProfileViewState extends State<ProfileView> {
                               color: appColors.footer,
                               size: ScreenUtils.iconMd,
                             ),
-                            onPressed: () =>
-                                Navigator.of(context).pushNamed(AppRoutes.settingsView),
+                            onPressed: () => Navigator.of(
+                              context,
+                            ).pushNamed(AppRoutes.settingsView),
                           ),
                         ),
                       ),
                       Expanded(
-                        child: SingleChildScrollView(
-                          physics: const BouncingScrollPhysics(),
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16.w),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Gap(16.h),
-                                _buildProfileCard(
-                                  context: context,
-                                  loggedIn: loggedIn,
-                                  userName: userName,
-                                  userEmail: userEmail,
-                                  profileImagePath: profileImagePath,
-                                  coverImagePath: coverImagePath,
-                                  onEdit: () {
-                                    if (!loggedIn) {
-                                      showAuthSheet(
-                                        context,
-                                        l10n.profileAuthMessage,
-                                      );
-                                      return;
-                                    }
-                                    Navigator.of(
-                                      context,
-                                    ).pushNamed(AppRoutes.editProfileView);
-                                  },
-                                ),
-                                if (loggedIn) ...[
-                                  Gap(24.h),
-                                  _buildTabs(l10n, appColors),
-                                  Gap(16.h),
-                                  _buildTabContent(),
+                        child: loggedIn
+                            ? Column(
+                                children: [
+                                  SingleChildScrollView(
+                                    physics: const BouncingScrollPhysics(),
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 16.w,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Gap(16.h),
+                                          _buildProfileCard(
+                                            context: context,
+                                            loggedIn: loggedIn,
+                                            userName: userName,
+                                            userEmail: userEmail,
+                                            profileImagePath: profileImagePath,
+                                            coverImagePath: coverImagePath,
+                                            onEdit: () {
+                                              if (!loggedIn) {
+                                                showAuthSheet(
+                                                  context,
+                                                  l10n.profileAuthMessage,
+                                                );
+                                                return;
+                                              }
+                                              Navigator.of(context).pushNamed(
+                                                AppRoutes.editProfileView,
+                                              );
+                                            },
+                                          ),
+                                          Gap(24.h),
+                                          _buildTabs(l10n, appColors),
+                                          Gap(16.h),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(child: _buildTabContent()),
                                 ],
-                                Gap(120.h),
-                              ],
-                            ),
-                          ),
-                        ),
+                              )
+                            : SingleChildScrollView(
+                                physics: const BouncingScrollPhysics(),
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 16.w,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Gap(16.h),
+                                      _buildProfileCard(
+                                        context: context,
+                                        loggedIn: loggedIn,
+                                        userName: userName,
+                                        userEmail: userEmail,
+                                        profileImagePath: profileImagePath,
+                                        coverImagePath: coverImagePath,
+                                        onEdit: () {
+                                          if (!loggedIn) {
+                                            showAuthSheet(
+                                              context,
+                                              l10n.profileAuthMessage,
+                                            );
+                                            return;
+                                          }
+                                          Navigator.of(context).pushNamed(
+                                            AppRoutes.editProfileView,
+                                          );
+                                        },
+                                      ),
+                                      Gap(120.h),
+                                    ],
+                                  ),
+                                ),
+                              ),
                       ),
                     ],
                   ),
@@ -218,8 +317,6 @@ class _ProfileViewState extends State<ProfileView> {
       ),
     );
   }
-
-
 
   Widget _buildProfileCard({
     required BuildContext context,
@@ -434,89 +531,171 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   Widget _buildTabs(AppLocalizations l10n, BaseThemeColors appColors) {
-    return CustomGlassContainer(
-      padding: EdgeInsets.all(4.r),
-      borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
-      color: appColors.bottomNavBar.withValues(alpha: 0.35),
-      borderColor: appColors.glassBase.withValues(alpha: 0.05),
-      child: Row(
-        children: [
-          Expanded(
-            child: GestureDetector(
-              onTap: () => setState(() => _selectedTabIndex = 0),
-              child: CustomGlassContainer(
-                padding: EdgeInsets.symmetric(vertical: 12.h),
-                borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
-                color: _selectedTabIndex == 0
-                    ? appColors.footer.withValues(alpha: 0.15)
-                    : Colors.transparent,
-                borderColor: _selectedTabIndex == 0
-                    ? appColors.glassBase.withValues(alpha: 0.1)
-                    : Colors.transparent,
-                child: Center(
-                  child: Text(
-                    l10n.profileFavorite,
-                    style: TextStyle(
-                      color: _selectedTabIndex == 0
-                          ? appColors.footer
-                          : appColors.footer.withValues(alpha: 0.6),
-                      fontSize: 14.sp,
-                      fontWeight: _selectedTabIndex == 0
-                          ? FontWeight.w600
-                          : FontWeight.w400,
+    return AnimatedBuilder(
+      animation: _pageController,
+      builder: (context, _) {
+        // page offset: 0.0 = favorites, 1.0 = scans
+        final page = _pageController.hasClients
+            ? (_pageController.page ?? _selectedTabIndex.toDouble())
+            : _selectedTabIndex.toDouble();
+
+        final favActive = 1.0 - page.clamp(0.0, 1.0);
+        final scanActive = page.clamp(0.0, 1.0);
+
+        return GestureDetector(
+          onHorizontalDragUpdate: (details) {
+            if (_pageController.hasClients) {
+              // Move the page view with the finger drag
+              final newPixels =
+                  _pageController.position.pixels - details.delta.dx;
+              _pageController.position.jumpTo(newPixels);
+            }
+          },
+          onHorizontalDragEnd: (details) {
+            if (_pageController.hasClients) {
+              final velocity = details.primaryVelocity ?? 0.0;
+              final page = _pageController.page ?? 0;
+              int targetPage;
+
+              // If swiping fast enough, snap to the next/prev page based on velocity
+              if (velocity < -300) {
+                targetPage = 1;
+              } else if (velocity > 300) {
+                targetPage = 0;
+              } else {
+                // Otherwise snap to the nearest page
+                targetPage = page.round();
+              }
+
+              _pageController.animateToPage(
+                targetPage,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOut,
+              );
+            }
+          },
+          child: CustomGlassContainer(
+            padding: EdgeInsets.all(4.r),
+            borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
+            color: appColors.bottomNavBar.withValues(alpha: 0.35),
+            borderColor: appColors.glassBase.withValues(alpha: 0.05),
+            child: Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      _pageController.animateToPage(
+                        0,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                      );
+                    },
+                    child: CustomGlassContainer(
+                      padding: EdgeInsets.symmetric(vertical: 12.h),
+                      borderRadius: BorderRadius.circular(
+                        ScreenUtils.radiusFull,
+                      ),
+                      color: appColors.footer.withValues(
+                        alpha: 0.15 * favActive,
+                      ),
+                      borderColor: appColors.glassBase.withValues(
+                        alpha: 0.1 * favActive,
+                      ),
+                      child: Center(
+                        child: Text(
+                          l10n.profileFavorite,
+                          style: TextStyle(
+                            color: Color.lerp(
+                              appColors.footer.withValues(alpha: 0.6),
+                              appColors.footer,
+                              favActive,
+                            ),
+                            fontSize: 14.sp,
+                            fontWeight: favActive > 0.5
+                                ? FontWeight.w600
+                                : FontWeight.w400,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: GestureDetector(
-              onTap: () => setState(() => _selectedTabIndex = 1),
-              child: CustomGlassContainer(
-                padding: EdgeInsets.symmetric(vertical: 12.h),
-                borderRadius: BorderRadius.circular(ScreenUtils.radiusFull),
-                color: _selectedTabIndex == 1
-                    ? appColors.footer.withValues(alpha: 0.15)
-                    : Colors.transparent,
-                borderColor: _selectedTabIndex == 1
-                    ? appColors.glassBase.withValues(alpha: 0.1)
-                    : Colors.transparent,
-                child: Center(
-                  child: Text(
-                    l10n.profileScan,
-                    style: TextStyle(
-                      color: _selectedTabIndex == 1
-                          ? appColors.footer
-                          : appColors.footer.withValues(alpha: 0.6),
-                      fontSize: 14.sp,
-                      fontWeight: _selectedTabIndex == 1
-                          ? FontWeight.w600
-                          : FontWeight.w400,
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      _pageController.animateToPage(
+                        1,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                      );
+                    },
+                    child: CustomGlassContainer(
+                      padding: EdgeInsets.symmetric(vertical: 12.h),
+                      borderRadius: BorderRadius.circular(
+                        ScreenUtils.radiusFull,
+                      ),
+                      color: appColors.footer.withValues(
+                        alpha: 0.15 * scanActive,
+                      ),
+                      borderColor: appColors.glassBase.withValues(
+                        alpha: 0.1 * scanActive,
+                      ),
+                      child: Center(
+                        child: Text(
+                          l10n.profileScan,
+                          style: TextStyle(
+                            color: Color.lerp(
+                              appColors.footer.withValues(alpha: 0.6),
+                              appColors.footer,
+                              scanActive,
+                            ),
+                            fontSize: 14.sp,
+                            fontWeight: scanActive > 0.5
+                                ? FontWeight.w600
+                                : FontWeight.w400,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
   Widget _buildTabContent() {
-    return IndexedStack(
-      index: _selectedTabIndex,
-      children: [
-        _buildFavoritesTab(),
-        _buildScanLogsTab(),
-      ],
+    return PageView(
+      controller: _pageController,
+      physics: const PageScrollPhysics(parent: BouncingScrollPhysics()),
+      onPageChanged: (index) {
+        setState(() => _selectedTabIndex = index);
+        // Silently fetch fresh data when switching tabs to ensure updates reflect immediately
+        if (index == 0) {
+          _scanCubit.loadFavorites();
+        } else {
+          _scanCubit.loadScanLogs();
+        }
+      },
+      children: [_buildFavoritesTab(), _buildScanLogsTab()],
     );
   }
 
   Widget _buildFavoritesTab() {
+    // Show local data immediately if available
+    if (_favorites != null) {
+      if (_favorites!.isEmpty) return _buildEmptyState();
+      return _buildLogList(_favorites!);
+    }
+    // Fallback: use BlocBuilder while first load is in progress
     return BlocBuilder<ScanCubit, ScanState>(
-      buildWhen: (_, curr) => curr is ScanFavoritesLoaded || curr is ScanError,
+      buildWhen: (_, curr) =>
+          curr is ScanFavoritesLoaded ||
+          curr is ScanError ||
+          curr is ScanLoading,
       builder: (context, state) {
         if (state is ScanFavoritesLoaded) {
           if (state.favorites.isEmpty) return _buildEmptyState();
@@ -546,8 +725,15 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   Widget _buildScanLogsTab() {
+    // Show local data immediately if available
+    if (_scanLogs != null) {
+      if (_scanLogs!.isEmpty) return _buildEmptyState();
+      return _buildLogList(_scanLogs!);
+    }
+    // Fallback: use BlocBuilder while first load is in progress
     return BlocBuilder<ScanCubit, ScanState>(
-      buildWhen: (_, curr) => curr is ScanLogsLoaded || curr is ScanError,
+      buildWhen: (_, curr) =>
+          curr is ScanLogsLoaded || curr is ScanError || curr is ScanLoading,
       builder: (context, state) {
         if (state is ScanLogsLoaded) {
           if (state.scanLogs.isEmpty) return _buildEmptyState();
@@ -578,9 +764,8 @@ class _ProfileViewState extends State<ProfileView> {
 
   Widget _buildLogList(List<ScanLogEntity> logs) {
     return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.zero,
+      physics: const BouncingScrollPhysics(),
+      padding: EdgeInsets.fromLTRB(0, 0, 0, 120.h),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 4,
         crossAxisSpacing: 8,
@@ -605,7 +790,7 @@ class _ProfileViewState extends State<ProfileView> {
               status: 'completed',
               processingTimeMs: 0,
               artifact: ScanArtifactEntity(
-                isPrimaryModel: false,
+                isPrimaryModel: log.isPrimaryModel,
                 artifactModelId: log.artifactModelId,
                 name: log.artifactName,
                 description: log.description,
@@ -635,7 +820,10 @@ class _ProfileViewState extends State<ProfileView> {
                   ),
                 ),
               ),
-            );
+            ).then((_) {
+              _scanCubit.silentReloadFavorites();
+              _scanCubit.silentReloadScanLogs();
+            });
           },
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8.r),
@@ -701,8 +889,6 @@ class _ProfileViewState extends State<ProfileView> {
                 textAlign: TextAlign.center,
               ),
               Gap(18.h),
-
-              // Tactile interactive glass shortcut to scan!
             ],
           ),
         ),
@@ -831,87 +1017,86 @@ class _PulsatingAvatarState extends State<_PulsatingAvatar>
         child: AnimatedBuilder(
           animation: _controller,
           builder: (context, child) {
-          return Stack(
-            alignment: Alignment.center,
-            children: [
-              // Double expand outer halo (indicating active, premium connection)
-              if (widget.isLoggedIn) ...[
-                Transform.scale(
-                  scale: 1.0 + 0.15 * _controller.value,
-                  child: Container(
-                    width: widget.size - 8.r,
-                    height: widget.size - 8.r,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: AppColors.secondary.withValues(
-                          alpha: 0.25 * (1.0 - _controller.value),
+            return Stack(
+              alignment: Alignment.center,
+              children: [
+                // Double expand outer halo (indicating active, premium connection)
+                if (widget.isLoggedIn) ...[
+                  Transform.scale(
+                    scale: 1.0 + 0.15 * _controller.value,
+                    child: Container(
+                      width: widget.size - 8.r,
+                      height: widget.size - 8.r,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: AppColors.secondary.withValues(
+                            alpha: 0.25 * (1.0 - _controller.value),
+                          ),
+                          width: 1.5.r,
                         ),
-                        width: 1.5.r,
                       ),
+                    ),
+                  ),
+                ],
+                // Core avatar container
+                Container(
+                  width: widget.size,
+                  height: widget.size,
+                  padding: EdgeInsets.all(4.r),
+                  decoration: BoxDecoration(
+                    color: appColors.background,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.secondary.withValues(
+                          alpha: widget.isLoggedIn ? 0.12 : 0.0,
+                        ),
+                        blurRadius: 10.r,
+                        spreadRadius: 1.r,
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(widget.size / 2),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: widget.isLoggedIn
+                            ? AppColors.secondary.withValues(alpha: 0.15)
+                            : appColors.footer.withValues(alpha: 0.8),
+                        image: widget.imagePath != null
+                            ? DecorationImage(
+                                image: ResizeImage(
+                                  FileImage(File(widget.imagePath!)),
+                                  width: 150,
+                                ),
+                                fit: BoxFit.cover,
+                              )
+                            : null,
+                      ),
+                      alignment: Alignment.center,
+                      child: widget.imagePath == null
+                          ? Text(
+                              widget.isLoggedIn ? letter : "?",
+                              style: TextStyle(
+                                fontSize: widget.size * 0.4,
+                                height: 1,
+                                color: widget.isLoggedIn
+                                    ? AppColors.secondary
+                                    : appColors.background,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )
+                          : null,
                     ),
                   ),
                 ),
               ],
-              // Core avatar container
-              Container(
-                width: widget.size,
-                height: widget.size,
-                padding: EdgeInsets.all(4.r),
-                decoration: BoxDecoration(
-                  color: appColors.background,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.secondary.withValues(
-                        alpha: widget.isLoggedIn ? 0.12 : 0.0,
-                      ),
-                      blurRadius: 10.r,
-                      spreadRadius: 1.r,
-                    ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(widget.size / 2),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: widget.isLoggedIn
-                          ? AppColors.secondary.withValues(alpha: 0.15)
-                          : appColors.footer.withValues(alpha: 0.8),
-                      image: widget.imagePath != null
-                          ? DecorationImage(
-                              image: ResizeImage(
-                                FileImage(File(widget.imagePath!)),
-                                width: 150,
-                              ),
-                              fit: BoxFit.cover,
-                            )
-                          : null,
-                    ),
-                    alignment: Alignment.center,
-                    child: widget.imagePath == null
-                        ? Text(
-                            widget.isLoggedIn ? letter : "?",
-                            style: TextStyle(
-                              fontSize: widget.size * 0.4,
-                              height: 1,
-                              color: widget.isLoggedIn
-                                  ? AppColors.secondary
-                                  : appColors.background,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          )
-                        : null,
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
-      ),
+            );
+          },
+        ),
       ),
     );
   }
 }
-

@@ -173,20 +173,6 @@ class _ChatViewState extends State<ChatView> {
         onTap: () => FocusScope.of(context).unfocus(),
         child: Stack(
           children: [
-            if (isDark)
-              Positioned.fill(
-                child: Image.asset(
-                  'assets/images/chat_background_dark.jpg',
-                  cacheWidth: 1080,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            if (isDark)
-              Positioned.fill(
-                child: Container(
-                  color: const Color(0xFF0D1215).withOpacity(0.7),
-                ),
-              ),
             Column(
               children: [
                 _buildTopBar(context),

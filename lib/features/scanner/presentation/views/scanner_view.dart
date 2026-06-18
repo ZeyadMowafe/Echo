@@ -47,86 +47,105 @@ class _ScannerBodyState extends State<_ScannerBody> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      backgroundColor: AppColors.of(context).background,
-      drawerScrimColor: Colors.transparent,
-      drawer: CustomGlassDrawer(
-        currentFeature: AppStrings.scanFeature.key,
-        onTap: (featureName) {
-          final cubit = context.read<FeaturesCubit>();
-          Navigator.of(context).popUntil((route) => route.isFirst);
-          cubit.changeFeature(featureName: featureName);
-        },
-      ),
-      body: Stack(
-        children: [
-          BlocBuilder<ScanCubit, ScanState>(
-            buildWhen: (previous, current) => previous.runtimeType != current.runtimeType,
-            builder: (context, state) {
-              if (state is ScanInitial) return _buildHome(context);
-              if (state is ScanImagePicked)
-                return _buildPreview(context, imagePath: state.imagePath);
-              if (state is ScanLoading)
-                return _buildPreview(
-                  context,
-                  imagePath: context.read<ScanCubit>().currentImagePath ?? '',
-                  isLoading: true,
-                );
-              if (state is ScanResultLoaded)
-                return _buildPreview(
-                  context,
-                  imagePath: state.imagePath ?? '',
-                  result: state,
-                  showTranslation: _showTranslation,
-                  onToggleTranslation: () =>
-                      setState(() => _showTranslation = !_showTranslation),
-                );
-              if (state is ScanAnchored)
-                return _buildPreview(
-                  context,
-                  imagePath: state.imagePath ?? '',
-                  result: ScanResultLoaded(
-                    result: state.result,
-                    imagePath: state.imagePath,
-                    isFavorited: state.isFavorited,
-                  ),
-                  showTranslation: _showTranslation,
-                  onToggleTranslation: () =>
-                      setState(() => _showTranslation = !_showTranslation),
-                );
-              if (state is ScanFilterRejected) return _buildFilterRejected(context, state);
-              if (state is ScanNoArtifactDetected) return _buildNoArtifactDetected(context);
-              if (state is ScanError) return _buildError(context, state);
-              return _buildHome(context);
-            },
-          ),
-          RepaintBoundary(
-            child: PositionedDirectional(
-              start: 16.w,
-              top: MediaQuery.of(context).padding.top + 6.h,
-              child: CustomGlassBackButton(
-                iconColor: AppColors.of(context).footer,
-                onPressed: () => Navigator.pop(context),
+    return PopScope(
+      canPop: context.watch<ScanCubit>().state is ScanInitial,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        context.read<ScanCubit>().clearResult();
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.of(context).background,
+        drawerScrimColor: Colors.transparent,
+        drawer: CustomGlassDrawer(
+          currentFeature: AppStrings.scanFeature.key,
+          onTap: (featureName) {
+            final cubit = context.read<FeaturesCubit>();
+            Navigator.of(context).popUntil((route) => route.isFirst);
+            cubit.changeFeature(featureName: featureName);
+          },
+        ),
+        body: Stack(
+          children: [
+            BlocBuilder<ScanCubit, ScanState>(
+              buildWhen: (previous, current) =>
+                  previous.runtimeType != current.runtimeType,
+              builder: (context, state) {
+                if (state is ScanInitial) return _buildHome(context);
+                if (state is ScanImagePicked)
+                  return _buildPreview(context, imagePath: state.imagePath);
+                if (state is ScanLoading)
+                  return _buildPreview(
+                    context,
+                    imagePath: context.read<ScanCubit>().currentImagePath ?? '',
+                    isLoading: true,
+                  );
+                if (state is ScanResultLoaded)
+                  return _buildPreview(
+                    context,
+                    imagePath: state.imagePath ?? '',
+                    result: state,
+                    showTranslation: _showTranslation,
+                    onToggleTranslation: () =>
+                        setState(() => _showTranslation = !_showTranslation),
+                  );
+                if (state is ScanAnchored)
+                  return _buildPreview(
+                    context,
+                    imagePath: state.imagePath ?? '',
+                    result: ScanResultLoaded(
+                      result: state.result,
+                      imagePath: state.imagePath,
+                      isFavorited: state.isFavorited,
+                    ),
+                    showTranslation: _showTranslation,
+                    onToggleTranslation: () =>
+                        setState(() => _showTranslation = !_showTranslation),
+                  );
+                if (state is ScanFilterRejected)
+                  return _buildFilterRejected(context, state);
+                if (state is ScanNoArtifactDetected)
+                  return _buildNoArtifactDetected(context);
+                if (state is ScanError) return _buildError(context, state);
+                return _buildHome(context);
+              },
+            ),
+            RepaintBoundary(
+              child: PositionedDirectional(
+                start: 16.w,
+                top: MediaQuery.of(context).padding.top + 6.h,
+                child: CustomGlassBackButton(
+                  iconColor: AppColors.of(context).footer,
+                  onPressed: () {
+                    final state = context.read<ScanCubit>().state;
+                    if (state is! ScanInitial) {
+                      context.read<ScanCubit>().clearResult();
+                    } else {
+                      Navigator.pop(context);
+                    }
+                  },
+                ),
               ),
             ),
-          ),
-          RepaintBoundary(
-            child: PositionedDirectional(
-              end: 16.w,
-              top: MediaQuery.of(context).padding.top + 6.h,
-              child: Builder(
-                builder: (ctx) => GestureDetector(
-                  onTap: () => Scaffold.of(ctx).openDrawer(),
-                  child: Icon(
-                    Icons.menu_rounded,
-                    size: 28.r,
-                    color: AppColors.of(context).footer.withValues(alpha: 0.7),
+            RepaintBoundary(
+              child: PositionedDirectional(
+                end: 16.w,
+                top: MediaQuery.of(context).padding.top + 6.h,
+                child: Builder(
+                  builder: (ctx) => GestureDetector(
+                    onTap: () => Scaffold.of(ctx).openDrawer(),
+                    child: Icon(
+                      Icons.menu_rounded,
+                      size: 28.r,
+                      color: AppColors.of(
+                        context,
+                      ).footer.withValues(alpha: 0.7),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -299,29 +318,40 @@ class _ScannerBodyState extends State<_ScannerBody> {
         SizedBox(
           width: double.infinity,
           height: double.infinity,
-          child: Image.file(File(imagePath), cacheWidth: 1080, fit: BoxFit.cover),
+          child: Image.file(
+            File(imagePath),
+            cacheWidth: 1080,
+            fit: BoxFit.cover,
+          ),
         ),
         Positioned(
           left: 22.w,
           top: 202.h,
           width: 346.w,
           height: 463.h,
-          child: isLoading
-              ? FuturisticScanAnalyzerOverlay(steps: [
-                  l10n.scanStep1,
-                  l10n.scanStep2,
-                  l10n.scanStep3,
-                  l10n.scanStep4,
-                  l10n.scanStep5,
-                ])
-              : Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.10),
-                    borderRadius: BorderRadius.circular(8.r),
-                    border: Border.all(color: AppColors.cf9f9f9, width: 1),
-                  ),
-                ),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(8.r),
+              border: Border.all(color: AppColors.cf9f9f9, width: 1),
+            ),
+          ),
         ),
+        if (isLoading)
+          Positioned(
+            left: 22.w,
+            right: 22.w,
+            top: 202.h - 36.h,
+            child: _ScanAnalyzingTextStatic(
+              steps: [
+                l10n.scanStep1,
+                l10n.scanStep2,
+                l10n.scanStep3,
+                l10n.scanStep4,
+                l10n.scanStep5,
+              ],
+            ),
+          ),
         if (result != null && !showTranslation)
           Positioned(
             left: 12.w,
@@ -353,7 +383,8 @@ class _ScannerBodyState extends State<_ScannerBody> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        result.result.artifact.name ?? l10n.detailsUnknownArtifact,
+                        result.result.artifact.name ??
+                            l10n.detailsUnknownArtifact,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 24.sp,
@@ -430,68 +461,69 @@ class _ScannerBodyState extends State<_ScannerBody> {
                             if (result.result.artifact.artifactModelId != null)
                               const Spacer(),
                             GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                SmoothRoute(
-                                  type: TransitionType.fadeSlideUp,
-                                  page: BlocProvider.value(
-                                    value: context.read<ScanCubit>(),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  SmoothRoute(
+                                    type: TransitionType.fadeSlideUp,
+                                    page: BlocProvider.value(
+                                      value: context.read<ScanCubit>(),
                                       child: DetailsView(
                                         args: ScanResultArgs(
                                           result: result.result,
                                           imagePath: result.imagePath,
                                           isFavorited: result.isFavorited,
                                         ),
+                                      ),
                                     ),
                                   ),
+                                );
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 16.w,
+                                  vertical: 10.h,
                                 ),
-                              );
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 16.w,
-                                vertical: 10.h,
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(50.r),
-                                border: Border.all(
-                                  color: Colors.black.withValues(alpha: 0.1),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(50.r),
+                                  border: Border.all(
+                                    color: Colors.black.withValues(alpha: 0.1),
+                                  ),
+                                  gradient: const LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Color(0x13FFFFFF),
+                                      Color(0x00FFFFFF),
+                                    ],
+                                  ),
                                 ),
-                                gradient: const LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    Color(0x13FFFFFF),
-                                    Color(0x00FFFFFF),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      l10n.scanDetails,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    Gap(4.w),
+                                    Icon(
+                                      Directionality.of(context) ==
+                                              TextDirection.rtl
+                                          ? Icons.arrow_back_rounded
+                                          : Icons.arrow_forward_rounded,
+                                      color: Colors.white,
+                                      size: 18.r,
+                                    ),
                                   ],
                                 ),
                               ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    l10n.scanDetails,
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  Gap(4.w),
-                                  Icon(
-                                    Directionality.of(context) == TextDirection.rtl
-                                        ? Icons.arrow_back_rounded
-                                        : Icons.arrow_forward_rounded,
-                                    color: Colors.white,
-                                    size: 18.r,
-                                  ),
-                                ],
-                              ),
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
                       ],
                     ],
                   ),
@@ -500,7 +532,8 @@ class _ScannerBodyState extends State<_ScannerBody> {
             ),
           ),
         // Translation toggle button
-        if (result != null && onToggleTranslation != null &&
+        if (result != null &&
+            onToggleTranslation != null &&
             result.result.hieroglyphs?.translation != null)
           PositionedDirectional(
             end: 17.w,
@@ -558,12 +591,12 @@ class _ScannerBodyState extends State<_ScannerBody> {
               ),
             ),
           ),
-          // Translation card overlay
-          if (result != null &&
-              showTranslation &&
-              result.result.hieroglyphs?.translation != null)
-            Positioned(
-              left: 8.w,
+        // Translation card overlay
+        if (result != null &&
+            showTranslation &&
+            result.result.hieroglyphs?.translation != null)
+          Positioned(
+            left: 8.w,
             top: 261.h,
             width: 375.w,
             bottom: 12.h,
@@ -686,7 +719,9 @@ class _ScannerBodyState extends State<_ScannerBody> {
                       child: Container(
                         padding: EdgeInsets.all(10.r),
                         decoration: BoxDecoration(
-                          color: AppColors.of(context).surface.withValues(alpha: 0.8),
+                          color: AppColors.of(
+                            context,
+                          ).surface.withValues(alpha: 0.8),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -718,66 +753,69 @@ class _ScannerBodyState extends State<_ScannerBody> {
                   ),
                 ),
               ),
-                if (result.scanLogId != null) ...[
-                  Gap(12.w),
-                  GestureDetector(
-                    onTap: () => _saveToFavorites(context, result.scanLogId!),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 12.w,
-                        vertical: 6.h,
-                      ),
-                      decoration: BoxDecoration(
+              if (result.scanLogId != null) ...[
+                Gap(12.w),
+                GestureDetector(
+                  onTap: () => _saveToFavorites(context, result.scanLogId!),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 12.w,
+                      vertical: 6.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: state.isFavorited
+                          ? Colors.redAccent.withValues(alpha: 0.15)
+                          : AppColors.of(
+                              context,
+                            ).surface.withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(20.r),
+                      border: Border.all(
                         color: state.isFavorited
-                            ? Colors.redAccent.withValues(alpha: 0.15)
-                            : AppColors.of(context).surface.withValues(alpha: 0.5),
-                        borderRadius: BorderRadius.circular(20.r),
-                        border: Border.all(
+                            ? Colors.redAccent.withValues(alpha: 0.4)
+                            : AppColors.of(
+                                context,
+                              ).footer.withValues(alpha: 0.15),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          state.isFavorited
+                              ? Icons.favorite
+                              : Icons.favorite_border,
                           color: state.isFavorited
-                              ? Colors.redAccent.withValues(alpha: 0.4)
+                              ? Colors.redAccent
                               : AppColors.of(
                                   context,
-                                ).footer.withValues(alpha: 0.15),
+                                ).footer.withValues(alpha: 0.5),
+                          size: 16.r,
                         ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            state.isFavorited
-                                ? Icons.favorite
-                                : Icons.favorite_border,
+                        Gap(6.w),
+                        Text(
+                          state.isFavorited
+                              ? l10n.scanFavorited
+                              : l10n.scanSave,
+                          style: TextStyle(
                             color: state.isFavorited
                                 ? Colors.redAccent
                                 : AppColors.of(
                                     context,
-                                  ).footer.withValues(alpha: 0.5),
-                            size: 16.r,
+                                  ).footer.withValues(alpha: 0.6),
+                            fontSize: 13.sp,
+                            fontWeight: FontWeight.w500,
                           ),
-                          Gap(6.w),
-                          Text(
-                            state.isFavorited
-                                ? l10n.scanFavorited
-                                : l10n.scanSave,
-                            style: TextStyle(
-                              color: state.isFavorited
-                                  ? Colors.redAccent
-                                  : AppColors.of(
-                                      context,
-                                    ).footer.withValues(alpha: 0.6),
-                              fontSize: 13.sp,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ],
-            ),
+            ],
+          ),
 
-          if (artifact.isPrimaryModel && (artifact.era != null || artifact.material != null)) ...[
+          if (artifact.isPrimaryModel &&
+              (artifact.era != null || artifact.material != null)) ...[
             Gap(12.h),
             Wrap(
               spacing: 8.w,
@@ -880,7 +918,9 @@ class _ScannerBodyState extends State<_ScannerBody> {
                           ),
                         if (hieroglyphs.cartoucheCount != null)
                           _StatChip(
-                            l10n.scanStatCartouches(hieroglyphs.cartoucheCount!),
+                            l10n.scanStatCartouches(
+                              hieroglyphs.cartoucheCount!,
+                            ),
                             Icons.circle_outlined,
                           ),
                       ],
@@ -1350,6 +1390,75 @@ class _StatChip extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ScanAnalyzingTextStatic extends StatefulWidget {
+  final List<String> steps;
+  const _ScanAnalyzingTextStatic({required this.steps});
+
+  @override
+  State<_ScanAnalyzingTextStatic> createState() =>
+      _ScanAnalyzingTextStaticState();
+}
+
+class _ScanAnalyzingTextStaticState extends State<_ScanAnalyzingTextStatic>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  int _stepIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1400),
+    )..repeat(reverse: true);
+    _startStepTimer();
+  }
+
+  void _startStepTimer() async {
+    while (mounted) {
+      await Future.delayed(const Duration(milliseconds: 1600));
+      if (!mounted) break;
+      setState(() {
+        _stepIndex = (_stepIndex + 1) % widget.steps.length;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: Tween<double>(
+        begin: 0.45,
+        end: 1.0,
+      ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut)),
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 400),
+        transitionBuilder: (child, animation) =>
+            FadeTransition(opacity: animation, child: child),
+        child: Text(
+          widget.steps[_stepIndex],
+          key: ValueKey(_stepIndex),
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 13.sp,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 0.3,
+          ),
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
       ),
     );
   }
